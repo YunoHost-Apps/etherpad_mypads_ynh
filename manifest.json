@@ -1,0 +1,76 @@
+{
+	"name": "Etherpad Mypads",
+	"id": "etherpad_mypads",
+	"packaging_format": 1,
+	"requirements": {
+		"yunohost": ">= 2.4"
+	},
+	"description": {
+		"en": "Framapad clone, a online editor providing collaborative editing in real-time.",
+		"fr": "Clone de Framapad, un éditeur en ligne fournissant l'édition collaborative en temps réel."
+	},
+	"version": "1.6.0",
+	"url": "https://framapad.org/",
+	"license": "free",
+	"maintainer": {
+		"name": "Maniack Crudelis",
+		"email": "maniackc_dev@crudelis.fr"
+	},
+	"multi_instance": true,
+	"services": [
+		"nginx",
+		"mysql"
+	],
+	"arguments": {
+		"install" : [
+			{
+				"name": "domain",
+				"type": "domain",
+				"ask": {
+					"en": "Choose a dedicated domain for Etherpad Mypads.",
+					"fr": "Choisissez un domaine dédié pour Etherpad Mypads."
+				},
+				"example": "sub.domain.org",
+"default": "mypads.crudelis-test4.fr"
+			},
+			{
+				"name": "admin",
+				"type": "user",
+				"ask": {
+					"en": "Choose the Etherpad Mypads administrator (must be an existing YunoHost user)",
+					"fr": "Administrateur du site (doit être un utilisateur YunoHost existant)"
+				},
+				"example": "john",
+"default": "mcrudelis"
+			},
+			{
+				"name": "is_public",
+				"ask": {
+					"en": "Is it a public website ?",
+					"fr": "Est-ce un site public ?"
+				},
+				"choices": ["Yes", "No"],
+				"default": "Yes"
+			},
+			{
+				"name": "password",
+				"type": "password",
+				"ask": {
+					"en": "Set the administrator password",
+					"fr": "Définissez le mot de passe administrateur"
+				},
+				"example": "Choose a password",
+"default": "admin"
+			},
+            {
+                "name": "abiword",
+                "type": "boolean",
+                "ask": {
+                    "en": "Use abiword (~260Mo) to expand export possibilities (pdf, doc) ?",
+                    "fr": "Utiliser abiword (~260Mo) pour étendre les possibilités d'export (pdf, doc) ?"
+                },
+                "default": false
+			}
+		]
+	}
+}

@@ -1,0 +1,12 @@
+[Unit]
+Description=Etherpad-lite, the collaborative editor.
+After=network.target
+
+[Service]
+Type=simple
+User=etherpad
+Group=etherpad
+ExecStart=__FINALPATH__bin/safeRun.sh /var/log/__APP__/etherpad.log
+
+[Install]
+WantedBy=multi-user.target

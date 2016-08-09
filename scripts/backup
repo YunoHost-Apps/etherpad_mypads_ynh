@@ -1,0 +1,33 @@
+#!/bin/bash
+
+# Source app helpers
+source /usr/share/yunohost/helpers
+
+# Récupère les infos de l'application.
+app=$YNH_APP_INSTANCE_NAME
+final_path=$(sudo yunohost app setting $app final_path)
+domain=$(sudo yunohost app setting $app domain)
+
+
+# The parameter $1 is the backup directory location
+# which will be compressed afterward
+backup_dir=$1/apps/$app
+sudo mkdir -p "$backup_dir"
+
+# Backup sources & data
+sudo cp -a $final_path/. $backup_dir/sources
+
+# Copy Nginx and YunoHost parameters
+sudo cp -a /etc/yunohost/apps/$app/. $backup_dir/yunohost
+sudo cp -a /etc/nginx/conf.d/$domain.d/$app.conf $backup_dir/nginx.conf
+
+# Backup db
+root_pwd=$(sudo cat /etc/yunohost/mysql)
+sudo mysqldump -u root -p$root_pwd --no-create-db $app --result-file="$backup_dir/db.sql"
+
+
+# Copie la configuration de logrotate
+sudo cp -a /etc/logrotate.d/$app $backup_dir/logrotate
+
+# Copie des fichiers du script systemd
+sudo cp -a /etc/systemd/system/$app.service $backup_dir/

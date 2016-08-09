@@ -1,0 +1,181 @@
+#!/bin/bash
+
+source .fonctions	# Charge les fonctions génériques habituellement utilisées dans le script
+
+CLEAN_SETUP () {
+# Nettoyage des résidus d'installation non pris en charge par le script remove.
+# Pas de nettoyage supplémentaire nécessaire ici...
+	echo ""
+}
+TRAP_ON	# Active trap pour arrêter le script si une erreur est détectée.
+
+# Retrieve arguments
+domain=$YNH_APP_ARG_DOMAIN
+admin=$YNH_APP_ARG_ADMIN
+is_public=$YNH_APP_ARG_IS_PUBLIC
+password=$YNH_APP_ARG_PASSWORD
+abiword=$YNH_APP_ARG_ABIWORD
+
+app=$YNH_APP_INSTANCE_NAME
+
+# Source app helpers
+source /usr/share/yunohost/helpers
+
+# Vérifie que les variables ne sont pas vides.
+CHECK_VAR "$app" "app name not set"
+
+
+CHECK_USER "$admin"	# Vérifie la validité de l'user admin
+
+CHECK_DOMAINPATH	# Vérifie la disponibilité du path et du domaine.
+
+CHECK_FINALPATH	# Vérifie que le dossier de destination n'est pas déjà utilisé.
+
+
+FIND_PORT 9001	# Cherche un port libre.
+
+# Enregistre les infos dans la config YunoHost
+sudo yunohost app setting $app domain -v $domain
+sudo yunohost app setting $app admin -v $admin
+sudo yunohost app setting $app is_public -v $is_public
+sudo yunohost app setting $app password -v $password
+sudo yunohost app setting $app port -v $port
+sudo yunohost app setting $app abiword -v $abiword
+
+
+GENERATE_DB $app	# Créer une base de données et un utilisateur dédié au nom de l'app.
+
+
+# Créer le repertoire de destination et stocke son emplacement.
+sudo mkdir "$final_path"
+sudo yunohost app setting $app final_path -v $final_path
+
+SETUP_SOURCE "1.6.0.tar.gz"	# Télécharge la source, décompresse et copie dans $final_path
+
+# Et copie le fichier de config nginx
+sudo cp ../conf/nginx.conf /etc/nginx/conf.d/$domain.d/$app.conf
+
+# Modifie les variables dans le fichier de configuration nginx
+sudo sed -i "s@__PORT__@$port@g" /etc/nginx/conf.d/$domain.d/$app.conf
+
+# Installation de npm et nodejs
+sudo apt-get update
+sudo apt-get install npm nodejs-legacy -qy
+
+# Créer l'user etherpad
+if ! grep -q "^etherpad:" /etc/passwd	# Test l'existence de l'utilisateur
+then	# Si il n'existe pas, l'user etherpad est créé
+	sudo useradd etherpad -r
+fi
+
+# Créer le dossier de log
+sudo mkdir -p /var/log/$app
+sudo touch /var/log/$app/etherpad.log
+install_log=/var/log/$app/installation.log
+sudo touch $install_log
+sudo chown etherpad -R /var/log/$app
+sudo chown admin -R $install_log
+
+# Installe les dépendances de etherpad et procède à l'intallation.
+# sudo bash -c "\"$final_path/bin/installDeps.sh\" > $install_log 2>&1"
+sudo "$final_path/bin/installDeps.sh" > $install_log 2>&1
+sudo npm install forever -g >> $install_log 2>&1
+
+# Configure etherpad
+sudo cp ../conf/settings.json "$final_path/settings.json"
+sudo sed -i "s/__PORT__/$port/g" "$final_path/settings.json"
+sudo sed -i "s/__DB_USER__/$db_user/g" "$final_path/settings.json"
+sudo sed -i "s/__DB_PWD__/$db_pwd/g" "$final_path/settings.json"
+sudo sed -i "s/__ADMIN__/$admin/g" "$final_path/settings.json"
+sudo sed -i "s/__PASSWD__/$password/g" "$final_path/settings.json"
+if [ "$abiword" -eq 1 ]
+then
+	sudo apt-get install abiword -qy	# Installation de abiword
+	abiword_path=`which abiword`	# Récupère l'emplacement de l'exécutable de abiword
+	sudo sed -i "s@\"abiword\" : null@\"abiword\" : \"$abiword_path\"@" "$final_path/settings.json"	# Renseigne l'emplacement de abiword dans la config de etherpad
+	STORE_MD5_CONFIG "settings.json" "$final_path/settings.json"	# Enregistre la somme de contrôle du fichier de config
+fi
+STORE_MD5_CONFIG "settings.json" "$final_path/settings.json"	# Enregistre la somme de contrôle du fichier de config
+
+# Configure les droits d'accès au fichiers
+# Les fichiers appartiennent à etherpad
+sudo chown -R etherpad: $final_path
+sudo chmod 700 $final_path/settings.json	# Restreint l'accès à settings.json
+
+
+# Configuration de logrotate
+sed -i "s@__APP__@$app@g" ../conf/logrotate
+sudo cp ../conf/logrotate /etc/logrotate.d/$app
+
+
+# Mise en place du script systemd
+sudo cp ../conf/etherpad.service /etc/systemd/system/$app.service
+sudo chown root: /etc/systemd/system/$app.service
+sudo sed -i "s@__FINALPATH__@$final_path/@g" /etc/systemd/system/$app.service
+sudo sed -i "s@__APP__@$app@g" /etc/systemd/system/$app.service
+## Démarrage auto du service
+sudo systemctl enable $app.service
+
+# Ajoute le service au monitoring de Yunohost.
+sudo yunohost service add $app.service --log "/var/log/$app/etherpad.log"
+
+
+# Installation des plugins etherpad (Framapad style)
+# script_dir="$PWD"
+cd "$final_path"
+sudo npm install ep_align >> $install_log 2>&1	# Add Left/Center/Right/Justify to lines of text in a pad
+sudo npm install ep_author_hover >> $install_log 2>&1	# Framapad - Adds author names to span titles
+sudo npm install ep_automatic_logut >> $install_log 2>&1	# Automatically disconnects user after some period of time (Prevent server overload)
+sudo npm install ep_comments_page >> $install_log 2>&1	# Framapad - Adds comments on sidebar and link it to the text.
+sudo npm install ep_countable >> $install_log 2>&1	# Framapad - Displays paragraphs, sentences, words and characters counts.
+sudo npm install ep_delete_empty_pads >> $install_log 2>&1	# Framapad - Delete pads which were never edited
+sudo npm install ep_font_color >> $install_log 2>&1	# Framapad - Apply colors to fonts
+sudo npm install ep_headings2 >> $install_log 2>&1	# Framapad - Adds heading support to Etherpad Lite.
+sudo npm install ep_markdown >> $install_log 2>&1	# Framapad - Edit and Export as Markdown in Etherpad
+sudo npm install ep_mypads >> $install_log 2>&1	# Framapad - Groups and private pads for etherpad
+sudo npm install ep_page_view >> $install_log 2>&1	# Framapad - Add support to do 'page view', with a toggle on/off option in Settings, also Page Breaks with Control Enter
+sudo npm install ep_spellcheck >> $install_log 2>&1	# Framapad - Add support to do 'Spell checking'
+sudo npm install ep_subscript_and_superscript >> $install_log 2>&1	# Framapad - Add support for Subscript and Superscript
+sudo npm install ep_table_of_contents >> $install_log 2>&1	# Framapad - View a table of contents for your pad
+# sudo npm install ep_unoconv	# Framapad - Use unoconv instead of abiword to export pads.
+sudo npm install ep_user_font_size >> $install_log 2>&1	# Framapad - User Pad Contents font size can be set in settings, this does not effect other peoples views
+sudo chown -R etherpad: $final_path/node_modules
+
+# Ajoute un lien vers etherpad pour créer des pads anonymes depuis Mypads.
+sudo sed -i "s@^ *\"DESCRIPTION\": .*</ul>@&<a href=../>Pads anonymes</a>@g" $final_path/node_modules/ep_mypads/static/l10n/fr.json
+sudo sed -i "s@^ *\"DESCRIPTION\": .*</ul>@&<a href=../>Anonymous pads</a>@g" $final_path/node_modules/ep_mypads/static/l10n/en.json
+
+# Démarre etherpad
+echo "Démarrage d'etherpad" >&2
+tempfile="$(mktemp)"
+tail -f -n1 /var/log/$app/etherpad.log > "$tempfile" &	# Suit le démarrage dans le log
+PID_TAIL=$!	# Récupère le PID de la commande tail, qui est passée en arrière plan.
+sudo service $app start	# Démarre etherpad. Le démarrage est fait le plus tôt possible, car il est très long...
+
+# Make app public if necessary
+if [ "$is_public" = "Yes" ];
+then
+	# Modifie le domaine pour qu'il passe dans une regex
+	domain_regex=$(echo "$domain" | sed 's@-@.@g')
+	CHECK_VAR "$domain_regex" "domain_regex empty"
+	sudo yunohost app setting $app skipped_regex -v "$domain_regex"
+	sudo yunohost app setting $app protected_regex -v "$domain_regex.*admin"	# Protège l'accès de l'administration d'etherpad et de mypads.
+fi
+sudo yunohost app setting $app path -v /mypads	# /mypads vient se rajouter à l'adresse de etherpad pour y être associé sur le portail.
+
+# Recharge la configuration Nginx
+sudo service nginx reload
+# Régénère la configuration de SSOwat
+sudo yunohost app ssowatconf
+
+# Surveille le démarrage du service.
+for i in `seq 1 20`
+do	# La boucle attend le démarrage d'etherpad. Ou 20 secondes. Cette boucle évite simplement un 502 au début, car le démarrage est long...
+	if grep -q "You can access your Etherpad instance at" "$tempfile"; then
+		break	# Si le log annonce le démarrage d'etherpad, sort de la boucle.
+	fi
+	echo -n "." >&2
+	sleep 1
+done
+kill -s 15 $PID_TAIL > /dev/null	# Arrête l'exécution de tail.
+sudo rm "$tempfile"

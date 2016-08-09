@@ -1,0 +1,104 @@
+#!/bin/bash
+
+source .fonctions	# Charge les fonctions génériques habituellement utilisées dans le script
+
+# Source app helpers
+source /usr/share/yunohost/helpers
+
+# Récupère les infos de l'application.
+app=$YNH_APP_INSTANCE_NAME
+domain=$(sudo yunohost app setting $app domain)
+path=$(sudo yunohost app setting $app path)
+admin=$(sudo yunohost app setting $app admin)
+is_public=$(sudo yunohost app setting $app is_public)
+final_path=$(sudo yunohost app setting $app final_path)
+port=$(sudo yunohost app setting $app port)
+abiword=$(sudo yunohost app setting $app abiword)
+
+
+SETUP_SOURCE "1.6.0.tar.gz"	# Télécharge la source, décompresse et copie dans $final_path
+
+# Et copie le fichier de config nginx
+sudo cp ../conf/nginx.conf /etc/nginx/conf.d/$domain.d/$app.conf
+
+# Modifie les variables dans le fichier de configuration nginx
+sudo sed -i "s@__PORT__@$port@g" /etc/nginx/conf.d/$domain.d/$app.conf
+
+
+# Configure etherpad
+# Copie ou modification d'un fichier de config
+sudo chmod 777 $final_path/settings.json	# Autorise l'accès à settings.json
+CHECK_MD5_CONFIG "settings.json" "$final_path/settings.json"	# Créé un backup du fichier de config si il a été modifié.
+sudo cp ../conf/settings.json "$final_path/settings.json"
+sudo sed -i "s/__PORT__/$port/g" "$final_path/settings.json"
+sudo sed -i "s/__DB_USER__/$app/g" "$final_path/settings.json"
+db_pwd=$(sudo yunohost app setting $app mysqlpwd)
+sudo sed -i "s/__DB_PWD__/$db_pwd/g" "$final_path/settings.json"
+sudo sed -i "s/__ADMIN__/$admin/g" "$final_path/settings.json"
+sudo sed -i "s/__PASSWD__/$password/g" "$final_path/settings.json"
+if [ "$abiword" -eq 1 ]
+then
+	abiword_path=`which abiword`	# Récupère l'emplacement de l'exécutable de abiword
+	sudo sed -i "s@\"abiword\" : null@\"abiword\" : \"$abiword_path\"@" "$final_path/settings.json"	# Renseigne l'emplacement de abiword dans la config de etherpad
+fi
+STORE_MD5_CONFIG "settings.json" "$final_path/settings.json"	# Réenregistre la somme de contrôle du fichier de config
+
+# Configure les droits d'accès au fichiers
+# Les fichiers appartiennent à etherpad
+sudo chown -R etherpad: $final_path
+sudo chmod 700 $final_path/settings.json	# Restreint l'accès à settings.json
+
+
+# Configuration de logrotate
+sed -i "s@__APP__@$app@g" ../conf/logrotate
+sudo cp ../conf/logrotate /etc/logrotate.d/$app
+
+
+# Mise en place du script systemd
+sudo service $app stop
+sudo cp ../conf/etherpad.service /etc/systemd/system/$app.service
+sudo chown root: /etc/systemd/system/$app.service
+sudo sed -i "s@__FINALPATH__@$final_path/@g" /etc/systemd/system/$app.service
+sudo sed -i "s@__APP__@$app@g" /etc/systemd/system/$app.service
+## Démarrage auto du service
+sudo systemctl enable $app.service
+
+# Ajoute un lien vers etherpad pour créer des pads anonymes depuis Mypads.
+sudo sed -i "s@^ *\"DESCRIPTION\": .*</ul>@&<a href=../>Pads anonymes</a>@g" $final_path/node_modules/ep_mypads/static/l10n/fr.json
+sudo sed -i "s@^ *\"DESCRIPTION\": .*</ul>@&<a href=../>Anonymous pads</a>@g" $final_path/node_modules/ep_mypads/static/l10n/en.json
+
+# Démarre etherpad
+echo "Démarrage d'etherpad" >&2
+tempfile="$(mktemp)"
+tail -f -n1 /var/log/$app/etherpad.log > "$tempfile" &	# Suit le démarrage dans le log
+PID_TAIL=$!	# Récupère le PID de la commande tail, qui est passée en arrière plan.
+sudo service $app start	# Démarre etherpad. Le démarrage est fait le plus tôt possible, car il est très long...
+
+# Make app public if necessary
+if [ "$is_public" = "Yes" ];
+then
+	# Modifie le domaine pour qu'il passe dans une regex
+	domain_regex=$(echo "$domain" | sed 's@-@.@g')
+	CHECK_VAR "$domain_regex" "domain_regex empty"
+	sudo yunohost app setting $app skipped_regex -v "$domain_regex"
+	sudo yunohost app setting $app protected_regex -v "$domain_regex.*admin"	# Protège l'accès de l'administration d'etherpad et de mypads.
+fi
+sudo yunohost app setting $app path -v /mypads	# /mypads vient se rajouter à l'adresse de etherpad pour y être associé sur le portail.
+
+# Recharge la configuration Nginx
+sudo service nginx reload
+# Régénère la configuration de SSOwat
+sudo yunohost app ssowatconf
+
+# Surveille le démarrage du service.
+for i in `seq 1 20`
+do	# La boucle attend le démarrage d'etherpad. Ou 20 secondes. Cette boucle évite simplement un 502 au début, car le démarrage est long...
+	if grep -q "You can access your Etherpad instance at" "$tempfile"; then
+		break	# Si le log annonce le démarrage d'etherpad, sort de la boucle.
+	fi
+	echo -n "." >&2
+	sleep 1
+done
+echo ""
+kill -s 15 $PID_TAIL > /dev/null	# Arrête l'exécution de tail.
+sudo rm "$tempfile"
