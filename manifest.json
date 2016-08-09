@@ -31,7 +31,6 @@
 					"fr": "Choisissez un domaine dédié pour Etherpad Mypads."
 				},
 				"example": "sub.domain.org",
-"default": "mypads.crudelis-test4.fr"
 			},
 			{
 				"name": "admin",
@@ -41,7 +40,6 @@
 					"fr": "Administrateur du site (doit être un utilisateur YunoHost existant)"
 				},
 				"example": "john",
-"default": "mcrudelis"
 			},
 			{
 				"name": "is_public",
@@ -60,7 +58,6 @@
 					"fr": "Définissez le mot de passe administrateur"
 				},
 				"example": "Choose a password",
-"default": "admin"
 			},
             {
                 "name": "abiword",
