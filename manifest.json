@@ -10,7 +10,7 @@
 		"fr": "Clone de Framapad, un éditeur en ligne fournissant l'édition collaborative en temps réel."
 	},
 	"version": "1.6.0",
-	"url": "https://framapad.org/",
+	"url": "https://framapad.org",
 	"license": "free",
 	"maintainer": {
 		"name": "Maniack Crudelis",
@@ -30,7 +30,7 @@
 					"en": "Choose a dedicated domain for Etherpad Mypads.",
 					"fr": "Choisissez un domaine dédié pour Etherpad Mypads."
 				},
-				"example": "sub.domain.org",
+				"example": "sub.domain.org"
 			},
 			{
 				"name": "admin",
@@ -39,12 +39,12 @@
 					"en": "Choose the Etherpad Mypads administrator (must be an existing YunoHost user)",
 					"fr": "Administrateur du site (doit être un utilisateur YunoHost existant)"
 				},
-				"example": "john",
+				"example": "john"
 			},
 			{
 				"name": "is_public",
 				"ask": {
-					"en": "Is it a public website ?",
+					"en": "Is it a public website?",
 					"fr": "Est-ce un site public ?"
 				},
 				"choices": ["Yes", "No"],
@@ -57,7 +57,7 @@
 					"en": "Set the administrator password",
 					"fr": "Définissez le mot de passe administrateur"
 				},
-				"example": "Choose a password",
+				"example": "Choose a password"
 			},
             {
                 "name": "abiword",
