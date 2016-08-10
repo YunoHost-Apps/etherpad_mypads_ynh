@@ -95,7 +95,9 @@ SETUP_SOURCE () {	# Télécharge la source, décompresse et copie dans $final_pa
 	# Copie les fichiers sources
 	sudo cp -a $(cat ../sources/source_dir)/. "$final_path"
 	# Copie les fichiers additionnels ou modifiés.
-	sudo cp -a ../sources/ajouts/. "$final_path"
+	if test -e "../sources/ajouts"; then
+		sudo cp -a ../sources/ajouts/. "$final_path"
+	fi
 }
 
 POOL_FPM () {	# Créer le fichier de configuration du pool php-fpm et le configure.
