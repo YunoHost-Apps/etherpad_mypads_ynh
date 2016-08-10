@@ -159,7 +159,7 @@ then
 	domain_regex=$(echo "$domain" | sed 's@-@.@g')
 	CHECK_VAR "$domain_regex" "domain_regex empty"
 	sudo yunohost app setting $app skipped_regex -v "$domain_regex"
-	sudo yunohost app setting $app protected_regex -v "$domain_regex.*admin"	# Protège l'accès de l'administration d'etherpad et de mypads.
+	sudo yunohost app setting $app protected_regex -v "$domain_regex/admin","$domain_regex/mypads/%?/admin"	# Protège l'accès de l'administration d'etherpad et de mypads.
 fi
 sudo yunohost app setting $app path -v /mypads	# /mypads vient se rajouter à l'adresse de etherpad pour y être associé sur le portail.
 
