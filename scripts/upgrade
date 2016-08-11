@@ -66,6 +66,11 @@ sudo systemctl enable $app.service
 # Ajoute un lien vers etherpad pour créer des pads anonymes depuis Mypads.
 sudo sed -i "s@^ *\"DESCRIPTION\": .*</ul>@&<a href=../>Pads anonymes</a>@g" $final_path/node_modules/ep_mypads/static/l10n/fr.json
 sudo sed -i "s@^ *\"DESCRIPTION\": .*</ul>@&<a href=../>Anonymous pads</a>@g" $final_path/node_modules/ep_mypads/static/l10n/en.json
+# Et un lien vers l'admin etherpad depuis Mypads.
+sudo sed -i "s@^ *\"FOOTER\": .*2.0@& | <a href='../admin'>Etherpad admin</a>@g" $final_path/node_modules/ep_mypads/static/l10n/en.json $final_path/node_modules/ep_mypads/static/l10n/fr.json
+
+mod_line=$(grep -nA5 "index.createOpenPad" $final_path/src/templates/index.html | grep "</div>" | cut -d '-' -f 1)	# Recherche le /div situé sous le champs d'ouverture de pad.
+sudo sed -i "$mod_line s@div>@&\n\t<center><br><font size="5"><a href="./mypads">Mypads</a></font></center>@" $final_path/src/templates/index.html	# Pour ajouter un lien vers le plugin mypads depuis la page d'Etherpad.
 
 # Démarre etherpad
 echo "Démarrage d'etherpad" >&2
@@ -75,15 +80,9 @@ PID_TAIL=$!	# Récupère le PID de la commande tail, qui est passée en arrière
 sudo service $app start	# Démarre etherpad. Le démarrage est fait le plus tôt possible, car il est très long...
 
 # Make app public if necessary
-if [ "$is_public" = "Yes" ];
-then
-	# Modifie le domaine pour qu'il passe dans une regex
-	domain_regex=$(echo "$domain" | sed 's@-@.@g')
-	CHECK_VAR "$domain_regex" "domain_regex empty"
-	sudo yunohost app setting $app skipped_regex -v "$domain_regex"
-	sudo yunohost app setting $app protected_regex -v "$domain_regex.*admin"	# Protège l'accès de l'administration d'etherpad et de mypads.
+if [ "$is_public" = "Yes" ]; then
+	sudo yunohost app setting $app skipped_uris -v "/"
 fi
-sudo yunohost app setting $app path -v /mypads	# /mypads vient se rajouter à l'adresse de etherpad pour y être associé sur le portail.
 
 # Recharge la configuration Nginx
 sudo service nginx reload
