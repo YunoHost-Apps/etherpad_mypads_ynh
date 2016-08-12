@@ -15,7 +15,6 @@ final_path=$(sudo yunohost app setting $app final_path)
 port=$(sudo yunohost app setting $app port)
 abiword=$(sudo yunohost app setting $app abiword)
 
-
 SETUP_SOURCE "1.6.0.tar.gz"	# Télécharge la source, décompresse et copie dans $final_path
 
 # Et copie le fichier de config nginx
@@ -27,26 +26,28 @@ sudo sed -i "s@__PORT__@$port@g" /etc/nginx/conf.d/$domain.d/$app.conf
 
 # Configure etherpad
 # Copie ou modification d'un fichier de config
-sudo chmod 777 $final_path/settings.json	# Autorise l'accès à settings.json
 CHECK_MD5_CONFIG "settings.json" "$final_path/settings.json"	# Créé un backup du fichier de config si il a été modifié.
+CHECK_MD5_CONFIG "credentials.json" "$final_path/credentials.json"	# Créé un backup du fichier de config si il a été modifié.
 sudo cp ../conf/settings.json "$final_path/settings.json"
+sudo cp ../conf/credentials.json "$final_path/credentials.json"
 sudo sed -i "s/__PORT__/$port/g" "$final_path/settings.json"
-sudo sed -i "s/__DB_USER__/$app/g" "$final_path/settings.json"
+sudo sed -i "s/__DB_USER__/$app/g" "$final_path/credentials.json"
 db_pwd=$(sudo yunohost app setting $app mysqlpwd)
-sudo sed -i "s/__DB_PWD__/$db_pwd/g" "$final_path/settings.json"
-sudo sed -i "s/__ADMIN__/$admin/g" "$final_path/settings.json"
-sudo sed -i "s/__PASSWD__/$password/g" "$final_path/settings.json"
+sudo sed -i "s/__DB_PWD__/$db_pwd/g" "$final_path/credentials.json"
+sudo sed -i "s/__ADMIN__/$admin/g" "$final_path/credentials.json"
+sudo sed -i "s/__PASSWD__/$password/g" "$final_path/credentials.json"
 if [ "$abiword" -eq 1 ]
 then
 	abiword_path=`which abiword`	# Récupère l'emplacement de l'exécutable de abiword
 	sudo sed -i "s@\"abiword\" : null@\"abiword\" : \"$abiword_path\"@" "$final_path/settings.json"	# Renseigne l'emplacement de abiword dans la config de etherpad
 fi
 STORE_MD5_CONFIG "settings.json" "$final_path/settings.json"	# Réenregistre la somme de contrôle du fichier de config
+STORE_MD5_CONFIG "credentials.json" "$final_path/credentials.json"	# Réenregistre la somme de contrôle du fichier de config
 
 # Configure les droits d'accès au fichiers
 # Les fichiers appartiennent à etherpad
 sudo chown -R etherpad: $final_path
-sudo chmod 700 $final_path/settings.json	# Restreint l'accès à settings.json
+sudo chmod 600 "$final_path/credentials.json"	# Restreint l'accès à credentials.json
 
 
 # Configuration de logrotate
@@ -64,13 +65,17 @@ sudo sed -i "s@__APP__@$app@g" /etc/systemd/system/$app.service
 sudo systemctl enable $app.service
 
 # Ajoute un lien vers etherpad pour créer des pads anonymes depuis Mypads.
-sudo sed -i "s@^ *\"DESCRIPTION\": .*</ul>@&<a href=../>Pads anonymes</a>@g" $final_path/node_modules/ep_mypads/static/l10n/fr.json
-sudo sed -i "s@^ *\"DESCRIPTION\": .*</ul>@&<a href=../>Anonymous pads</a>@g" $final_path/node_modules/ep_mypads/static/l10n/en.json
+# sudo sed -i "s@^ *\"DESCRIPTION\": .*</ul>@&<a href=../>Pads anonymes</a>@g" $final_path/node_modules/ep_mypads/static/l10n/fr.json
+# sudo sed -i "s@^ *\"DESCRIPTION\": .*</ul>@&<a href=../>Anonymous pads</a>@g" $final_path/node_modules/ep_mypads/static/l10n/en.json
 # Et un lien vers l'admin etherpad depuis Mypads.
-sudo sed -i "s@^ *\"FOOTER\": .*2.0@& | <a href='../admin'>Etherpad admin</a>@g" $final_path/node_modules/ep_mypads/static/l10n/en.json $final_path/node_modules/ep_mypads/static/l10n/fr.json
+# sudo sed -i "s@^ *\"FOOTER\": .*2.0@& | <a href='../admin'>Etherpad admin</a>@g" $final_path/node_modules/ep_mypads/static/l10n/en.json $final_path/node_modules/ep_mypads/static/l10n/fr.json
 
 mod_line=$(grep -nA5 "index.createOpenPad" $final_path/src/templates/index.html | grep "</div>" | cut -d '-' -f 1)	# Recherche le /div situé sous le champs d'ouverture de pad.
 sudo sed -i "$mod_line s@div>@&\n\t<center><br><font size="5"><a href="./mypads">Mypads</a></font></center>@" $final_path/src/templates/index.html	# Pour ajouter un lien vers le plugin mypads depuis la page d'Etherpad.
+
+sudo mkdir -p /home/.etherpad
+sudo chown etherpad: -R /home/.etherpad
+sudo usermod -d /home/.etherpad etherpad
 
 # Démarre etherpad
 echo "Démarrage d'etherpad" >&2
@@ -82,6 +87,8 @@ sudo service $app start	# Démarre etherpad. Le démarrage est fait le plus tôt
 # Make app public if necessary
 if [ "$is_public" = "Yes" ]; then
 	sudo yunohost app setting $app skipped_uris -v "/"
+else
+	sudo yunohost app setting $app skipped_uris -v "/admin"	# La page d'admin etherpad ne supporte pas le sso...
 fi
 
 # Recharge la configuration Nginx

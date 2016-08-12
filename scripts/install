@@ -65,8 +65,10 @@ sudo apt-get install npm nodejs-legacy -qy
 # Créer l'user etherpad
 if ! grep -q "^etherpad:" /etc/passwd	# Test l'existence de l'utilisateur
 then	# Si il n'existe pas, l'user etherpad est créé
-	sudo useradd etherpad -r
+	sudo useradd etherpad -d /home/.etherpad
 fi
+sudo mkdir -p /home/.etherpad
+sudo chown etherpad: -R /home/.etherpad
 
 # Créer le dossier de log
 sudo mkdir -p /var/log/$app
@@ -83,24 +85,25 @@ sudo npm install forever -g >> $install_log 2>&1
 
 # Configure etherpad
 sudo cp ../conf/settings.json "$final_path/settings.json"
+sudo cp ../conf/credentials.json "$final_path/credentials.json"
 sudo sed -i "s/__PORT__/$port/g" "$final_path/settings.json"
-sudo sed -i "s/__DB_USER__/$db_user/g" "$final_path/settings.json"
-sudo sed -i "s/__DB_PWD__/$db_pwd/g" "$final_path/settings.json"
-sudo sed -i "s/__ADMIN__/$admin/g" "$final_path/settings.json"
-sudo sed -i "s/__PASSWD__/$password/g" "$final_path/settings.json"
+sudo sed -i "s/__DB_USER__/$db_user/g" "$final_path/credentials.json"
+sudo sed -i "s/__DB_PWD__/$db_pwd/g" "$final_path/credentials.json"
+sudo sed -i "s/__ADMIN__/$admin/g" "$final_path/credentials.json"
+sudo sed -i "s/__PASSWD__/$password/g" "$final_path/credentials.json"
 if [ "$abiword" -eq 1 ]
 then
 	sudo apt-get install abiword -qy	# Installation de abiword
 	abiword_path=`which abiword`	# Récupère l'emplacement de l'exécutable de abiword
 	sudo sed -i "s@\"abiword\" : null@\"abiword\" : \"$abiword_path\"@" "$final_path/settings.json"	# Renseigne l'emplacement de abiword dans la config de etherpad
-	STORE_MD5_CONFIG "settings.json" "$final_path/settings.json"	# Enregistre la somme de contrôle du fichier de config
 fi
 STORE_MD5_CONFIG "settings.json" "$final_path/settings.json"	# Enregistre la somme de contrôle du fichier de config
+STORE_MD5_CONFIG "credentials.json" "$final_path/credentials.json"	# Enregistre la somme de contrôle du fichier de config
 
 # Configure les droits d'accès au fichiers
 # Les fichiers appartiennent à etherpad
 sudo chown -R etherpad: $final_path
-sudo chmod 700 $final_path/settings.json	# Restreint l'accès à settings.json
+sudo chmod 600 $final_path/credentials.json	# Restreint l'accès à credentials.json
 
 
 # Configuration de logrotate
@@ -160,6 +163,8 @@ sudo service $app start	# Démarre etherpad. Le démarrage est fait le plus tôt
 # Make app public if necessary
 if [ "$is_public" = "Yes" ]; then
 	sudo yunohost app setting $app skipped_uris -v "/"
+else
+	sudo yunohost app setting $app skipped_uris -v "/admin"	# La page d'admin etherpad ne supporte pas le sso...
 fi
 
 # Recharge la configuration Nginx

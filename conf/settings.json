@@ -41,14 +41,7 @@
   //               },
 
   /* An Example of MySQL Configuration */
-   "dbType" : "mysql",
-   "dbSettings" : {
-                    "user"    : "__DB_USER__",
-                    "host"    : "localhost",
-                    "password": "__DB_PWD__",
-                    "database": "__DB_USER__",
-                    "charset" : "utf8mb4"
-                  },
+// Withdrawn and moved...
 
   //the default text of a pad
   "defaultPadText" : "Welcome to Etherpad!\n\nThis pad text is synchronized as you type, so that everyone viewing this page sees the same text. This allows you to collaborate seamlessly on documents!\n\nGet involved with Etherpad at http:\/\/etherpad.org\n",
@@ -142,12 +135,7 @@
 
   /* Users for basic authentication. is_admin = true gives access to /admin.
      If you do not uncomment this, /admin will not be available! */
-  "users": {
-    "__ADMIN__": {
-      "password": "__PASSWD__",
-      "is_admin": true
-    }
-  },
+// Withdrawn and moved...
 
   // restrict socket.io transport methods
   "socketTransportProtocols" : ["xhr-polling", "jsonp-polling", "htmlfile"],
