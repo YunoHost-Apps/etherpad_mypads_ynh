@@ -14,6 +14,6 @@ Le script installe les paquets *npm* et *nodejs-legacy*, ainsi que *abiword* si 
 **En raison du plugin mypads, cette version d'etherpad doit être installée à la racine d'un domaine ou d'un sous-domaine dédié. Autrement, mypads sera inaccessible.**
 
 **Mise à jour du package:**  
-sudo yunohost app upgrade etherpad_mypads -u https://github.com/YunoHost-Apps/etherpad_mypads_ynh
+sudo yunohost app upgrade --verbose etherpad_mypads -u https://github.com/YunoHost-Apps/etherpad_mypads_ynh
 
 **Multi-utilisateur:** Oui, sans support ldap.

@@ -24,8 +24,19 @@ source /usr/share/yunohost/helpers
 # Vérifie que les variables ne sont pas vides.
 CHECK_VAR "$app" "app name not set"
 
-
 CHECK_USER "$admin"	# Vérifie la validité de l'user admin
+
+if sudo yunohost domain list | grep -q $domain	# Vérifie la liste des domaines
+then	# Si le domaine existe dans Yunohost
+	if sudo yunohost app map | grep -q $domain	# Vérifie la liste des apps par domaine
+	then 	# Si une app est installée sur ce domaine.
+		echo "An app is already installed on the domain $domain. Mypads needs a whole domain or subdomain to himself." >&2
+	fi
+# else	# Si le domaine n'existe pas.
+# 	echo "The $domain domain does not exist, it will be created now.\nYou must probably update your DNS zone by yourself !" >&2
+# 	sudo yunohost domain add $domain
+# Sauf que si le domaine n'existe pas. Le choix est rejeté dés le manifest...
+fi
 
 CHECK_DOMAINPATH	# Vérifie la disponibilité du path et du domaine.
 
