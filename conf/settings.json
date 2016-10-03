@@ -58,7 +58,7 @@
     "rtl": false,
     "alwaysShowChat": false,
     "chatAndUsers": false,
-    "lang": "en-gb",
+    "lang": "__LANGUAGE__",
 
     // Plugins config
 		// ep_automatic_logut

@@ -3,8 +3,9 @@
 	; Manifest
 		domain="domain.tld"	(DOMAIN)
 		admin="john"	(USER)
-		is_public="Yes"	(PUBLIC|public=Yes|private=No)
 		password="pass"	(PASSWORD)
+		language="en"
+		is_public="Yes"	(PUBLIC|public=Yes|private=No)
 		abiword="0"
 	; Checks
 		pkg_linter=1

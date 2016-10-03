@@ -12,9 +12,11 @@ TRAP_ON	# Active trap pour arrêter le script si une erreur est détectée.
 # Retrieve arguments
 domain=$YNH_APP_ARG_DOMAIN
 admin=$YNH_APP_ARG_ADMIN
-is_public=$YNH_APP_ARG_IS_PUBLIC
 password=$YNH_APP_ARG_PASSWORD
+language=$YNH_APP_ARG_LANGUAGE
+is_public=$YNH_APP_ARG_IS_PUBLIC
 abiword=$YNH_APP_ARG_ABIWORD
+
 
 app=$YNH_APP_INSTANCE_NAME
 
@@ -108,6 +110,7 @@ then
 	abiword_path=`which abiword`	# Récupère l'emplacement de l'exécutable de abiword
 	sudo sed -i "s@\"abiword\" : null@\"abiword\" : \"$abiword_path\"@" "$final_path/settings.json"	# Renseigne l'emplacement de abiword dans la config de etherpad
 fi
+sudo sed -i "s/__LANGUAGE__/$language/g" "$final_path/settings.json"
 STORE_MD5_CONFIG "settings.json" "$final_path/settings.json"	# Enregistre la somme de contrôle du fichier de config
 STORE_MD5_CONFIG "credentials.json" "$final_path/credentials.json"	# Enregistre la somme de contrôle du fichier de config
 
@@ -135,7 +138,7 @@ sudo yunohost service add $app.service --log "/var/log/$app/etherpad.log"
 
 
 # Installation des plugins etherpad (Framapad style)
-# script_dir="$PWD"
+script_dir="$PWD"
 cd "$final_path"
 sudo npm install ep_align >> $install_log 2>&1	# Add Left/Center/Right/Justify to lines of text in a pad
 sudo npm install ep_author_hover >> $install_log 2>&1	# Framapad - Adds author names to span titles
@@ -184,8 +187,8 @@ sudo service nginx reload
 sudo yunohost app ssowatconf
 
 # Surveille le démarrage du service.
-for i in `seq 1 20`
-do	# La boucle attend le démarrage d'etherpad. Ou 20 secondes. Cette boucle évite simplement un 502 au début, car le démarrage est long...
+for i in `seq 1 30`
+do	# La boucle attend le démarrage d'etherpad. Ou 30 secondes. Cette boucle évite simplement un 502 au début, car le démarrage est long...
 	if grep -q "You can access your Etherpad instance at" "$tempfile"; then
 		break	# Si le log annonce le démarrage d'etherpad, sort de la boucle.
 	fi
@@ -194,3 +197,7 @@ do	# La boucle attend le démarrage d'etherpad. Ou 20 secondes. Cette boucle év
 done
 kill -s 15 $PID_TAIL > /dev/null	# Arrête l'exécution de tail.
 sudo rm "$tempfile"
+
+# Change la langue de mypads
+sudo sed -i "s/__LANGUAGE__/$language/g" "$script_dir/../conf/lang_mypads.sql"
+mysql -u $db_user -p$db_pwd $db_user < "$script_dir/../conf/lang_mypads.sql"

@@ -42,15 +42,6 @@
 				"example": "john"
 			},
 			{
-				"name": "is_public",
-				"ask": {
-					"en": "Is it a public website?",
-					"fr": "Est-ce un site public ?"
-				},
-				"choices": ["Yes", "No"],
-				"default": "Yes"
-			},
-			{
 				"name": "password",
 				"type": "password",
 				"ask": {
@@ -58,6 +49,24 @@
 					"fr": "Définissez le mot de passe administrateur"
 				},
 				"example": "Choose a password"
+			},
+			{
+				"name": "language",
+				"ask": {
+					"en": "Choose your language",
+					"fr": "Choisissez la langue"
+				},
+				"choices" : ["en", "fr"],
+				"default" : "en"
+			},
+			{
+				"name": "is_public",
+				"ask": {
+					"en": "Is it a public website?",
+					"fr": "Est-ce un site public ?"
+				},
+				"choices": ["Yes", "No"],
+				"default": "Yes"
 			},
             {
                 "name": "abiword",
