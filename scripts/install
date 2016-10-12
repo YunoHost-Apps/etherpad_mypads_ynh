@@ -52,6 +52,7 @@ sudo yunohost app setting $app domain -v $domain
 sudo yunohost app setting $app admin -v $admin
 sudo yunohost app setting $app is_public -v $is_public
 sudo yunohost app setting $app password -v $password
+sudo yunohost app setting $app language -v $language
 sudo yunohost app setting $app port -v $port
 sudo yunohost app setting $app abiword -v $abiword
 
