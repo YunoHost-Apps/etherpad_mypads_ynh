@@ -29,17 +29,13 @@ fi
 
 REMOVE_BDD $app	# Suppression de la base de donnée et de l'utilisateur associé.
 
-REMOVE_APP_DIR	# Suppression du dossier de l'application
+SECURE_REMOVE '/var/www/$app'	# Suppression du dossier de l'application
 
 REMOVE_NGINX_CONF	# Suppression de la configuration nginx
 
 REMOVE_LOGROTATE_CONF	# Suppression de la configuration de logrotate
 
-# Suppression des log
-if [ -e "/var/log/$app/" ]; then
-	echo "Delete log"
-	sudo rm -r "/var/log/$app/"
-fi
+SECURE_REMOVE '/var/log/$app/'	# Suppression des log
 
 # # Supprime l'utilisateur
 # if grep -q "^etherpad:" /etc/passwd	# Test l'existence de l'utilisateur
