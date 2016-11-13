@@ -201,4 +201,4 @@ sudo rm "$tempfile"
 
 # Change la langue de mypads
 sudo sed -i "s/__LANGUAGE__/$language/g" "$script_dir/../conf/lang_mypads.sql"
-mysql -u $db_user -p$db_pwd $db_user < "$script_dir/../conf/lang_mypads.sql"
+# mysql -u $db_user -p$db_pwd $db_user < "$script_dir/../conf/lang_mypads.sql"
