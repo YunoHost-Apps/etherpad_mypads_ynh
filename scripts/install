@@ -188,17 +188,24 @@ sudo service nginx reload
 sudo yunohost app ssowatconf
 
 # Surveille le démarrage du service.
+lang_OK=0
 for i in `seq 1 30`
 do	# La boucle attend le démarrage d'etherpad. Ou 30 secondes. Cette boucle évite simplement un 502 au début, car le démarrage est long...
-	if grep -q "You can access your Etherpad instance at" "$tempfile"; then
-		break	# Si le log annonce le démarrage d'etherpad, sort de la boucle.
+	if grep -q "You can access your Etherpad instance at" "$tempfile" && [ "$lang_OK" -eq 0 ] ; then
+		# Si le log annonce une première fois le démarrage d'etherpad, applique la langue de mypads et redémarre le service.
+		sudo sed -i "s/__LANGUAGE__/$language/g" "$script_dir/../conf/lang_mypads.sql"
+		mysql -u $db_user -p$db_pwd $db_user < "$script_dir/../conf/lang_mypads.sql"
+		echo ""
+		sudo service $app restart
+		cat /dev/null > "$tempfile"	# Purge le log de suivi du démarrage.
+		lang_OK=1
+		i=1;
+	fi
+	if grep -q "You can access your Etherpad instance at" "$tempfile" && [ "$lang_OK" -eq 1 ]; then
+		break	# Si le log annonce une deuxième fois le démarrage d'etherpad, sort de la boucle.
 	fi
 	echo -n "." >&2
 	sleep 1
 done
 kill -s 15 $PID_TAIL > /dev/null	# Arrête l'exécution de tail.
 sudo rm "$tempfile"
-
-# Change la langue de mypads
-sudo sed -i "s/__LANGUAGE__/$language/g" "$script_dir/../conf/lang_mypads.sql"
-# mysql -u $db_user -p$db_pwd $db_user < "$script_dir/../conf/lang_mypads.sql"
