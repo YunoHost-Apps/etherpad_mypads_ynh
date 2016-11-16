@@ -35,3 +35,9 @@ Ce package etherpad intègre les plugins suivant:
 - ep_subscript_and_superscript - *Add support for Subscript and Superscript*
 - ep_table_of_contents - *View a table of contents for your pad*
 - ep_user_font_size - *User Pad Contents font size can be set in settings, this does not effect other peoples views*
+
+---
+## Usage
+Le support ldap étant absent sur le plugin mypads, aucun utilisateur n'est créé par défaut.  
+Il est nécessaire de se connecter à l'interface d'administration pour créer les premiers utilisateurs.  
+Le login et le mot de passe administrateur sont ceux choisis en moment de l'installation.
