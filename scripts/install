@@ -28,6 +28,11 @@ CHECK_VAR "$app" "app name not set"
 
 CHECK_USER "$admin"	# Vérifie la validité de l'user admin
 
+if [ "${#password}" -lt 8 ] || [ "${#password}" -gt 30 ]
+then
+	echo "The password must be between 8 and 30 characters." >&2 && false
+fi
+
 if sudo yunohost domain list | grep -q $domain	# Vérifie la liste des domaines
 then	# Si le domaine existe dans Yunohost
 	if sudo yunohost app map | grep -q $domain	# Vérifie la liste des apps par domaine

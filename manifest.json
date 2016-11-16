@@ -45,8 +45,8 @@
 				"name": "password",
 				"type": "password",
 				"ask": {
-					"en": "Set the administrator password",
-					"fr": "Définissez le mot de passe administrateur"
+					"en": "Set the administrator password (between 8 and 30 characters)",
+					"fr": "Définissez le mot de passe administrateur (entre 8 et 30 caractères)"
 				},
 				"example": "Choose a password"
 			},
