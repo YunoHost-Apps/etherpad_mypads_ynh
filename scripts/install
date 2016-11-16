@@ -137,10 +137,10 @@ sudo chown root: /etc/systemd/system/$app.service
 sudo sed -i "s@__FINALPATH__@$final_path/@g" /etc/systemd/system/$app.service
 sudo sed -i "s@__APP__@$app@g" /etc/systemd/system/$app.service
 ## Démarrage auto du service
-sudo systemctl enable $app.service
+sudo systemctl enable $app
 
 # Ajoute le service au monitoring de Yunohost.
-sudo yunohost service add $app.service --log "/var/log/$app/etherpad.log"
+sudo yunohost service add $app --log "/var/log/$app/etherpad.log"
 
 
 # Installation des plugins etherpad (Framapad style)
