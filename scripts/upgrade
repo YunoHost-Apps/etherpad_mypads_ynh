@@ -7,14 +7,14 @@ source /usr/share/yunohost/helpers
 
 # Récupère les infos de l'application.
 app=$YNH_APP_INSTANCE_NAME
-domain=$(sudo yunohost app setting $app domain)
-path=$(sudo yunohost app setting $app path)
-admin=$(sudo yunohost app setting $app admin)
-language=$(sudo yunohost app setting $app language)
-is_public=$(sudo yunohost app setting $app is_public)
-final_path=$(sudo yunohost app setting $app final_path)
-port=$(sudo yunohost app setting $app port)
-abiword=$(sudo yunohost app setting $app abiword)
+domain=$(ynh_app_setting_get $app domain)
+path=$(ynh_app_setting_get $app path)
+admin=$(ynh_app_setting_get $app admin)
+language=$(ynh_app_setting_get $app language)
+is_public=$(ynh_app_setting_get $app is_public)
+final_path=$(ynh_app_setting_get $app final_path)
+port=$(ynh_app_setting_get $app port)
+abiword=$(ynh_app_setting_get $app abiword)
 
 SETUP_SOURCE "1.6.0.tar.gz"	# Télécharge la source, décompresse et copie dans $final_path
 
@@ -33,7 +33,7 @@ sudo cp ../conf/settings.json "$final_path/settings.json"
 sudo cp ../conf/credentials.json "$final_path/credentials.json"
 sudo sed -i "s/__PORT__/$port/g" "$final_path/settings.json"
 sudo sed -i "s/__DB_USER__/$app/g" "$final_path/credentials.json"
-db_pwd=$(sudo yunohost app setting $app mysqlpwd)
+db_pwd=$(ynh_app_setting_get $app mysqlpwd)
 sudo sed -i "s/__DB_PWD__/$db_pwd/g" "$final_path/credentials.json"
 sudo sed -i "s/__ADMIN__/$admin/g" "$final_path/credentials.json"
 sudo sed -i "s/__PASSWD__/$password/g" "$final_path/credentials.json"
@@ -44,7 +44,7 @@ then
 fi
 if test -z $language; then
     language=en # En cas d'upgrade d'une version ne gérant pas la langue, la langue est anglais par défaut
-    sudo yunohost app setting $app language -v $language
+    ynh_app_setting_set $app language $language
 fi
 sudo sed -i "s/__LANGUAGE__/$language/g" "$final_path/settings.json"
 STORE_MD5_CONFIG "settings.json" "$final_path/settings.json"	# Réenregistre la somme de contrôle du fichier de config
@@ -92,9 +92,9 @@ sudo service $app start	# Démarre etherpad. Le démarrage est fait le plus tôt
 
 # Make app public if necessary
 if [ "$is_public" = "Yes" ]; then
-	sudo yunohost app setting $app skipped_uris -v "/"
+	ynh_app_setting_set $app skipped_uris "/"
 else
-	sudo yunohost app setting $app skipped_uris -v "/admin"	# La page d'admin etherpad ne supporte pas le sso...
+	ynh_app_setting_set $app skipped_uris "/admin"	# La page d'admin etherpad ne supporte pas le sso...
 fi
 
 # Recharge la configuration Nginx
@@ -103,8 +103,8 @@ sudo service nginx reload
 sudo yunohost app ssowatconf
 
 # Surveille le démarrage du service.
-for i in `seq 1 20`
-do	# La boucle attend le démarrage d'etherpad. Ou 20 secondes. Cette boucle évite simplement un 502 au début, car le démarrage est long...
+for i in `seq 1 60`
+do	# La boucle attend le démarrage d'etherpad. Ou 1 minute. Cette boucle évite simplement un 502 au début, car le démarrage est long...
 	if grep -q "You can access your Etherpad instance at" "$tempfile"; then
 		break	# Si le log annonce le démarrage d'etherpad, sort de la boucle.
 	fi

@@ -5,12 +5,11 @@ source /usr/share/yunohost/helpers
 
 # Récupère les infos de l'application.
 app=$YNH_APP_INSTANCE_NAME
-domain=$(sudo yunohost app setting $app domain)
-final_path=$(sudo yunohost app setting $app final_path)
+domain=$(ynh_app_setting_get $app domain)
+final_path=$(ynh_app_setting_get $app final_path)
 
 if [ -d $final_path ]; then
-    echo "There is already a directory: $final_path " >&2
-    exit 1
+    ynh_die "There is already a directory: $final_path"
 fi
 
 # The parameter $1 is the uncompressed restore directory location
@@ -19,8 +18,7 @@ backup_dir=$1/apps/$app
 # Restore Nginx
 conf=/etc/nginx/conf.d/$domain.d/$app.conf
 if [ -f $conf ]; then
-    echo "There is already a nginx conf file at this path: $conf " >&2
-    exit 1
+    ynh_die "There is already a nginx conf file at this path: $conf"
 fi
 sudo cp -a $backup_dir/nginx.conf $conf
 
@@ -30,28 +28,39 @@ sudo cp -a $backup_dir/yunohost/. /etc/yunohost/apps/$app
 # Restore sources & data
 sudo cp -a "$backup_dir/sources/." $final_path
 
+# Créer le dossier de log
+sudo mkdir -p /var/log/$app
+sudo touch /var/log/$app/etherpad.log
+install_log=/var/log/$app/installation.log
+sudo touch $install_log
+sudo chown etherpad -R /var/log/$app
+sudo chown admin -R $install_log
+
+# Installation de npm et nodejs
+sudo apt-get update
+sudo apt-get install npm nodejs-legacy -qy
+
+# Installe les dépendances de etherpad
+# sudo "$final_path/bin/installDeps.sh" > $install_log 2>&1
+sudo npm install forever -g >> $install_log 2>&1
+
 # Créer la base de donnée et la restaure
-db_pwd=$(sudo yunohost app setting $app mysqlpwd)
+db_pwd=$(ynh_app_setting_get $app mysqlpwd)
 db_user=$app
 ynh_mysql_create_db $db_user $db_user $db_pwd
 mysql --debug-check -u $db_user -p$db_pwd $db_user < ${backup_dir}/db.sql
 
-# Créer l'user etherpad
-if ! grep -q "^etherpad:" /etc/passwd	# Test l'existence de l'utilisateur
-then	# Si il n'existe pas, l'user etherpad est créé
-	sudo useradd etherpad -r
+# ADD_SYS_USER	# Créer un user système dédié pour l'application
+if ! ynh_system_user_exists "$app"	# Test l'existence de l'utilisateur
+then
+	sudo useradd -d /var/www/$app --system --user-group $app --shell /usr/sbin/nologin || (echo "Unable to create $app system account" >&2 && false)
 fi
-
-# Créer le dossier de log
-sudo mkdir -p /var/log/$app
-sudo touch /var/log/$app/etherpad.log
-sudo chown etherpad -R /var/log/$app
 
 # Restaure la configuration de logrotate
 sudo cp -a $backup_dir/logrotate /etc/logrotate.d/$app
 
 # Ajoute le service au monitoring de Yunohost.
-sudo yunohost service add $app.service --log "/var/log/$app/etherpad.log"
+sudo yunohost service add $app --log "/var/log/$app/etherpad.log"
 
 # Restauration des fichiers du script systemd
 sudo cp -a $backup_dir/$app.service /etc/systemd/system/$app.service
@@ -69,8 +78,8 @@ sudo service $app start	# Démarre etherpad. Le démarrage est fait le plus tôt
 sudo service nginx reload
 
 # Surveille le démarrage du service.
-for i in `seq 1 20`
-do	# La boucle attend le démarrage d'etherpad. Ou 20 secondes. Cette boucle évite simplement un 502 au début, car le démarrage est long...
+for i in `seq 1 60`
+do	# La boucle attend le démarrage d'etherpad. Ou 1 minute. Cette boucle évite simplement un 502 au début, car le démarrage est long...
 	if grep -q "You can access your Etherpad instance at" "$tempfile"; then
 		break	# Si le log annonce le démarrage d'etherpad, sort de la boucle.
 	fi
@@ -80,3 +89,5 @@ done
 echo ""
 kill -s 15 $PID_TAIL > /dev/null	# Arrête l'exécution de tail.
 sudo rm "$tempfile"
+
+sudo cat /var/log/$app/etherpad.log >&2

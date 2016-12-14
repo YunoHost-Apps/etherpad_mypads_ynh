@@ -8,8 +8,8 @@ app=$YNH_APP_INSTANCE_NAME
 # Source app helpers
 source /usr/share/yunohost/helpers
 
-domain=$(sudo yunohost app setting $app domain)
-port=$(sudo yunohost app setting $app port)
+domain=$(ynh_app_setting_get $app domain)
+port=$(ynh_app_setting_get $app port)
 
 
 # Arrêt du service
@@ -24,7 +24,7 @@ fi
 if sudo yunohost service status | grep -q $app	# Test l'existence du service dans Yunohost
 then
 	echo "Remove $app service"
-	sudo yunohost service remove $app.service
+	sudo yunohost service remove $app
 fi
 
 REMOVE_BDD $app	# Suppression de la base de donnée et de l'utilisateur associé.

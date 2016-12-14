@@ -4,7 +4,11 @@ source .fonctions	# Charge les fonctions génériques habituellement utilisées 
 
 CLEAN_SETUP () {
 # Nettoyage des résidus d'installation non pris en charge par le script remove.
-# Pas de nettoyage supplémentaire nécessaire ici...
+	if test -n "$PID_TAIL"
+	then
+		kill -s 15 $PID_TAIL > /dev/null	# Arrête l'exécution de tail.
+		sudo rm -f "$tempfile"
+	fi
 	echo ""
 }
 TRAP_ON	# Active trap pour arrêter le script si une erreur est détectée.
@@ -53,13 +57,13 @@ CHECK_FINALPATH	# Vérifie que le dossier de destination n'est pas déjà utilis
 FIND_PORT 9001	# Cherche un port libre.
 
 # Enregistre les infos dans la config YunoHost
-sudo yunohost app setting $app domain -v $domain
-sudo yunohost app setting $app admin -v $admin
-sudo yunohost app setting $app is_public -v $is_public
-sudo yunohost app setting $app password -v $password
-sudo yunohost app setting $app language -v $language
-sudo yunohost app setting $app port -v $port
-sudo yunohost app setting $app abiword -v $abiword
+ynh_app_setting_set $app domain $domain
+ynh_app_setting_set $app admin $admin
+ynh_app_setting_set $app is_public $is_public
+ynh_app_setting_set $app password $password
+ynh_app_setting_set $app language $language
+ynh_app_setting_set $app port $port
+ynh_app_setting_set $app abiword $abiword
 
 
 GENERATE_DB $app	# Créer une base de données et un utilisateur dédié au nom de l'app.
@@ -67,7 +71,7 @@ GENERATE_DB $app	# Créer une base de données et un utilisateur dédié au nom 
 
 # Créer le repertoire de destination et stocke son emplacement.
 sudo mkdir "$final_path"
-sudo yunohost app setting $app final_path -v $final_path
+ynh_app_setting_set $app final_path $final_path
 
 SETUP_SOURCE "1.6.0.tar.gz"	# Télécharge la source, décompresse et copie dans $final_path
 
@@ -81,20 +85,14 @@ sudo sed -i "s@__PORT__@$port@g" /etc/nginx/conf.d/$domain.d/$app.conf
 sudo apt-get update
 sudo apt-get install npm nodejs-legacy -qy
 
-# Créer l'user etherpad
-if ! grep -q "^etherpad:" /etc/passwd	# Test l'existence de l'utilisateur
-then	# Si il n'existe pas, l'user etherpad est créé
-	sudo useradd etherpad -d /home/.etherpad
-fi
-sudo mkdir -p /home/.etherpad
-sudo chown etherpad: -R /home/.etherpad
+ADD_SYS_USER	# Créer un user système dédié pour l'application
 
 # Créer le dossier de log
 sudo mkdir -p /var/log/$app
 sudo touch /var/log/$app/etherpad.log
 install_log=/var/log/$app/installation.log
 sudo touch $install_log
-sudo chown etherpad -R /var/log/$app
+sudo chown $app -R /var/log/$app
 sudo chown admin -R $install_log
 
 # Installe les dépendances de etherpad et procède à l'intallation.
@@ -122,7 +120,7 @@ STORE_MD5_CONFIG "credentials.json" "$final_path/credentials.json"	# Enregistre 
 
 # Configure les droits d'accès au fichiers
 # Les fichiers appartiennent à etherpad
-sudo chown -R etherpad: $final_path
+sudo chown -R $app: $final_path
 sudo chmod 600 $final_path/credentials.json	# Restreint l'accès à credentials.json
 
 
@@ -162,7 +160,7 @@ sudo npm install ep_subscript_and_superscript >> $install_log 2>&1	# Framapad - 
 sudo npm install ep_table_of_contents >> $install_log 2>&1	# Framapad - View a table of contents for your pad
 # sudo npm install ep_unoconv	# Framapad - Use unoconv instead of abiword to export pads.
 sudo npm install ep_user_font_size >> $install_log 2>&1	# Framapad - User Pad Contents font size can be set in settings, this does not effect other peoples views
-sudo chown -R etherpad: $final_path/node_modules
+sudo chown -R $app: $final_path/node_modules
 
 # Ajoute un lien vers etherpad pour créer des pads anonymes depuis Mypads.
 sudo sed -i "s@^ *\"DESCRIPTION\": .*</ul>@&<a href=../>Pads anonymes</a>@g" $final_path/node_modules/ep_mypads/static/l10n/fr.json
@@ -182,9 +180,9 @@ sudo service $app start	# Démarre etherpad. Le démarrage est fait le plus tôt
 
 # Make app public if necessary
 if [ "$is_public" = "Yes" ]; then
-	sudo yunohost app setting $app skipped_uris -v "/"
+	ynh_app_setting_set $app skipped_uris "/"
 else
-	sudo yunohost app setting $app skipped_uris -v "/admin"	# La page d'admin etherpad ne supporte pas le sso...
+	ynh_app_setting_set $app skipped_uris "/admin"	# La page d'admin etherpad ne supporte pas le sso...
 fi
 
 # Recharge la configuration Nginx
@@ -194,8 +192,8 @@ sudo yunohost app ssowatconf
 
 # Surveille le démarrage du service.
 lang_OK=0
-for i in `seq 1 30`
-do	# La boucle attend le démarrage d'etherpad. Ou 30 secondes. Cette boucle évite simplement un 502 au début, car le démarrage est long...
+for i in `seq 1 60`
+do	# La boucle attend le démarrage d'etherpad. Ou 1 minute. Cette boucle évite simplement un 502 au début, car le démarrage est long...
 	if grep -q "You can access your Etherpad instance at" "$tempfile" && [ "$lang_OK" -eq 0 ] ; then
 		# Si le log annonce une première fois le démarrage d'etherpad, applique la langue de mypads et redémarre le service.
 		sudo sed -i "s/__LANGUAGE__/$language/g" "$script_dir/../conf/lang_mypads.sql"
