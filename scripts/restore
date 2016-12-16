@@ -28,12 +28,18 @@ sudo cp -a $backup_dir/yunohost/. /etc/yunohost/apps/$app
 # Restore sources & data
 sudo cp -a "$backup_dir/sources/." $final_path
 
+# ADD_SYS_USER	# Créer un user système dédié pour l'application
+if ! ynh_system_user_exists "$app"	# Test l'existence de l'utilisateur
+then
+	sudo useradd -d /var/www/$app --system --user-group $app --shell /usr/sbin/nologin || (echo "Unable to create $app system account" >&2 && false)
+fi
+
 # Créer le dossier de log
 sudo mkdir -p /var/log/$app
 sudo touch /var/log/$app/etherpad.log
 install_log=/var/log/$app/installation.log
 sudo touch $install_log
-sudo chown etherpad -R /var/log/$app
+sudo chown $app -R /var/log/$app
 sudo chown admin -R $install_log
 
 # Installation de npm et nodejs
@@ -49,12 +55,6 @@ db_pwd=$(ynh_app_setting_get $app mysqlpwd)
 db_user=$app
 ynh_mysql_create_db $db_user $db_user $db_pwd
 mysql --debug-check -u $db_user -p$db_pwd $db_user < ${backup_dir}/db.sql
-
-# ADD_SYS_USER	# Créer un user système dédié pour l'application
-if ! ynh_system_user_exists "$app"	# Test l'existence de l'utilisateur
-then
-	sudo useradd -d /var/www/$app --system --user-group $app --shell /usr/sbin/nologin || (echo "Unable to create $app system account" >&2 && false)
-fi
 
 # Restaure la configuration de logrotate
 sudo cp -a $backup_dir/logrotate /etc/logrotate.d/$app

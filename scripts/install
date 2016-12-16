@@ -20,7 +20,7 @@ password=$YNH_APP_ARG_PASSWORD
 language=$YNH_APP_ARG_LANGUAGE
 is_public=$YNH_APP_ARG_IS_PUBLIC
 abiword=$YNH_APP_ARG_ABIWORD
-
+path="" # Assure la compatibilité avec les fonctions utilisant $path
 
 app=$YNH_APP_INSTANCE_NAME
 
