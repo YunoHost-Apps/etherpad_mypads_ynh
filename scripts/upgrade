@@ -52,7 +52,7 @@ STORE_MD5_CONFIG "credentials.json" "$final_path/credentials.json"	# Réenregist
 
 # Configure les droits d'accès au fichiers
 # Les fichiers appartiennent à etherpad
-sudo chown -R etherpad: $final_path
+sudo chown -R $app: $final_path
 sudo chmod 600 "$final_path/credentials.json"	# Restreint l'accès à credentials.json
 
 
@@ -79,9 +79,9 @@ sudo systemctl enable $app.service
 mod_line=$(grep -nA5 "index.createOpenPad" $final_path/src/templates/index.html | grep "</div>" | cut -d '-' -f 1)	# Recherche le /div situé sous le champs d'ouverture de pad.
 sudo sed -i "$mod_line s@div>@&\n\t<center><br><font size="5"><a href="./mypads">Mypads</a></font></center>@" $final_path/src/templates/index.html	# Pour ajouter un lien vers le plugin mypads depuis la page d'Etherpad.
 
-sudo mkdir -p /home/.etherpad
-sudo chown etherpad: -R /home/.etherpad
-sudo usermod -d /home/.etherpad etherpad
+# sudo mkdir -p /home/.etherpad
+# sudo chown $app: -R /home/.etherpad
+# sudo usermod -d /home/.etherpad $app
 
 # Démarre etherpad
 echo "Démarrage d'etherpad" >&2
@@ -106,6 +106,7 @@ sudo yunohost app ssowatconf
 for i in `seq 1 60`
 do	# La boucle attend le démarrage d'etherpad. Ou 1 minute. Cette boucle évite simplement un 502 au début, car le démarrage est long...
 	if grep -q "You can access your Etherpad instance at" "$tempfile"; then
+		echo "Le service $app a démarré correctement." >&2
 		break	# Si le log annonce le démarrage d'etherpad, sort de la boucle.
 	fi
 	echo -n "." >&2

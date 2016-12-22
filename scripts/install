@@ -43,10 +43,6 @@ then	# Si le domaine existe dans Yunohost
 	then 	# Si une app est installée sur ce domaine.
 		echo "An app is already installed on the domain $domain. Mypads needs a whole domain or subdomain to himself." >&2
 	fi
-# else	# Si le domaine n'existe pas.
-# 	echo "The $domain domain does not exist, it will be created now.\nYou must probably update your DNS zone by yourself !" >&2
-# 	sudo yunohost domain add $domain
-# Sauf que si le domaine n'existe pas. Le choix est rejeté dés le manifest...
 fi
 
 CHECK_DOMAINPATH	# Vérifie la disponibilité du path et du domaine.
@@ -192,10 +188,11 @@ sudo yunohost app ssowatconf
 
 # Surveille le démarrage du service.
 lang_OK=0
-for i in `seq 1 60`
-do	# La boucle attend le démarrage d'etherpad. Ou 1 minute. Cette boucle évite simplement un 502 au début, car le démarrage est long...
+for i in `seq 1 120`
+do	# La boucle attend le démarrage d'etherpad. Ou 2 minutes. Cette boucle évite simplement un 502 au début, car le démarrage est long...
 	if grep -q "You can access your Etherpad instance at" "$tempfile" && [ "$lang_OK" -eq 0 ] ; then
 		# Si le log annonce une première fois le démarrage d'etherpad, applique la langue de mypads et redémarre le service.
+		echo "Le service $app a démarré correctement." >&2
 		sudo sed -i "s/__LANGUAGE__/$language/g" "$script_dir/../conf/lang_mypads.sql"
 		mysql -u $db_user -p$db_pwd $db_user < "$script_dir/../conf/lang_mypads.sql"
 		echo ""
@@ -205,6 +202,7 @@ do	# La boucle attend le démarrage d'etherpad. Ou 1 minute. Cette boucle évite
 		i=1;
 	fi
 	if grep -q "You can access your Etherpad instance at" "$tempfile" && [ "$lang_OK" -eq 1 ]; then
+		echo "Le service $app a démarré correctement." >&2
 		break	# Si le log annonce une deuxième fois le démarrage d'etherpad, sort de la boucle.
 	fi
 	echo -n "." >&2

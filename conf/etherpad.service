@@ -4,8 +4,8 @@ After=network.target
 
 [Service]
 Type=simple
-User=etherpad
-Group=etherpad
+User=__APP__
+Group=__APP__
 ExecStart=__FINALPATH__bin/safeRun.sh /var/log/__APP__/etherpad.log
 
 [Install]

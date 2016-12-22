@@ -81,6 +81,7 @@ sudo service nginx reload
 for i in `seq 1 60`
 do	# La boucle attend le démarrage d'etherpad. Ou 1 minute. Cette boucle évite simplement un 502 au début, car le démarrage est long...
 	if grep -q "You can access your Etherpad instance at" "$tempfile"; then
+		echo "Le service $app a démarré correctement." >&2
 		break	# Si le log annonce le démarrage d'etherpad, sort de la boucle.
 	fi
 	echo -n "." >&2
@@ -89,5 +90,3 @@ done
 echo ""
 kill -s 15 $PID_TAIL > /dev/null	# Arrête l'exécution de tail.
 sudo rm "$tempfile"
-
-sudo cat /var/log/$app/etherpad.log >&2
