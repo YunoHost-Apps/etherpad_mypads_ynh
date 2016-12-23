@@ -55,6 +55,7 @@ STORE_MD5_CONFIG "credentials.json" "$final_path/credentials.json"	# Réenregist
 ADD_SYS_USER	# Créer un user système dédié pour l'application
 sudo chown -R $app: $final_path
 sudo chmod 600 "$final_path/credentials.json"	# Restreint l'accès à credentials.json
+sudo chown $app -R /var/log/$app/etherpad.log
 
 
 # Configuration de logrotate
@@ -69,7 +70,7 @@ sudo chown root: /etc/systemd/system/$app.service
 sudo sed -i "s@__FINALPATH__@$final_path/@g" /etc/systemd/system/$app.service
 sudo sed -i "s@__APP__@$app@g" /etc/systemd/system/$app.service
 ## Démarrage auto du service
-sudo systemctl enable $app.service
+sudo systemctl enable $app
 
 # Ajoute un lien vers etherpad pour créer des pads anonymes depuis Mypads.
 # sudo sed -i "s@^ *\"DESCRIPTION\": .*</ul>@&<a href=../>Pads anonymes</a>@g" $final_path/node_modules/ep_mypads/static/l10n/fr.json
