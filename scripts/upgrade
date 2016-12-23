@@ -52,6 +52,7 @@ STORE_MD5_CONFIG "credentials.json" "$final_path/credentials.json"	# Réenregist
 
 # Configure les droits d'accès au fichiers
 # Les fichiers appartiennent à etherpad
+ADD_SYS_USER	# Créer un user système dédié pour l'application
 sudo chown -R $app: $final_path
 sudo chmod 600 "$final_path/credentials.json"	# Restreint l'accès à credentials.json
 
