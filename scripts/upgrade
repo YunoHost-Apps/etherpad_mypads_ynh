@@ -1,31 +1,79 @@
 #!/bin/bash
 
-source .fonctions	# Charge les fonctions génériques habituellement utilisées dans le script
+#=================================================
+# GENERIC STARTING
+#=================================================
+# IMPORT GENERIC HELPERS
+#=================================================
 
-# Source app helpers
+source .fonctions
 source /usr/share/yunohost/helpers
 
-# Récupère les infos de l'application.
+#=================================================
+# LOAD SETTINGS
+#=================================================
+
 app=$YNH_APP_INSTANCE_NAME
+
 domain=$(ynh_app_setting_get $app domain)
-path=$(ynh_app_setting_get $app path)
 admin=$(ynh_app_setting_get $app admin)
 language=$(ynh_app_setting_get $app language)
 is_public=$(ynh_app_setting_get $app is_public)
 final_path=$(ynh_app_setting_get $app final_path)
 port=$(ynh_app_setting_get $app port)
 abiword=$(ynh_app_setting_get $app abiword)
+db_name=$(ynh_app_setting_get $app db_name)
 
-SETUP_SOURCE "1.6.0.tar.gz"	# Télécharge la source, décompresse et copie dans $final_path
+#=================================================
+# FIX OLD THINGS
+#=================================================
 
-# Et copie le fichier de config nginx
+if [ "$is_public" = "Yes" ]; then
+	ynh_app_setting_set $app is_public 1	# Fixe is_public en booléen
+	is_public=1
+elif [ "$is_public" = "No" ]; then
+	ynh_app_setting_set $app is_public 0
+	is_public=0
+fi
+
+if [ -z $db_name ]; then	# Si db_name n'est pas renseigné dans app setting
+	db_name=$(ynh_make_valid_dbid $app)
+	ynh_app_setting_set $app db_name $db_name
+fi
+
+#=================================================
+# BACKUP BEFORE UPGRADE THEN ACTIVE TRAP
+#=================================================
+
+BACKUP_BEFORE_UPGRADE	# Backup the current version of the app
+ynh_clean_setup () {
+	BACKUP_FAIL_UPGRADE	# restore it if the upgrade fails
+}
+ynh_abort_if_errors	# Active trap pour arrêter le script si une erreur est détectée.
+
+#=================================================
+# STANDARD UPGRADE STEPS
+#=================================================
+# DOWNLOAD, CHECK AND UNPACK SOURCE
+#=================================================
+
+SETUP_SOURCE	# Télécharge la source, décompresse et copie dans $final_path
+
+#=================================================
+# NGINX CONFIGURATION
+#=================================================
+
+# Copie le fichier de config nginx
 sudo cp ../conf/nginx.conf /etc/nginx/conf.d/$domain.d/$app.conf
-
 # Modifie les variables dans le fichier de configuration nginx
 sudo sed -i "s@__PORT__@$port@g" /etc/nginx/conf.d/$domain.d/$app.conf
 
+#=================================================
+# SPECIFIC UPGRADE
+#=================================================
+# CONFIGURE ETHERPAD
+#=================================================
 
-# Configure etherpad
 # Copie ou modification d'un fichier de config
 CHECK_MD5_CONFIG "settings.json" "$final_path/settings.json"	# Créé un backup du fichier de config si il a été modifié.
 CHECK_MD5_CONFIG "credentials.json" "$final_path/credentials.json"	# Créé un backup du fichier de config si il a été modifié.
@@ -34,6 +82,7 @@ sudo cp ../conf/credentials.json "$final_path/credentials.json"
 sudo sed -i "s/__PORT__/$port/g" "$final_path/settings.json"
 sudo sed -i "s/__DB_USER__/$app/g" "$final_path/credentials.json"
 db_pwd=$(ynh_app_setting_get $app mysqlpwd)
+password=$(ynh_app_setting_get $app password)
 sudo sed -i "s/__DB_PWD__/$db_pwd/g" "$final_path/credentials.json"
 sudo sed -i "s/__ADMIN__/$admin/g" "$final_path/credentials.json"
 sudo sed -i "s/__PASSWD__/$password/g" "$final_path/credentials.json"
@@ -43,28 +92,40 @@ then
 	sudo sed -i "s@\"abiword\" : null@\"abiword\" : \"$abiword_path\"@" "$final_path/settings.json"	# Renseigne l'emplacement de abiword dans la config de etherpad
 fi
 if test -z $language; then
-    language=en # En cas d'upgrade d'une version ne gérant pas la langue, la langue est anglais par défaut
-    ynh_app_setting_set $app language $language
+	language=en # En cas d'upgrade d'une version ne gérant pas la langue, la langue est anglais par défaut
+	ynh_app_setting_set $app language $language
 fi
 sudo sed -i "s/__LANGUAGE__/$language/g" "$final_path/settings.json"
 STORE_MD5_CONFIG "settings.json" "$final_path/settings.json"	# Réenregistre la somme de contrôle du fichier de config
 STORE_MD5_CONFIG "credentials.json" "$final_path/credentials.json"	# Réenregistre la somme de contrôle du fichier de config
 
-# Configure les droits d'accès au fichiers
+#=================================================
+# CREATE DEDICATED USER
+#=================================================
+
+ynh_system_user_create $app	# Create the dedicated user, if not exist
+
+#=================================================
+# SECURING FILES AND DIRECTORIES
+#=================================================
+
 # Les fichiers appartiennent à etherpad
-ADD_SYS_USER	# Créer un user système dédié pour l'application
 sudo chown -R $app: $final_path
 sudo chmod 600 "$final_path/credentials.json"	# Restreint l'accès à credentials.json
 sudo chown $app -R /var/log/$app/etherpad.log
 
+#=================================================
+# SETUP LOGROTATE
+#=================================================
 
-# Configuration de logrotate
-sed -i "s@__APP__@$app@g" ../conf/logrotate
-sudo cp ../conf/logrotate /etc/logrotate.d/$app
+ynh_use_logrotate
 
+#=================================================
+# SETUP SYSTEMD
+#=================================================
 
 # Mise en place du script systemd
-sudo service $app stop
+sudo systemctl stop $app
 sudo cp ../conf/etherpad.service /etc/systemd/system/$app.service
 sudo chown root: /etc/systemd/system/$app.service
 sudo sed -i "s@__FINALPATH__@$final_path/@g" /etc/systemd/system/$app.service
@@ -72,48 +133,54 @@ sudo sed -i "s@__APP__@$app@g" /etc/systemd/system/$app.service
 ## Démarrage auto du service
 sudo systemctl enable $app
 
-# Ajoute un lien vers etherpad pour créer des pads anonymes depuis Mypads.
-# sudo sed -i "s@^ *\"DESCRIPTION\": .*</ul>@&<a href=../>Pads anonymes</a>@g" $final_path/node_modules/ep_mypads/static/l10n/fr.json
-# sudo sed -i "s@^ *\"DESCRIPTION\": .*</ul>@&<a href=../>Anonymous pads</a>@g" $final_path/node_modules/ep_mypads/static/l10n/en.json
-# Et un lien vers l'admin etherpad depuis Mypads.
-# sudo sed -i "s@^ *\"FOOTER\": .*2.0@& | <a href='../admin'>Etherpad admin</a>@g" $final_path/node_modules/ep_mypads/static/l10n/en.json $final_path/node_modules/ep_mypads/static/l10n/fr.json
+#=================================================
+# SOME HACKS
+#=================================================
 
 mod_line=$(grep -nA5 "index.createOpenPad" $final_path/src/templates/index.html | grep "</div>" | cut -d '-' -f 1)	# Recherche le /div situé sous le champs d'ouverture de pad.
 sudo sed -i "$mod_line s@div>@&\n\t<center><br><font size="5"><a href="./mypads">Mypads</a></font></center>@" $final_path/src/templates/index.html	# Pour ajouter un lien vers le plugin mypads depuis la page d'Etherpad.
 
-# sudo mkdir -p /home/.etherpad
-# sudo chown $app: -R /home/.etherpad
-# sudo usermod -d /home/.etherpad $app
+#=================================================
+# START ETHERPAD IN BACKGROUND
+#=================================================
 
 # Démarre etherpad
-echo "Démarrage d'etherpad" >&2
+WARNING echo "Démarrage d'etherpad"
 tempfile="$(mktemp)"
 tail -f -n1 /var/log/$app/etherpad.log > "$tempfile" &	# Suit le démarrage dans le log
 PID_TAIL=$!	# Récupère le PID de la commande tail, qui est passée en arrière plan.
-sudo service $app start	# Démarre etherpad. Le démarrage est fait le plus tôt possible, car il est très long...
+sudo systemctl start $app	# Démarre etherpad. Le démarrage est fait le plus tôt possible, car il est très long...
+
+#=================================================
+# SETUP SSOWAT
+#=================================================
 
 # Make app public if necessary
-if [ "$is_public" = "Yes" ]; then
+if [ $is_public -eq 1 ]; then
 	ynh_app_setting_set $app skipped_uris "/"
 else
 	ynh_app_setting_set $app skipped_uris "/admin"	# La page d'admin etherpad ne supporte pas le sso...
 fi
 
-# Recharge la configuration Nginx
-sudo service nginx reload
-# Régénère la configuration de SSOwat
-sudo yunohost app ssowatconf
+#=================================================
+# RELOAD NGINX
+#=================================================
 
-# Surveille le démarrage du service.
+sudo systemctl reload nginx
+
+#=================================================
+# CHECK ETHERPAD STARTING
+#=================================================
+
 for i in `seq 1 60`
 do	# La boucle attend le démarrage d'etherpad. Ou 1 minute. Cette boucle évite simplement un 502 au début, car le démarrage est long...
 	if grep -q "You can access your Etherpad instance at" "$tempfile"; then
-		echo "Le service $app a démarré correctement." >&2
+		WARNING echo "Le service $app a démarré correctement."
 		break	# Si le log annonce le démarrage d'etherpad, sort de la boucle.
 	fi
-	echo -n "." >&2
+	WARNING echo -n "."
 	sleep 1
 done
 echo ""
-kill -s 15 $PID_TAIL > /dev/null	# Arrête l'exécution de tail.
+QUIET kill -s 15 $PID_TAIL	# Arrête l'exécution de tail.
 sudo rm "$tempfile"

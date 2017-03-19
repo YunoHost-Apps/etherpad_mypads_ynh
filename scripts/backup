@@ -1,33 +1,69 @@
 #!/bin/bash
 
-# Source app helpers
+#=================================================
+# GENERIC STARTING
+#=================================================
+# MANAGE FAILURE OF THE SCRIPT
+#=================================================
+
+# Exit on command errors and treat unset variables as an error
+set -eu
+
+#=================================================
+# IMPORT GENERIC HELPERS
+#=================================================
+
+if [ ! -e .fonctions ]; then
+	# Rapatrie le fichier de fonctions si il n'est pas dans le dossier courant
+	sudo cp ../settings/scripts/.fonctions ./.fonctions
+	sudo chmod a+rx .fonctions
+fi
+source .fonctions
 source /usr/share/yunohost/helpers
 
-# Récupère les infos de l'application.
+#=================================================
+# LOAD SETTINGS
+#=================================================
+
 app=$YNH_APP_INSTANCE_NAME
+
 final_path=$(ynh_app_setting_get $app final_path)
 domain=$(ynh_app_setting_get $app domain)
+db_name=$(ynh_app_setting_get $app db_name)
 
+#=================================================
+# STANDARD BACKUP STEPS
+#=================================================
+# BACKUP OF THE MAIN DIR OF THE APP
+#=================================================
 
-# The parameter $1 is the backup directory location
-# which will be compressed afterward
-backup_dir=$1/apps/$app
-sudo mkdir -p "$backup_dir"
+CHECK_SIZE "$final_path"
+ynh_backup "$final_path" "sources"
 
-# Backup sources & data
-sudo cp -a $final_path/. $backup_dir/sources
+#=================================================
+# BACKUP OF THE NGINX CONFIGURATION
+#=================================================
 
-# Copy Nginx and YunoHost parameters
-sudo cp -a /etc/yunohost/apps/$app/. $backup_dir/yunohost
-sudo cp -a /etc/nginx/conf.d/$domain.d/$app.conf $backup_dir/nginx.conf
+ynh_backup "/etc/nginx/conf.d/$domain.d/$app.conf" "nginx.conf"
 
-# Backup db
-root_pwd=$(sudo cat /etc/yunohost/mysql)
-sudo mysqldump -u root -p$root_pwd --no-create-db $app --result-file="$backup_dir/db.sql"
+#=================================================
+# BACKUP OF THE SQL BDD
+#=================================================
 
+ynh_mysql_dump_db "$db_name" > dump.sql
+CHECK_SIZE "dump.sql"
+ynh_backup "dump.sql" "db.sql"
 
-# Copie la configuration de logrotate
-sudo cp -a /etc/logrotate.d/$app $backup_dir/logrotate
+#=================================================
+# SPECIFIC BACKUP
+#=================================================
+# BACKUP LOGROTATE
+#=================================================
 
-# Copie des fichiers du script systemd
-sudo cp -a /etc/systemd/system/$app.service $backup_dir/
+ynh_backup "/etc/logrotate.d/$app" "logrotate"
+
+#=================================================
+# BACKUP SYSTEMD
+#=================================================
+
+ynh_backup "/etc/systemd/system/$app.service" "systemd"

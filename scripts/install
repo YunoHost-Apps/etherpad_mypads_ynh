@@ -1,87 +1,131 @@
 #!/bin/bash
 
-source .fonctions	# Charge les fonctions génériques habituellement utilisées dans le script
+#=================================================
+# GENERIC STARTING
+#=================================================
+# IMPORT GENERIC HELPERS
+#=================================================
 
-CLEAN_SETUP () {
+source .fonctions
+source /usr/share/yunohost/helpers
+
+#=================================================
+# MANAGE FAILURE OF THE SCRIPT
+#=================================================
+
+ynh_clean_setup () {
 # Nettoyage des résidus d'installation non pris en charge par le script remove.
 	if test -n "$PID_TAIL"
 	then
-		kill -s 15 $PID_TAIL > /dev/null	# Arrête l'exécution de tail.
+		SUPPRESS_WARNING kill -s 15 $PID_TAIL	# Arrête l'exécution de tail.
 		sudo rm -f "$tempfile"
 	fi
 	echo ""
 }
-TRAP_ON	# Active trap pour arrêter le script si une erreur est détectée.
+ynh_abort_if_errors	# Active trap pour arrêter le script si une erreur est détectée.
 
-# Retrieve arguments
+#=================================================
+# RETRIEVE ARGUMENTS FROM THE MANIFEST
+#=================================================
+
 domain=$YNH_APP_ARG_DOMAIN
 admin=$YNH_APP_ARG_ADMIN
 password=$YNH_APP_ARG_PASSWORD
 language=$YNH_APP_ARG_LANGUAGE
 is_public=$YNH_APP_ARG_IS_PUBLIC
 abiword=$YNH_APP_ARG_ABIWORD
-path="" # Assure la compatibilité avec les fonctions utilisant $path
+path_url="" # Assure la compatibilité avec les fonctions utilisant $path_url
 
 app=$YNH_APP_INSTANCE_NAME
 
-# Source app helpers
-source /usr/share/yunohost/helpers
-
-# Vérifie que les variables ne sont pas vides.
-CHECK_VAR "$app" "app name not set"
+#=================================================
+# CHECK IF THE APP CAN BE INSTALLED WITH THIS ARGS
+#=================================================
 
 CHECK_USER "$admin"	# Vérifie la validité de l'user admin
 
 if [ "${#password}" -lt 8 ] || [ "${#password}" -gt 30 ]
 then
-	echo "The password must be between 8 and 30 characters." >&2 && false
+	ynh_die "The password must be between 8 and 30 characters."
 fi
 
 if sudo yunohost domain list | grep -q $domain	# Vérifie la liste des domaines
 then	# Si le domaine existe dans Yunohost
 	if sudo yunohost app map | grep -q $domain	# Vérifie la liste des apps par domaine
 	then 	# Si une app est installée sur ce domaine.
-		echo "An app is already installed on the domain $domain. Mypads needs a whole domain or subdomain to himself." >&2
+		WARNING echo "An app is already installed on the domain $domain. Mypads needs a whole domain or subdomain to himself."
 	fi
 fi
 
 CHECK_DOMAINPATH	# Vérifie la disponibilité du path et du domaine.
-
 CHECK_FINALPATH	# Vérifie que le dossier de destination n'est pas déjà utilisé.
 
+#=================================================
+# STORE SETTINGS FROM MANIFEST
+#=================================================
 
-FIND_PORT 9001	# Cherche un port libre.
-
-# Enregistre les infos dans la config YunoHost
 ynh_app_setting_set $app domain $domain
 ynh_app_setting_set $app admin $admin
 ynh_app_setting_set $app is_public $is_public
 ynh_app_setting_set $app password $password
 ynh_app_setting_set $app language $language
-ynh_app_setting_set $app port $port
 ynh_app_setting_set $app abiword $abiword
 
+#=================================================
+# STANDARD MODIFICATIONS
+#=================================================
+# FIND AND OPEN A PORT
+#=================================================
 
-GENERATE_DB $app	# Créer une base de données et un utilisateur dédié au nom de l'app.
+port=$(ynh_find_port 9001)	# Cherche un port libre.
+ynh_app_setting_set $app port $port
 
+#=================================================
+# INSTALL DEPENDENCIES
+#=================================================
 
-# Créer le repertoire de destination et stocke son emplacement.
-sudo mkdir "$final_path"
+if [ $abiword -eq 1 ]
+then
+	ynh_install_app_dependencies npm nodejs-legacy abiword
+else
+	ynh_install_app_dependencies npm nodejs-legacy
+fi
+
+#=================================================
+# CREATE A SQL BDD
+#=================================================
+
+db_name=$(ynh_make_valid_dbid $app)
+ynh_app_setting_set $app db_name $db_name
+ynh_mysql_generate_db $db_name $db_name
+
+#=================================================
+# DOWNLOAD, CHECK AND UNPACK SOURCE
+#=================================================
+
 ynh_app_setting_set $app final_path $final_path
+SETUP_SOURCE	# Télécharge la source, décompresse et copie dans $final_path
 
-SETUP_SOURCE "1.6.0.tar.gz"	# Télécharge la source, décompresse et copie dans $final_path
+#=================================================
+# NGINX CONFIGURATION
+#=================================================
 
 # Et copie le fichier de config nginx
 sudo cp ../conf/nginx.conf /etc/nginx/conf.d/$domain.d/$app.conf
-
 # Modifie les variables dans le fichier de configuration nginx
 sudo sed -i "s@__PORT__@$port@g" /etc/nginx/conf.d/$domain.d/$app.conf
 
-# Installation de npm et nodejs
-sudo apt-get update
-sudo apt-get install npm nodejs-legacy -qy
+#=================================================
+# CREATE DEDICATED USER
+#=================================================
 
-ADD_SYS_USER	# Créer un user système dédié pour l'application
+ynh_system_user_create $app	# Créer un utilisateur système dédié à l'app
+
+#=================================================
+# SPECIFIC SETUP
+#=================================================
+# HANDLE LOG FILES AND LOGROTATE
+#=================================================
 
 # Créer le dossier de log
 sudo mkdir -p /var/log/$app
@@ -91,22 +135,30 @@ sudo touch $install_log
 sudo chown $app -R /var/log/$app
 sudo chown admin -R $install_log
 
+# Configuration de logrotate
+ynh_use_logrotate
+
+#=================================================
+# INSTALL ETHERPAD
+#=================================================
+
 # Installe les dépendances de etherpad et procède à l'intallation.
-# sudo bash -c "\"$final_path/bin/installDeps.sh\" > $install_log 2>&1"
 sudo "$final_path/bin/installDeps.sh" > $install_log 2>&1
 sudo npm install forever -g >> $install_log 2>&1
 
-# Configure etherpad
+#=================================================
+# CONFIGURE ETHERPAD
+#=================================================
+
 sudo cp ../conf/settings.json "$final_path/settings.json"
 sudo cp ../conf/credentials.json "$final_path/credentials.json"
 sudo sed -i "s/__PORT__/$port/g" "$final_path/settings.json"
-sudo sed -i "s/__DB_USER__/$db_user/g" "$final_path/credentials.json"
+sudo sed -i "s/__DB_USER__/$db_name/g" "$final_path/credentials.json"
 sudo sed -i "s/__DB_PWD__/$db_pwd/g" "$final_path/credentials.json"
 sudo sed -i "s/__ADMIN__/$admin/g" "$final_path/credentials.json"
 sudo sed -i "s/__PASSWD__/$password/g" "$final_path/credentials.json"
 if [ "$abiword" -eq 1 ]
 then
-	sudo apt-get install abiword -qy	# Installation de abiword
 	abiword_path=`which abiword`	# Récupère l'emplacement de l'exécutable de abiword
 	sudo sed -i "s@\"abiword\" : null@\"abiword\" : \"$abiword_path\"@" "$final_path/settings.json"	# Renseigne l'emplacement de abiword dans la config de etherpad
 fi
@@ -114,18 +166,19 @@ sudo sed -i "s/__LANGUAGE__/$language/g" "$final_path/settings.json"
 STORE_MD5_CONFIG "settings.json" "$final_path/settings.json"	# Enregistre la somme de contrôle du fichier de config
 STORE_MD5_CONFIG "credentials.json" "$final_path/credentials.json"	# Enregistre la somme de contrôle du fichier de config
 
-# Configure les droits d'accès au fichiers
+
+#=================================================
+# SECURING FILES AND DIRECTORIES
+#=================================================
+
 # Les fichiers appartiennent à etherpad
 sudo chown -R $app: $final_path
 sudo chmod 600 $final_path/credentials.json	# Restreint l'accès à credentials.json
 
+#=================================================
+# SETUP SYSTEMD
+#=================================================
 
-# Configuration de logrotate
-sed -i "s@__APP__@$app@g" ../conf/logrotate
-sudo cp ../conf/logrotate /etc/logrotate.d/$app
-
-
-# Mise en place du script systemd
 sudo cp ../conf/etherpad.service /etc/systemd/system/$app.service
 sudo chown root: /etc/systemd/system/$app.service
 sudo sed -i "s@__FINALPATH__@$final_path/@g" /etc/systemd/system/$app.service
@@ -133,11 +186,17 @@ sudo sed -i "s@__APP__@$app@g" /etc/systemd/system/$app.service
 ## Démarrage auto du service
 sudo systemctl enable $app
 
+#=================================================
+# ENABLE SERVICE IN ADMIN PANEL
+#=================================================
+
 # Ajoute le service au monitoring de Yunohost.
 sudo yunohost service add $app --log "/var/log/$app/etherpad.log"
 
+#=================================================
+# INSTALL FRAMAPAD'S PLUGINS
+#=================================================
 
-# Installation des plugins etherpad (Framapad style)
 script_dir="$PWD"
 cd "$final_path"
 sudo npm install ep_align >> $install_log 2>&1	# Add Left/Center/Right/Justify to lines of text in a pad
@@ -158,6 +217,10 @@ sudo npm install ep_table_of_contents >> $install_log 2>&1	# Framapad - View a t
 sudo npm install ep_user_font_size >> $install_log 2>&1	# Framapad - User Pad Contents font size can be set in settings, this does not effect other peoples views
 sudo chown -R $app: $final_path/node_modules
 
+#=================================================
+# SOME HACKS
+#=================================================
+
 # Ajoute un lien vers etherpad pour créer des pads anonymes depuis Mypads.
 sudo sed -i "s@^ *\"DESCRIPTION\": .*</ul>@&<a href=../>Pads anonymes</a>@g" $final_path/node_modules/ep_mypads/static/l10n/fr.json
 sudo sed -i "s@^ *\"DESCRIPTION\": .*</ul>@&<a href=../>Anonymous pads</a>@g" $final_path/node_modules/ep_mypads/static/l10n/en.json
@@ -167,46 +230,56 @@ sudo sed -i "s@^ *\"FOOTER\": .*2.0@& | <a href='../admin'>Etherpad admin</a>@g"
 mod_line=$(grep -nA5 "index.createOpenPad" $final_path/src/templates/index.html | grep "</div>" | cut -d '-' -f 1)	# Recherche le /div situé sous le champs d'ouverture de pad.
 sudo sed -i "$mod_line s@div>@&\n\t<center><br><font size="5"><a href="./mypads">Mypads</a></font></center>@" $final_path/src/templates/index.html	# Pour ajouter un lien vers le plugin mypads depuis la page d'Etherpad.
 
-# Démarre etherpad
-echo "Démarrage d'etherpad" >&2
+#=================================================
+# START ETHERPAD IN BACKGROUND
+#=================================================
+
+WARNING echo "Démarrage d'etherpad"
 tempfile="$(mktemp)"
 tail -f -n1 /var/log/$app/etherpad.log > "$tempfile" &	# Suit le démarrage dans le log
 PID_TAIL=$!	# Récupère le PID de la commande tail, qui est passée en arrière plan.
-sudo service $app start	# Démarre etherpad. Le démarrage est fait le plus tôt possible, car il est très long...
+sudo systemctl start $app	# Démarre etherpad. Le démarrage est fait le plus tôt possible, car il est très long...
 
-# Make app public if necessary
-if [ "$is_public" = "Yes" ]; then
+#=================================================
+# SETUP SSOWAT
+#=================================================
+
+if [ $is_public -eq 1 ]; then
 	ynh_app_setting_set $app skipped_uris "/"
 else
 	ynh_app_setting_set $app skipped_uris "/admin"	# La page d'admin etherpad ne supporte pas le sso...
 fi
 
-# Recharge la configuration Nginx
-sudo service nginx reload
-# Régénère la configuration de SSOwat
-sudo yunohost app ssowatconf
+#=================================================
+# RELOAD NGINX
+#=================================================
 
-# Surveille le démarrage du service.
+sudo systemctl reload nginx
+
+#=================================================
+# CHECK ETHERPAD STARTING
+#=================================================
+
 lang_OK=0
 for i in `seq 1 120`
 do	# La boucle attend le démarrage d'etherpad. Ou 2 minutes. Cette boucle évite simplement un 502 au début, car le démarrage est long...
 	if grep -q "You can access your Etherpad instance at" "$tempfile" && [ "$lang_OK" -eq 0 ] ; then
 		# Si le log annonce une première fois le démarrage d'etherpad, applique la langue de mypads et redémarre le service.
-		echo "Le service $app a démarré correctement." >&2
+		WARNING echo "Le service $app a démarré correctement."
 		sudo sed -i "s/__LANGUAGE__/$language/g" "$script_dir/../conf/lang_mypads.sql"
-		mysql -u $db_user -p$db_pwd $db_user < "$script_dir/../conf/lang_mypads.sql"
+		mysql -u $db_name -p$db_pwd $db_name < "$script_dir/../conf/lang_mypads.sql"
 		echo ""
-		sudo service $app restart
+		sudo systemctl restart $app
 		cat /dev/null > "$tempfile"	# Purge le log de suivi du démarrage.
 		lang_OK=1
 		i=1;
 	fi
 	if grep -q "You can access your Etherpad instance at" "$tempfile" && [ "$lang_OK" -eq 1 ]; then
-		echo "Le service $app a démarré correctement." >&2
+		WARNING echo "Le service $app a démarré correctement."
 		break	# Si le log annonce une deuxième fois le démarrage d'etherpad, sort de la boucle.
 	fi
-	echo -n "." >&2
+	WARNING echo -n "."
 	sleep 1
 done
-kill -s 15 $PID_TAIL > /dev/null	# Arrête l'exécution de tail.
+SUPPRESS_WARNING kill -s 15 $PID_TAIL	# Arrête l'exécution de tail.
 sudo rm "$tempfile"

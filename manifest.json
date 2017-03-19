@@ -11,7 +11,7 @@
 	},
 	"version": "1.6.0",
 	"url": "https://framapad.org",
-	"license": "free",
+	"license": "Apache-2.0",
 	"maintainer": {
 		"name": "Maniack Crudelis",
 		"email": "maniackc_dev@crudelis.fr"
@@ -61,12 +61,12 @@
 			},
 			{
 				"name": "is_public",
+				"type": "boolean",
 				"ask": {
 					"en": "Is it a public website?",
 					"fr": "Est-ce un site public ?"
 				},
-				"choices": ["Yes", "No"],
-				"default": "Yes"
+				"default": true
 			},
             {
                 "name": "abiword",
