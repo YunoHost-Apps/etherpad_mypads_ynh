@@ -3,7 +3,7 @@
 	; Manifest
 		domain="domain.tld"	(DOMAIN)
 		admin="john"	(USER)
-		password="pass"	(PASSWORD)
+		password="longpassword"	(PASSWORD)
 		language="en"
 		is_public=1	(PUBLIC|public=1|private=0)
 		abiword="0"
