@@ -48,17 +48,13 @@ test ! -d $final_path \
 # RESTORE OF THE NGINX CONFIGURATION
 #=================================================
 
-conf=/etc/nginx/conf.d/$domain.d/$app.conf
-if [ -f $conf ]; then
-	ynh_die "There is already a nginx conf file at this path: $conf "
-fi
-sudo cp -a ./nginx.conf $conf
+ynh_restore_file nginx.conf
 
 #=================================================
 # RESTORE OF THE MAIN DIR OF THE APP
 #=================================================
 
-sudo cp -a ./sources/. $final_path
+ynh_restore_file sources
 
 #=================================================
 # RESTORE OF THE SQL BDD
@@ -88,7 +84,7 @@ sudo chown $app -R /var/log/$app
 sudo chown admin -R $install_log
 
 # Restaure la configuration de logrotate
-sudo cp -a ./logrotate /etc/logrotate.d/$app
+ynh_restore_file logrotate
 
 #=================================================
 # INSTALL DEPENDENCIES
@@ -117,7 +113,7 @@ sudo yunohost service add $app --log "/var/log/$app/etherpad.log"
 # RESTORE SYSTEMD
 #=================================================
 
-sudo cp -a ./systemd /etc/systemd/system/$app.service
+ynh_restore_file systemd
 ## Démarrage auto du service
 sudo systemctl enable $app.service
 
@@ -153,4 +149,4 @@ do	# La boucle attend le démarrage d'etherpad. Ou 1 minute. Cette boucle évite
 done
 echo ""
 kill -s 15 $PID_TAIL > /dev/null	# Arrête l'exécution de tail.
-sudo rm "$tempfile"
+ynh_secure_remove "$tempfile"

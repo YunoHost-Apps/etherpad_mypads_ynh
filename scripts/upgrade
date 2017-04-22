@@ -57,16 +57,13 @@ ynh_abort_if_errors	# Active trap pour arrêter le script si une erreur est dét
 # DOWNLOAD, CHECK AND UNPACK SOURCE
 #=================================================
 
-SETUP_SOURCE	# Télécharge la source, décompresse et copie dans $final_path
+ynh_setup_source	# Télécharge la source, décompresse et copie dans $final_path
 
 #=================================================
 # NGINX CONFIGURATION
 #=================================================
 
-# Copie le fichier de config nginx
-sudo cp ../conf/nginx.conf /etc/nginx/conf.d/$domain.d/$app.conf
-# Modifie les variables dans le fichier de configuration nginx
-sudo sed -i "s@__PORT__@$port@g" /etc/nginx/conf.d/$domain.d/$app.conf
+ynh_nginx_config
 
 #=================================================
 # SPECIFIC UPGRADE
@@ -75,29 +72,29 @@ sudo sed -i "s@__PORT__@$port@g" /etc/nginx/conf.d/$domain.d/$app.conf
 #=================================================
 
 # Copie ou modification d'un fichier de config
-CHECK_MD5_CONFIG "settings.json" "$final_path/settings.json"	# Créé un backup du fichier de config si il a été modifié.
-CHECK_MD5_CONFIG "credentials.json" "$final_path/credentials.json"	# Créé un backup du fichier de config si il a été modifié.
+ynh_compare_checksum_config "$final_path/settings.json"	# Créé un backup du fichier de config si il a été modifié.
+ynh_compare_checksum_config "$final_path/credentials.json"	# Créé un backup du fichier de config si il a été modifié.
 sudo cp ../conf/settings.json "$final_path/settings.json"
 sudo cp ../conf/credentials.json "$final_path/credentials.json"
-sudo sed -i "s/__PORT__/$port/g" "$final_path/settings.json"
-sudo sed -i "s/__DB_USER__/$app/g" "$final_path/credentials.json"
+ynh_replace_string "__PORT__" "$port" "$final_path/settings.json"
+ynh_replace_string "__DB_USER__" "$app" "$final_path/credentials.json"
 db_pwd=$(ynh_app_setting_get $app mysqlpwd)
 password=$(ynh_app_setting_get $app password)
-sudo sed -i "s/__DB_PWD__/$db_pwd/g" "$final_path/credentials.json"
-sudo sed -i "s/__ADMIN__/$admin/g" "$final_path/credentials.json"
-sudo sed -i "s/__PASSWD__/$password/g" "$final_path/credentials.json"
+ynh_replace_string "__DB_PWD__" "$db_pwd" "$final_path/credentials.json"
+ynh_replace_string "__ADMIN__" "$admin" "$final_path/credentials.json"
+ynh_replace_string "__PASSWD__" "$password" "$final_path/credentials.json"
 if [ "$abiword" -eq 1 ]
 then
 	abiword_path=`which abiword`	# Récupère l'emplacement de l'exécutable de abiword
-	sudo sed -i "s@\"abiword\" : null@\"abiword\" : \"$abiword_path\"@" "$final_path/settings.json"	# Renseigne l'emplacement de abiword dans la config de etherpad
+	ynh_replace_string "\"abiword\" : null" "\"abiword\" : \"$abiword_path\"" "$final_path/settings.json"	# Renseigne l'emplacement de abiword dans la config de etherpad
 fi
 if test -z $language; then
 	language=en # En cas d'upgrade d'une version ne gérant pas la langue, la langue est anglais par défaut
 	ynh_app_setting_set $app language $language
 fi
-sudo sed -i "s/__LANGUAGE__/$language/g" "$final_path/settings.json"
-STORE_MD5_CONFIG "settings.json" "$final_path/settings.json"	# Réenregistre la somme de contrôle du fichier de config
-STORE_MD5_CONFIG "credentials.json" "$final_path/credentials.json"	# Réenregistre la somme de contrôle du fichier de config
+ynh_replace_string "__LANGUAGE__" "$language" "$final_path/settings.json"
+ynh_store_checksum_config "$final_path/settings.json"	# Réenregistre la somme de contrôle du fichier de config
+ynh_store_checksum_config "$final_path/credentials.json"	# Réenregistre la somme de contrôle du fichier de config
 
 #=================================================
 # CREATE DEDICATED USER
@@ -124,14 +121,7 @@ ynh_use_logrotate
 # SETUP SYSTEMD
 #=================================================
 
-# Mise en place du script systemd
-sudo systemctl stop $app
-sudo cp ../conf/etherpad.service /etc/systemd/system/$app.service
-sudo chown root: /etc/systemd/system/$app.service
-sudo sed -i "s@__FINALPATH__@$final_path/@g" /etc/systemd/system/$app.service
-sudo sed -i "s@__APP__@$app@g" /etc/systemd/system/$app.service
-## Démarrage auto du service
-sudo systemctl enable $app
+ynh_systemd_config
 
 #=================================================
 # SOME HACKS
@@ -183,4 +173,4 @@ do	# La boucle attend le démarrage d'etherpad. Ou 1 minute. Cette boucle évite
 done
 echo ""
 QUIET kill -s 15 $PID_TAIL	# Arrête l'exécution de tail.
-sudo rm "$tempfile"
+ynh_secure_remove "$tempfile"

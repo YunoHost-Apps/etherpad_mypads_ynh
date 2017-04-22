@@ -25,12 +25,7 @@ db_name=$(ynh_app_setting_get $app db_name)
 # STOP AND REMOVE SERVICE
 #=================================================
 
-if [ -e "/etc/systemd/system/$app.service" ]; then
-	echo "Delete systemd script"
-	sudo systemctl stop $app
-	sudo systemctl disable $app.service
-	sudo rm "/etc/systemd/system/$app.service"
-fi
+ynh_remove_systemd_config
 
 #=================================================
 # DISABLE SERVICE IN ADMIN PANEL
@@ -58,13 +53,13 @@ ynh_mysql_remove_db $db_name $db_name	# Suppression de la base de donnée et de 
 # REMOVE THE MAIN DIR OF THE APP
 #=================================================
 
-SECURE_REMOVE '/var/www/$app'	# Suppression du dossier de l'application
+ynh_secure_remove "/var/www/$app"	# Suppression du dossier de l'application
 
 #=================================================
 # REMOVE THE NGINX CONFIGURATION
 #=================================================
 
-REMOVE_NGINX_CONF	# Suppression de la configuration nginx
+ynh_remove_nginx_config	# Suppression de la configuration nginx
 
 #=================================================
 # REMOVE THE LOGROTATE CONFIG

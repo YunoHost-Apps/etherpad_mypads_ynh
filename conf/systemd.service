@@ -6,7 +6,7 @@ After=network.target
 Type=simple
 User=__APP__
 Group=__APP__
-ExecStart=__FINALPATH__bin/safeRun.sh /var/log/__APP__/etherpad.log
+ExecStart=__FINALPATH__/bin/safeRun.sh /var/log/__APP__/etherpad.log
 
 [Install]
 WantedBy=multi-user.target
