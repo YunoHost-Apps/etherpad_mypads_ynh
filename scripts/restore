@@ -100,13 +100,11 @@ fi
 #=================================================
 
 ynh_install_nodejs 0.10
-ynh_app_setting_set $app nodejs_path $nodejs_path
 
 #=================================================
 # INSTALL ETHERPAD DEPENDENCIES
 #=================================================
 
-ynh_use_nodejs
 sudo "$nodejs_path/npm" install forever -g >> $install_log 2>&1
 
 #=================================================
