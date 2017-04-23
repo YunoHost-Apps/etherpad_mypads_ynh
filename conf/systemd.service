@@ -6,6 +6,8 @@ After=network.target
 Type=simple
 User=__APP__
 Group=__APP__
+ExecStartPre=__NODEJS__
+Environment="PATH=__ENV_PATH__"
 ExecStart=__FINALPATH__/bin/safeRun.sh /var/log/__APP__/etherpad.log
 
 [Install]

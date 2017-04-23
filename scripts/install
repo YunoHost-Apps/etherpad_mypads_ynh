@@ -84,10 +84,14 @@ ynh_app_setting_set $app port $port
 
 if [ $abiword -eq 1 ]
 then
-	ynh_install_app_dependencies npm nodejs-legacy abiword
-else
-	ynh_install_app_dependencies npm nodejs-legacy
+	ynh_install_app_dependencies abiword
 fi
+
+#=================================================
+# INSTALL NODEJS
+#=================================================
+
+ynh_install_nodejs 0.10
 
 #=================================================
 # CREATE A SQL BDD
@@ -137,9 +141,11 @@ ynh_use_logrotate
 # INSTALL ETHERPAD
 #=================================================
 
+# final_path doit appartenir à `admin` pour l'exécution de installDeps.sh (avec root, `hash` perd la trace de node installé via nvm)
+sudo chown admin -R "$final_path"
 # Installe les dépendances de etherpad et procède à l'intallation.
-sudo "$final_path/bin/installDeps.sh" > $install_log 2>&1
-sudo npm install forever -g >> $install_log 2>&1
+"$final_path/bin/installDeps.sh" > $install_log 2>&1
+sudo "$nodejs_path/npm" install forever -g >> $install_log 2>&1
 
 #=================================================
 # CONFIGURE ETHERPAD
@@ -175,6 +181,9 @@ sudo chmod 600 $final_path/credentials.json	# Restreint l'accès à credentials.
 #=================================================
 
 ynh_systemd_config
+ynh_replace_string "__NODEJS__" "$nodejs_use_version" "/etc/systemd/system/$app.service"
+ynh_replace_string "__ENV_PATH__" "$PATH" "/etc/systemd/system/$app.service"
+sudo systemctl daemon-reload
 
 #=================================================
 # ENABLE SERVICE IN ADMIN PANEL
@@ -189,22 +198,22 @@ sudo yunohost service add $app --log "/var/log/$app/etherpad.log"
 
 script_dir="$PWD"
 cd "$final_path"
-sudo npm install ep_align >> $install_log 2>&1	# Add Left/Center/Right/Justify to lines of text in a pad
-sudo npm install ep_author_hover >> $install_log 2>&1	# Framapad - Adds author names to span titles
-sudo npm install ep_automatic_logut >> $install_log 2>&1	# Automatically disconnects user after some period of time (Prevent server overload)
-sudo npm install ep_comments_page >> $install_log 2>&1	# Framapad - Adds comments on sidebar and link it to the text.
-sudo npm install ep_countable >> $install_log 2>&1	# Framapad - Displays paragraphs, sentences, words and characters counts.
-sudo npm install ep_delete_empty_pads >> $install_log 2>&1	# Framapad - Delete pads which were never edited
-sudo npm install ep_font_color >> $install_log 2>&1	# Framapad - Apply colors to fonts
-sudo npm install ep_headings2 >> $install_log 2>&1	# Framapad - Adds heading support to Etherpad Lite.
-sudo npm install ep_markdown >> $install_log 2>&1	# Framapad - Edit and Export as Markdown in Etherpad
-sudo npm install ep_mypads >> $install_log 2>&1	# Framapad - Groups and private pads for etherpad
-sudo npm install ep_page_view >> $install_log 2>&1	# Framapad - Add support to do 'page view', with a toggle on/off option in Settings, also Page Breaks with Control Enter
-sudo npm install ep_spellcheck >> $install_log 2>&1	# Framapad - Add support to do 'Spell checking'
-sudo npm install ep_subscript_and_superscript >> $install_log 2>&1	# Framapad - Add support for Subscript and Superscript
-sudo npm install ep_table_of_contents >> $install_log 2>&1	# Framapad - View a table of contents for your pad
-# sudo npm install ep_unoconv	# Framapad - Use unoconv instead of abiword to export pads.
-sudo npm install ep_user_font_size >> $install_log 2>&1	# Framapad - User Pad Contents font size can be set in settings, this does not effect other peoples views
+sudo "$nodejs_path/npm" install ep_align >> $install_log 2>&1	# Add Left/Center/Right/Justify to lines of text in a pad
+sudo "$nodejs_path/npm" install ep_author_hover >> $install_log 2>&1	# Framapad - Adds author names to span titles
+sudo "$nodejs_path/npm" install ep_automatic_logut >> $install_log 2>&1	# Automatically disconnects user after some period of time (Prevent server overload)
+sudo "$nodejs_path/npm" install ep_comments_page >> $install_log 2>&1	# Framapad - Adds comments on sidebar and link it to the text.
+sudo "$nodejs_path/npm" install ep_countable >> $install_log 2>&1	# Framapad - Displays paragraphs, sentences, words and characters counts.
+sudo "$nodejs_path/npm" install ep_delete_empty_pads >> $install_log 2>&1	# Framapad - Delete pads which were never edited
+sudo "$nodejs_path/npm" install ep_font_color >> $install_log 2>&1	# Framapad - Apply colors to fonts
+sudo "$nodejs_path/npm" install ep_headings2 >> $install_log 2>&1	# Framapad - Adds heading support to Etherpad Lite.
+sudo "$nodejs_path/npm" install ep_markdown >> $install_log 2>&1	# Framapad - Edit and Export as Markdown in Etherpad
+sudo "$nodejs_path/npm" install ep_mypads >> $install_log 2>&1	# Framapad - Groups and private pads for etherpad
+sudo "$nodejs_path/npm" install ep_page_view >> $install_log 2>&1	# Framapad - Add support to do 'page view', with a toggle on/off option in Settings, also Page Breaks with Control Enter
+sudo "$nodejs_path/npm" install ep_spellcheck >> $install_log 2>&1	# Framapad - Add support to do 'Spell checking'
+sudo "$nodejs_path/npm" install ep_subscript_and_superscript >> $install_log 2>&1	# Framapad - Add support for Subscript and Superscript
+sudo "$nodejs_path/npm" install ep_table_of_contents >> $install_log 2>&1	# Framapad - View a table of contents for your pad
+# sudo "$nodejs_path/npm" install ep_unoconv"	# Framapad - Use unoconv instead of abiword to export pads.
+sudo "$nodejs_path/npm" install ep_user_font_size >> $install_log 2>&1	# Framapad - User Pad Contents font size can be set in settings, this does not effect other peoples views
 sudo chown -R $app: $final_path/node_modules
 
 #=================================================

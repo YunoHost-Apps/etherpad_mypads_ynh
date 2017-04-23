@@ -90,18 +90,24 @@ ynh_restore_file logrotate
 # INSTALL DEPENDENCIES
 #=================================================
 
-if [ "$abiword" -eq 1 ]
+if [ $abiword -eq 1 ]
 then
-	ynh_install_app_dependencies npm nodejs-legacy abiword
-else
-	ynh_install_app_dependencies npm nodejs-legacy
+	ynh_install_app_dependencies abiword
 fi
+
+#=================================================
+# INSTALL NODEJS
+#=================================================
+
+ynh_install_nodejs 0.10
+ynh_app_setting_set $app nodejs_path $nodejs_path
 
 #=================================================
 # INSTALL ETHERPAD DEPENDENCIES
 #=================================================
 
-sudo npm install forever -g >> $install_log 2>&1
+ynh_use_nodejs
+sudo "$nodejs_path/npm" install forever -g >> $install_log 2>&1
 
 #=================================================
 # ENABLE SERVICE IN ADMIN PANEL
