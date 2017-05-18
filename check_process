@@ -18,7 +18,7 @@
 		backup_restore=1
 		multi_instance=0
 		incorrect_path=0
-		port_already_use=0
+		port_already_use=1	(9001)
 ;; Test abiword
 	auto_remove=1
 	; Manifest

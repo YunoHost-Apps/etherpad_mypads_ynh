@@ -99,14 +99,14 @@ ynh_install_nodejs 0.10
 
 db_name=$(ynh_make_valid_dbid $app)
 ynh_app_setting_set $app db_name $db_name
-ynh_mysql_generate_db $db_name $db_name
+ynh_mysql_setup_db $db_name $db_name
 
 #=================================================
 # DOWNLOAD, CHECK AND UNPACK SOURCE
 #=================================================
 
 ynh_app_setting_set $app final_path $final_path
-ynh_setup_source	# Télécharge la source, décompresse et copie dans $final_path
+ynh_setup_source $final_path	# Télécharge la source, décompresse et copie dans $final_path
 
 #=================================================
 # NGINX CONFIGURATION
