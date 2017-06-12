@@ -38,21 +38,21 @@ db_name=$(ynh_app_setting_get $app db_name)
 #=================================================
 
 CHECK_SIZE "$final_path"
-ynh_backup_abstract "$final_path" "sources"
+ynh_backup "$final_path" "${YNH_APP_BACKUP_DIR}$final_path"
 
 #=================================================
 # BACKUP OF THE NGINX CONFIGURATION
 #=================================================
 
-ynh_backup_abstract "/etc/nginx/conf.d/$domain.d/$app.conf" "nginx.conf"
+ynh_backup "/etc/nginx/conf.d/$domain.d/$app.conf" "${YNH_APP_BACKUP_DIR}/etc/nginx/conf.d/$domain.d/$app.conf"
 
 #=================================================
 # BACKUP OF THE SQL BDD
 #=================================================
 
-ynh_mysql_dump_db "$db_name" > dump.sql
-CHECK_SIZE "dump.sql"
-ynh_backup_abstract "dump.sql" "db.sql"
+ynh_mysql_dump_db "$db_name" > db.sql
+CHECK_SIZE "db.sql"
+# ynh_backup "db.sql" "${YNH_APP_BACKUP_DIR}/db.sql"
 
 #=================================================
 # SPECIFIC BACKUP
@@ -60,10 +60,10 @@ ynh_backup_abstract "dump.sql" "db.sql"
 # BACKUP LOGROTATE
 #=================================================
 
-ynh_backup_abstract "/etc/logrotate.d/$app" "logrotate"
+ynh_backup "/etc/logrotate.d/$app" "${YNH_APP_BACKUP_DIR}/etc/logrotate.d/$app"
 
 #=================================================
 # BACKUP SYSTEMD
 #=================================================
 
-ynh_backup_abstract "/etc/systemd/system/$app.service" "systemd"
+ynh_backup "/etc/systemd/system/$app.service" "${YNH_APP_BACKUP_DIR}/etc/systemd/system/$app.service"

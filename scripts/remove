@@ -42,7 +42,7 @@ fi
 # REMOVE DEPENDENCIES
 #=================================================
 
-if [ "$abiword" -eq 1 ]
+if [ $abiword -eq 1 ]
 then
 	ynh_remove_app_dependencies
 fi

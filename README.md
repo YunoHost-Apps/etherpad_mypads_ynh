@@ -41,3 +41,7 @@ Ce package etherpad intègre les plugins suivant:
 Le support ldap étant absent sur le plugin mypads, aucun utilisateur n'est créé par défaut.  
 Il est nécessaire de se connecter à l'interface d'administration pour créer les premiers utilisateurs.  
 Le login et le mot de passe administrateur sont ceux choisis en moment de l'installation.
+
+**Voir l'état du package:**  
+*[Dernier rapport hebdomadaire](https://forum.yunohost.org/t/rapport-hebdomadaire-dintegration-continue/2297)*  
+*[Dernier test d'intégration continue](https://ci-apps.yunohost.org/jenkins/job/etherpad_mypads%20%28Community%29/lastBuild/consoleFull)*

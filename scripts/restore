@@ -48,27 +48,27 @@ test ! -d $final_path \
 # RESTORE OF THE NGINX CONFIGURATION
 #=================================================
 
-ynh_restore_file nginx.conf
+ynh_restore_file "/etc/nginx/conf.d/$domain.d/$app.conf"
 
 #=================================================
 # RESTORE OF THE MAIN DIR OF THE APP
 #=================================================
 
-ynh_restore_file sources
+ynh_restore_file "$final_path"
 
 #=================================================
 # RESTORE OF THE SQL BDD
 #=================================================
 
 db_pwd=$(ynh_app_setting_get $app mysqlpwd)
-ynh_mysql_create_db $db_name $db_name $db_pwd
+ynh_mysql_setup_db $db_name $db_name $db_pwd
 ynh_mysql_connect_as $db_name $db_pwd $db_name < ./db.sql
 
 #=================================================
 # RECREATE OF THE DEDICATED USER
 #=================================================
 
-ynh_system_user_create $app	# Recreate the dedicated user, if not exist
+ynh_system_user_create $app /home/$app	# Recreate the dedicated user, if not exist
 
 #=================================================
 # SPECIFIC RESTORE
@@ -84,7 +84,7 @@ sudo chown $app -R /var/log/$app
 sudo chown admin -R $install_log
 
 # Restaure la configuration de logrotate
-ynh_restore_file logrotate
+ynh_restore_file "/etc/logrotate.d/$app"
 
 #=================================================
 # INSTALL DEPENDENCIES
@@ -99,13 +99,15 @@ fi
 # INSTALL NODEJS
 #=================================================
 
-ynh_install_nodejs 0.10
+ynh_install_nodejs 4.8.3
 
 #=================================================
 # INSTALL ETHERPAD DEPENDENCIES
 #=================================================
 
-sudo "$nodejs_path/npm" install forever -g >> $install_log 2>&1
+ynh_use_nodejs
+sudo_path npm cache clean
+sudo_path npm install forever -g >> $install_log 2>&1
 
 #=================================================
 # ENABLE SERVICE IN ADMIN PANEL
@@ -117,7 +119,7 @@ sudo yunohost service add $app --log "/var/log/$app/etherpad.log"
 # RESTORE SYSTEMD
 #=================================================
 
-ynh_restore_file systemd
+ynh_restore_file "/etc/systemd/system/$app.service"
 ## Démarrage auto du service
 sudo systemctl enable $app.service
 
@@ -154,3 +156,7 @@ done
 echo ""
 kill -s 15 $PID_TAIL > /dev/null	# Arrête l'exécution de tail.
 ynh_secure_remove "$tempfile"
+
+sleep 20
+cat /var/log/$app/etherpad.log >&2
+echo "<<<" >&2
