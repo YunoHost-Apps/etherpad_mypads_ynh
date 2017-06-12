@@ -146,8 +146,6 @@ ynh_use_nodejs
 sudo_path "$final_path/bin/installDeps.sh" > $install_log 2>&1
 sudo_path npm install forever -g >> $install_log 2>&1
 
-sudo ls -alh /root >&2
-sudo ls -alh /home/admin >&2
 #=================================================
 # CONFIGURE ETHERPAD
 #=================================================
