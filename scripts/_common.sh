@@ -514,7 +514,7 @@ ynh_use_logrotate () {
 			logfile=$1/.log	# Else, uses the directory and all logfile into it.
 		fi
 	else
-		logfile="/var/log/${app}/.log" # Without argument, use a defaut directory in /var/log
+		logfile="/var/log/${app}/*.log" # Without argument, use a defaut directory in /var/log
 	fi
 	cat > ./${app}-logrotate << EOF	# Build a config file for logrotate
 $logfile {
@@ -847,32 +847,4 @@ ynh_backup_if_checksum_is_different () {
 			echo "$backup_file"	# Return the name of the backup file
 		fi
 	fi
-}
-
-# Check availability of a web path
-#
-# example: ynh_webpath_available some.domain.tld /coffee
-#
-# usage: ynh_webpath_available domain path
-# | arg: domain - the domain/host of the url
-# | arg: path - the web path to check the availability of
-ynh_webpath_available () {
-	local domain=$1
-	local path=$2
-	sudo yunohost domain url-available $domain $path
-}
-
-# Register/book a web path for an app
-#
-# example: ynh_webpath_register wordpress some.domain.tld /coffee
-#
-# usage: ynh_webpath_register app domain path
-# | arg: app - the app for which the domain should be registered
-# | arg: domain - the domain/host of the web path
-# | arg: path - the web path to be registered
-ynh_webpath_register () {
-	local app=$1
-	local domain=$2
-	local path=$3
-	sudo yunohost app register-url $app $domain $path
 }
