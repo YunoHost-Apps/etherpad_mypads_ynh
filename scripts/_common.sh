@@ -240,7 +240,7 @@ n_install_dir="/opt/node_n"
 ynh_use_nodejs () {
 	nodejs_version=$(ynh_app_setting_get $app nodejs_version)
 
-	load_n_path="[[ :$PATH: == *\":$n_install_dir/bin:\"* ]] || PATH+=\":$n_install_dir/bin\""
+	load_n_path="[[ :$PATH: == *\":$n_install_dir/bin:\"* ]] || PATH=\"$n_install_dir/bin:$PATH\""
 
 	nodejs_use_version="n $nodejs_version"
 
@@ -265,12 +265,25 @@ ynh_install_nodejs () {
 	sudo mkdir -p "$n_install_dir"
 
 	# Load n path in PATH
-	PATH+=":$n_install_dir/bin"
+	CLEAR_PATH="$n_install_dir/bin:$PATH"
+	# Remove /usr/local/bin in PATH in case of node has already setup.
+	PATH=$(echo $CLEAR_PATH | sed 's@/usr/local/bin:@@')
+
+	# Move an existing node binary, to avoid to block n.
+	test -x /usr/bin/node && sudo mv /usr/bin/node /usr/bin/node_n
+	test -x /usr/bin/npm && sudo mv /usr/bin/npm /usr/bin/npm_n
 
 	# If n is not previously setup, install it
 	n --version > /dev/null 2>&1 || \
 	( echo "Installation of N - Node.js version management" >&2; \
-	curl -sL $n_install_script | sudo N_PREFIX="$n_install_dir" bash -s -- -y $nodejs_version )
+	curl -sL $n_install_script | sudo env "PATH=$PATH" N_PREFIX="$n_install_dir" bash -s -- -y $nodejs_version )
+
+	# Restore /usr/local/bin in PATH
+	PATH=$CLEAR_PATH
+
+	# And replace the old node binary.
+	test -x /usr/bin/node_n && sudo mv /usr/bin/node_n /usr/bin/node
+	test -x /usr/bin/npm_n && sudo mv /usr/bin/npm_n /usr/bin/npm
 
 	# Install the requested version of nodejs (except for the first installation of n, which installed the requested version of node.)
 	sudo env "PATH=$PATH" n $nodejs_version
