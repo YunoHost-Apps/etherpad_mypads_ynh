@@ -68,7 +68,7 @@
 				},
 				"default": true
 			},
-				"name": "",
+				"name": "export",
 				"ask": {
 					"en": "Choose abiword or libreoffice (more stable)",
 					"fr": "Choisissez abiword ou libreoffice (plus stable)"
