@@ -33,7 +33,7 @@ admin=$YNH_APP_ARG_ADMIN
 password=$YNH_APP_ARG_PASSWORD
 language=$YNH_APP_ARG_LANGUAGE
 is_public=$YNH_APP_ARG_IS_PUBLIC
-abiword=$YNH_APP_ARG_ABIWORD
+export=$YNH_APP_ARG_EXPORT
 path_url="" # Assure la compatibilité avec les fonctions utilisant $path_url
 
 app=$YNH_APP_INSTANCE_NAME
@@ -67,7 +67,7 @@ ynh_app_setting_set $app admin $admin
 ynh_app_setting_set $app is_public $is_public
 ynh_app_setting_set $app password $password
 ynh_app_setting_set $app language $language
-ynh_app_setting_set $app abiword $abiword
+ynh_app_setting_set $app export $export
 
 #=================================================
 # STANDARD MODIFICATIONS
@@ -82,11 +82,17 @@ ynh_app_setting_set $app port $port
 # INSTALL DEPENDENCIES
 #=================================================
 
-if [ $abiword -eq 1 ]
+if [ $export -eq 1 ]
 then
 	ynh_install_app_dependencies abiword
+	
 fi
 
+if [ $export -eq 2 ]
+then
+	ynh_install_app_dependencies unoconv libreoffice-writer
+	
+fi
 #=================================================
 # INSTALL NODEJS
 #=================================================
@@ -157,10 +163,16 @@ ynh_replace_string "__DB_USER__" "$db_name" "$final_path/credentials.json"
 ynh_replace_string "__DB_PWD__" "$db_pwd" "$final_path/credentials.json"
 ynh_replace_string "__ADMIN__" "$admin" "$final_path/credentials.json"
 ynh_replace_string "__PASSWD__" "$password" "$final_path/credentials.json"
-if [ "$abiword" -eq 1 ]
+if [ "$export" -eq 1 ]
 then
 	abiword_path=`which abiword`	# Récupère l'emplacement de l'exécutable de abiword
 	ynh_replace_string "\"abiword\" : null" "\"abiword\" : \"$abiword_path\"" "$final_path/settings.json"	# Renseigne l'emplacement de abiword dans la config de etherpad
+fi
+
+if [ "$export" -eq 2 ]
+then
+	soffice_path=`which soffice`	# Récupère l'emplacement de l'exécutable de abiword
+	ynh_replace_string "\"soffice\" : null" "\"soffice\" : \"$soffice_path\"" "$final_path/settings.json"	# Renseigne l'emplacement de abiword dans la config de etherpad
 fi
 ynh_replace_string "__LANGUAGE__" "$language" "$final_path/settings.json"
 ynh_store_file_checksum "$final_path/settings.json"	# Enregistre la somme de contrôle du fichier de config
