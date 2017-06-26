@@ -31,7 +31,7 @@ domain=$(ynh_app_setting_get $app domain)
 path_url=$(ynh_app_setting_get $app path_url)
 final_path=$(ynh_app_setting_get $app final_path)
 db_name=$(ynh_app_setting_get $app db_name)
-abiword=$(ynh_app_setting_get $app abiword)
+export=$(ynh_app_setting_get $app export)
 
 #=================================================
 # CHECK IF THE APP CAN BE RESTORED
@@ -68,7 +68,7 @@ ynh_mysql_connect_as $db_name $db_pwd $db_name < ./db.sql
 # RECREATE OF THE DEDICATED USER
 #=================================================
 
-ynh_system_user_create $app /home/$app	# Recreate the dedicated user, if not exist
+ynh_system_user_create $app $final_path	# Recreate the dedicated user, if not exist
 
 #=================================================
 # SPECIFIC RESTORE
@@ -90,9 +90,10 @@ ynh_restore_file "/etc/logrotate.d/$app"
 # INSTALL DEPENDENCIES
 #=================================================
 
-if [ $abiword -eq 1 ]
-then
+if [ "$export" = "abiword" ]; then
 	ynh_install_app_dependencies abiword
+elif [ "$export" = "libreoffice" ]; then
+	ynh_install_app_dependencies unoconv libreoffice-writer
 fi
 
 #=================================================

@@ -1,4 +1,4 @@
-;; Test complet
+;; Test complet avec libreoffice
 	auto_remove=1
 	; Manifest
 		domain="domain.tld"	(DOMAIN)
@@ -6,7 +6,7 @@
 		password="password"
 		language="en"
 		is_public=1	(PUBLIC|public=1|private=0)
-		abiword="0"
+		export="libreoffice"
 	; Checks
 		pkg_linter=1
 		setup_sub_dir=0
@@ -28,7 +28,18 @@
 		password="password"
 		language="en"
 		is_public=1	(PUBLIC|public=1|private=0)
-		abiword="1"
+		export="abiword"
+	; Checks
+		setup_root=1
+;; Test sans export
+	auto_remove=1
+	; Manifest
+		domain="domain.tld"	(DOMAIN)
+		admin="john"	(USER)
+		password="password"
+		language="en"
+		is_public=1	(PUBLIC|public=1|private=0)
+		export="none"
 	; Checks
 		setup_root=1
 ;;; Levels

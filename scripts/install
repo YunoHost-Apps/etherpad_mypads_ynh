@@ -82,17 +82,12 @@ ynh_app_setting_set $app port $port
 # INSTALL DEPENDENCIES
 #=================================================
 
-if [ $export -eq 1 ]
-then
+if [ "$export" = "abiword" ]; then
 	ynh_install_app_dependencies abiword
-	
+elif [ "$export" = "libreoffice" ]; then
+	ynh_install_app_dependencies unoconv libreoffice-writer
 fi
 
-if [ $export -eq 2 ]
-then
-	ynh_install_app_dependencies unoconv libreoffice-writer
-	
-fi
 #=================================================
 # INSTALL NODEJS
 #=================================================
@@ -124,7 +119,7 @@ ynh_nginx_config
 # CREATE DEDICATED USER
 #=================================================
 
-ynh_system_user_create $app /home/$app	# Créer un utilisateur système dédié à l'app
+ynh_system_user_create $app $final_path	# Créer un utilisateur système dédié à l'app
 
 #=================================================
 # SPECIFIC SETUP
@@ -163,13 +158,11 @@ ynh_replace_string "__DB_USER__" "$db_name" "$final_path/credentials.json"
 ynh_replace_string "__DB_PWD__" "$db_pwd" "$final_path/credentials.json"
 ynh_replace_string "__ADMIN__" "$admin" "$final_path/credentials.json"
 ynh_replace_string "__PASSWD__" "$password" "$final_path/credentials.json"
-if [ "$export" -eq 1 ]
+if [ "$export" = "abiword" ]
 then
 	abiword_path=`which abiword`	# Récupère l'emplacement de l'exécutable de abiword
 	ynh_replace_string "\"abiword\" : null" "\"abiword\" : \"$abiword_path\"" "$final_path/settings.json"	# Renseigne l'emplacement de abiword dans la config de etherpad
-fi
-
-if [ "$export" -eq 2 ]
+elif [ "$export" = "libreoffice" ]
 then
 	soffice_path=`which soffice`	# Récupère l'emplacement de l'exécutable de abiword
 	ynh_replace_string "\"soffice\" : null" "\"soffice\" : \"$soffice_path\"" "$final_path/settings.json"	# Renseigne l'emplacement de abiword dans la config de etherpad
@@ -223,7 +216,6 @@ sudo_path npm install ep_page_view >> $install_log 2>&1	# Framapad - Add support
 sudo_path npm install ep_spellcheck >> $install_log 2>&1	# Framapad - Add support to do 'Spell checking'
 sudo_path npm install ep_subscript_and_superscript >> $install_log 2>&1	# Framapad - Add support for Subscript and Superscript
 sudo_path npm install ep_table_of_contents >> $install_log 2>&1	# Framapad - View a table of contents for your pad
-# sudo_path npm install ep_unoconv"	# Framapad - Use unoconv instead of abiword to export pads.
 sudo_path npm install ep_user_font_size >> $install_log 2>&1	# Framapad - User Pad Contents font size can be set in settings, this does not effect other peoples views
 sudo chown -R $app: $final_path/node_modules
 

@@ -18,7 +18,7 @@ app=$YNH_APP_INSTANCE_NAME
 domain=$(ynh_app_setting_get $app domain)
 port=$(ynh_app_setting_get $app port)
 db_name=$(ynh_app_setting_get $app db_name)
-abiword=$(ynh_app_setting_get $app abiword)
+export=$(ynh_app_setting_get $app export)
 
 #=================================================
 # STANDARD REMOVE
@@ -42,7 +42,7 @@ fi
 # REMOVE DEPENDENCIES
 #=================================================
 
-if [ $abiword -eq 1 ]
+if [ "$export" != "none" ]
 then
 	ynh_remove_app_dependencies
 fi
