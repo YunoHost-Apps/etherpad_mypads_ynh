@@ -9,8 +9,6 @@ Ce package etherpad utilise les mêmes plugins que [Framapad](https://framapad.o
 http://etherpad.org/  
 https://git.framasoft.org/framasoft/ep_mypads
 
-Le script installe les paquets *npm* et *nodejs-legacy*, ainsi que *abiword* si l'option est selectionnée.
-
 **En raison du plugin mypads, cette version d'etherpad doit être installée à la racine d'un domaine ou d'un sous-domaine dédié. Autrement, mypads sera inaccessible.**
 
 **Mise à jour du package:**  

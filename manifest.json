@@ -68,13 +68,14 @@
 				},
 				"default": true
 			},
+            {
 				"name": "export",
 				"ask": {
-					"en": "Choose abiword or libreoffice (more stable)",
-					"fr": "Choisissez abiword ou libreoffice (plus stable)"
+					"en": "Use abiword (~260Mo) or libreoffice (~400Mo) (more stable) to expand export possibilities (pdf, doc) ?",
+					"fr": "Utiliser abiword (~260Mo) ou libre office (~400Mo) (plus stable) pour étendre les possibilités d'export (pdf, doc) ?"
 				},
-				"choices" : ["abiword", "libreoffice"],
-				"default" : "libreoffice"
+				"choices" : ["none", "abiword", "libreoffice"],
+				"default" : "none"
 			}
 		]
 	}
