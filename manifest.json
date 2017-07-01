@@ -69,13 +69,13 @@
 				"default": true
 			},
             {
-                "name": "abiword",
-                "type": "boolean",
-                "ask": {
-                    "en": "Use abiword (~260Mo) to expand export possibilities (pdf, doc) ?",
-                    "fr": "Utiliser abiword (~260Mo) pour étendre les possibilités d'export (pdf, doc) ?"
-                },
-                "default": false
+				"name": "export",
+				"ask": {
+					"en": "Use abiword (~260Mo) or libreoffice (~400Mo) (more stable) to expand export possibilities (pdf, doc) ?",
+					"fr": "Utiliser abiword (~260Mo) ou libre office (~400Mo) (plus stable) pour étendre les possibilités d'export (pdf, doc) ?"
+				},
+				"choices" : ["none", "abiword", "libreoffice"],
+				"default" : "none"
 			}
 		]
 	}
