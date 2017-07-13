@@ -163,6 +163,9 @@ sudo chown $app -R /var/log/$app/etherpad.log
 # SETUP LOGROTATE
 #=================================================
 
+# Remove logrotate config
+ynh_remove_logrotate
+# And replace it
 ynh_use_logrotate
 
 #=================================================
