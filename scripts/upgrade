@@ -8,6 +8,8 @@
 
 source _common.sh
 source /usr/share/yunohost/helpers
+# Load common variables for all scripts.
+source _variables
 
 #=================================================
 # LOAD SETTINGS
@@ -63,17 +65,20 @@ fi
 # BACKUP BEFORE UPGRADE THEN ACTIVE TRAP
 #=================================================
 
-BACKUP_BEFORE_UPGRADE	# Backup the current version of the app
+# Backup the current version of the app
+ynh_backup_before_upgrade
 ynh_clean_setup () {
-	BACKUP_FAIL_UPGRADE	# restore it if the upgrade fails
+	# restore it if the upgrade fails
+	ynh_restore_upgradebackup
 }
-ynh_abort_if_errors	# Active trap pour arrêter le script si une erreur est détectée.
+# Exit if an error occurs during the execution of the script
+ynh_abort_if_errors
 
 #=================================================
 # STOP ETHERPAD
 #=================================================
 
-sudo systemctl stop $app
+systemctl stop $app
 
 #=================================================
 # STANDARD UPGRADE STEPS
@@ -87,7 +92,7 @@ ynh_setup_source "$final_path"	# Télécharge la source, décompresse et copie d
 # NGINX CONFIGURATION
 #=================================================
 
-ynh_nginx_config
+ynh_add_nginx_config
 
 #=================================================
 # UPGRADE NODEJS
@@ -97,17 +102,17 @@ ynh_nginx_config
 if [ -d /opt/nvm ]
 then
 	ynh_secure_remove "/opt/nvm"
-	sudo sed --in-place "/NVM_DIR/d" /root/.bashrc
+	sed --in-place "/NVM_DIR/d" /root/.bashrc
 fi
 
-ynh_install_nodejs 4.8.3
+ynh_install_nodejs $nodejs_version
 
 #=================================================
 # UPGRADE NPM MODULES
 #=================================================
 
-sudo_path npm cache clean
-sudo_path npm update
+npm cache clean
+npm update
 
 #=================================================
 # SPECIFIC UPGRADE
@@ -118,8 +123,8 @@ sudo_path npm update
 # Copie ou modification d'un fichier de config
 ynh_backup_if_checksum_is_different "$final_path/settings.json"	# Créé un backup du fichier de config si il a été modifié.
 ynh_backup_if_checksum_is_different "$final_path/credentials.json"	# Créé un backup du fichier de config si il a été modifié.
-sudo cp ../conf/settings.json "$final_path/settings.json"
-sudo cp ../conf/credentials.json "$final_path/credentials.json"
+cp ../conf/settings.json "$final_path/settings.json"
+cp ../conf/credentials.json "$final_path/credentials.json"
 ynh_replace_string "__PORT__" "$port" "$final_path/settings.json"
 ynh_replace_string "__DB_USER__" "$app" "$final_path/credentials.json"
 db_pwd=$(ynh_app_setting_get $app mysqlpwd)
@@ -155,9 +160,9 @@ ynh_system_user_create $app $final_path	# Create the dedicated user, if not exis
 #=================================================
 
 # Les fichiers appartiennent à etherpad
-sudo chown -R $app: $final_path
-sudo chmod 600 "$final_path/credentials.json"	# Restreint l'accès à credentials.json
-sudo chown $app -R /var/log/$app/etherpad.log
+chown -R $app: $final_path
+chmod 600 "$final_path/credentials.json"	# Restreint l'accès à credentials.json
+chown $app -R /var/log/$app/etherpad.log
 
 #=================================================
 # SETUP LOGROTATE
@@ -172,17 +177,16 @@ ynh_use_logrotate
 # SETUP SYSTEMD
 #=================================================
 
-ynh_systemd_config
-ynh_replace_string "__NODEJS__" "$nodejs_use_version" "/etc/systemd/system/$app.service"
-ynh_replace_string "__ENV_PATH__" "$PATH" "/etc/systemd/system/$app.service"
-sudo systemctl daemon-reload
+ynh_replace_string "__NODEJS__" "$nodejs_use_version" "../conf/systemd.service"
+ynh_replace_string "__ENV_PATH__" "$PATH" "../conf/systemd.service"
+ynh_add_systemd_config
 
 #=================================================
 # SOME HACKS
 #=================================================
 
 mod_line=$(grep -nA5 "index.createOpenPad" $final_path/src/templates/index.html | grep "</div>" | cut -d '-' -f 1)	# Recherche le /div situé sous le champs d'ouverture de pad.
-sudo sed -i "$mod_line s@div>@&\n\t<center><br><font size="5"><a href="./mypads">Mypads</a></font></center>@" $final_path/src/templates/index.html	# Pour ajouter un lien vers le plugin mypads depuis la page d'Etherpad.
+sed -i "$mod_line s@div>@&\n\t<center><br><font size="5"><a href="./mypads">Mypads</a></font></center>@" $final_path/src/templates/index.html	# Pour ajouter un lien vers le plugin mypads depuis la page d'Etherpad.
 
 #=================================================
 # START ETHERPAD IN BACKGROUND
@@ -193,7 +197,7 @@ WARNING echo "Redémarrage d'etherpad"
 tempfile="$(mktemp)"
 tail -f -n1 /var/log/$app/etherpad.log > "$tempfile" &	# Suit le démarrage dans le log
 PID_TAIL=$!	# Récupère le PID de la commande tail, qui est passée en arrière plan.
-sudo systemctl start $app	# Redémarre etherpad. Le démarrage est fait le plus tôt possible, car il est très long...
+systemctl start $app	# Redémarre etherpad. Le démarrage est fait le plus tôt possible, car il est très long...
 
 #=================================================
 # SETUP SSOWAT
@@ -210,7 +214,7 @@ fi
 # RELOAD NGINX
 #=================================================
 
-sudo systemctl reload nginx
+systemctl reload nginx
 
 #=================================================
 # CHECK ETHERPAD STARTING

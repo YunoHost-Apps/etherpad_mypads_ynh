@@ -1,25 +1,27 @@
 #!/bin/bash
 
 #=================================================
-# GENERIC STARTING
-#=================================================
-# MANAGE FAILURE OF THE SCRIPT
-#=================================================
-
-# Exit on command errors and treat unset variables as an error
-set -eu
-
+# GENERIC START
 #=================================================
 # IMPORT GENERIC HELPERS
 #=================================================
 
 if [ ! -e _common.sh ]; then
-	# Rapatrie le fichier de fonctions si il n'est pas dans le dossier courant
-	sudo cp ../settings/scripts/_common.sh ./_common.sh
-	sudo chmod a+rx _common.sh
+	# Get the _common.sh file if it's not in the current directory
+	cp ../settings/scripts/_common.sh ./_common.sh
+	chmod a+rx _common.sh
 fi
 source _common.sh
 source /usr/share/yunohost/helpers
+# Load common variables for all scripts.
+source ../settings/scripts/_variables
+
+#=================================================
+# MANAGE SCRIPT FAILURE
+#=================================================
+
+# Exit if an error occurs during the execution of the script
+ynh_abort_if_errors
 
 #=================================================
 # LOAD SETTINGS
@@ -37,7 +39,7 @@ export=$(ynh_app_setting_get $app export)
 # CHECK IF THE APP CAN BE RESTORED
 #=================================================
 
-sudo yunohost app checkurl "${domain}${path_url}" -a "$app" \
+yunohost app checkurl "${domain}${path_url}" -a "$app" \
 	|| ynh_die "Path not available: ${domain}${path_url}"
 test ! -d $final_path \
 	|| ynh_die "There is already a directory: $final_path "
@@ -76,12 +78,12 @@ ynh_system_user_create $app $final_path	# Recreate the dedicated user, if not ex
 # HANDLE LOG FILES AND LOGROTATE
 #=================================================
 
-sudo mkdir -p /var/log/$app
-sudo touch /var/log/$app/etherpad.log
+mkdir -p /var/log/$app
+touch /var/log/$app/etherpad.log
 install_log=/var/log/$app/installation.log
-sudo touch $install_log
-sudo chown $app -R /var/log/$app
-sudo chown admin -R $install_log
+touch $install_log
+chown $app -R /var/log/$app
+chown admin -R $install_log
 
 # Restaure la configuration de logrotate
 ynh_restore_file "/etc/logrotate.d/$app"
@@ -91,30 +93,30 @@ ynh_restore_file "/etc/logrotate.d/$app"
 #=================================================
 
 if [ "$export" = "abiword" ]; then
-	ynh_install_app_dependencies abiword
+	ynh_install_app_dependencies $abiword_app_depencencies
 elif [ "$export" = "libreoffice" ]; then
-	ynh_install_app_dependencies unoconv libreoffice-writer
+	ynh_install_app_dependencies $libreoffice_app_dependencies
 fi
 
 #=================================================
 # INSTALL NODEJS
 #=================================================
 
-ynh_install_nodejs 4.8.3
+ynh_install_nodejs $nodejs_version
 
 #=================================================
 # INSTALL ETHERPAD DEPENDENCIES
 #=================================================
 
 ynh_use_nodejs
-sudo_path npm cache clean
-sudo_path npm install forever -g >> $install_log 2>&1
+npm cache clean
+npm install forever -g >> $install_log 2>&1
 
 #=================================================
 # ENABLE SERVICE IN ADMIN PANEL
 #=================================================
 
-sudo yunohost service add $app --log "/var/log/$app/etherpad.log"
+yunohost service add $app --log "/var/log/$app/etherpad.log"
 
 #=================================================
 # RESTORE SYSTEMD
@@ -122,7 +124,7 @@ sudo yunohost service add $app --log "/var/log/$app/etherpad.log"
 
 ynh_restore_file "/etc/systemd/system/$app.service"
 ## Démarrage auto du service
-sudo systemctl enable $app.service
+systemctl enable $app.service
 
 #=================================================
 # START ETHERPAD IN BACKGROUND
@@ -132,13 +134,13 @@ echo "Démarrage d'etherpad" >&2
 tempfile="$(mktemp)"
 tail -f -n1 /var/log/$app/etherpad.log > "$tempfile" &	# Suit le démarrage dans le log
 PID_TAIL=$!	# Récupère le PID de la commande tail, qui est passée en arrière plan.
-sudo systemctl start $app	# Démarre etherpad. Le démarrage est fait le plus tôt possible, car il est très long...
+systemctl start $app	# Démarre etherpad. Le démarrage est fait le plus tôt possible, car il est très long...
 
 #=================================================
 # RELOAD NGINX
 #=================================================
 
-sudo systemctl reload nginx
+systemctl reload nginx
 
 #=================================================
 # CHECK ETHERPAD STARTING
@@ -157,7 +159,3 @@ done
 echo ""
 kill -s 15 $PID_TAIL > /dev/null	# Arrête l'exécution de tail.
 ynh_secure_remove "$tempfile"
-
-sleep 20
-cat /var/log/$app/etherpad.log >&2
-echo "<<<" >&2

@@ -32,10 +32,10 @@ ynh_remove_systemd_config
 # DISABLE SERVICE IN ADMIN PANEL
 #=================================================
 
-if sudo yunohost service status | grep -q $app	# Test l'existence du service dans Yunohost
+if yunohost service status | grep -q $app	# Test l'existence du service dans Yunohost
 then
 	echo "Remove $app service"
-	sudo yunohost service remove $app
+	yunohost service remove $app
 fi
 
 #=================================================

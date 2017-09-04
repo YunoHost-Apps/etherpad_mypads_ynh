@@ -8,6 +8,8 @@
 
 source _common.sh
 source /usr/share/yunohost/helpers
+# Load common variables for all scripts.
+source _variables
 
 #=================================================
 # MANAGE FAILURE OF THE SCRIPT
@@ -34,7 +36,6 @@ password=$YNH_APP_ARG_PASSWORD
 language=$YNH_APP_ARG_LANGUAGE
 is_public=$YNH_APP_ARG_IS_PUBLIC
 export=$YNH_APP_ARG_EXPORT
-path_url="" # Assure la compatibilité avec les fonctions utilisant $path_url
 
 app=$YNH_APP_INSTANCE_NAME
 
@@ -47,16 +48,23 @@ then
 	ynh_die "The password must be between 8 and 30 characters."
 fi
 
-if sudo yunohost domain list | grep -q $domain	# Vérifie la liste des domaines
+if yunohost domain list | grep -q $domain	# Vérifie la liste des domaines
 then	# Si le domaine existe dans Yunohost
-	if sudo yunohost app map | grep -q $domain	# Vérifie la liste des apps par domaine
+	if yunohost app map | grep -q $domain	# Vérifie la liste des apps par domaine
 	then 	# Si une app est installée sur ce domaine.
 		WARNING echo "An app is already installed on the domain $domain. Mypads needs a whole domain or subdomain to himself."
 	fi
 fi
 
-CHECK_DOMAINPATH	# Vérifie la disponibilité du path et du domaine.
-CHECK_FINALPATH	# Vérifie que le dossier de destination n'est pas déjà utilisé.
+final_path=/var/www/$app
+test ! -e "$final_path" || ynh_die "This path already contains a folder"
+
+path_url="/"
+# Check web path availability
+ynh_webpath_available $domain $path_url
+# Register (book) web path
+ynh_webpath_register $app $domain $path_url
+path_url="" # Assure la compatibilité avec les fonctions utilisant $path_url
 
 #=================================================
 # STORE SETTINGS FROM MANIFEST
@@ -83,16 +91,16 @@ ynh_app_setting_set $app port $port
 #=================================================
 
 if [ "$export" = "abiword" ]; then
-	ynh_install_app_dependencies abiword
+	ynh_install_app_dependencies $abiword_app_depencencies
 elif [ "$export" = "libreoffice" ]; then
-	ynh_install_app_dependencies unoconv libreoffice-writer
+	ynh_install_app_dependencies $libreoffice_app_dependencies
 fi
 
 #=================================================
 # INSTALL NODEJS
 #=================================================
 
-ynh_install_nodejs 4.8.3
+ynh_install_nodejs $nodejs_version
 
 #=================================================
 # CREATE A SQL BDD
@@ -113,7 +121,7 @@ ynh_setup_source "$final_path"	# Télécharge la source, décompresse et copie d
 # NGINX CONFIGURATION
 #=================================================
 
-ynh_nginx_config
+ynh_add_nginx_config
 
 #=================================================
 # CREATE DEDICATED USER
@@ -128,12 +136,11 @@ ynh_system_user_create $app $final_path	# Créer un utilisateur système dédié
 #=================================================
 
 # Créer le dossier de log
-sudo mkdir -p /var/log/$app
-sudo touch /var/log/$app/etherpad.log
+mkdir -p /var/log/$app
+touch /var/log/$app/etherpad.log
 install_log=/var/log/$app/installation.log
-sudo touch $install_log
-sudo chown $app -R /var/log/$app
-sudo chown admin -R $install_log
+touch $install_log
+chown $app -R /var/log/$app
 
 # Configuration de logrotate
 ynh_use_logrotate
@@ -144,15 +151,15 @@ ynh_use_logrotate
 
 # Installe les dépendances de etherpad et procède à l'intallation.
 ynh_use_nodejs
-sudo_path "$final_path/bin/installDeps.sh" > $install_log 2>&1
-sudo_path npm install forever -g >> $install_log 2>&1
+"$final_path/bin/installDeps.sh" > $install_log 2>&1
+npm install forever -g >> $install_log 2>&1
 
 #=================================================
 # CONFIGURE ETHERPAD
 #=================================================
 
-sudo cp ../conf/settings.json "$final_path/settings.json"
-sudo cp ../conf/credentials.json "$final_path/credentials.json"
+cp ../conf/settings.json "$final_path/settings.json"
+cp ../conf/credentials.json "$final_path/credentials.json"
 ynh_replace_string "__PORT__" "$port" "$final_path/settings.json"
 ynh_replace_string "__DB_USER__" "$db_name" "$final_path/credentials.json"
 ynh_replace_string "__DB_PWD__" "$db_pwd" "$final_path/credentials.json"
@@ -177,24 +184,23 @@ ynh_store_file_checksum "$final_path/credentials.json"	# Enregistre la somme de 
 #=================================================
 
 # Les fichiers appartiennent à etherpad
-sudo chown -R $app: $final_path
-sudo chmod 600 $final_path/credentials.json	# Restreint l'accès à credentials.json
+chown -R $app: $final_path
+chmod 600 $final_path/credentials.json	# Restreint l'accès à credentials.json
 
 #=================================================
 # SETUP SYSTEMD
 #=================================================
 
-ynh_systemd_config
-ynh_replace_string "__NODEJS__" "$nodejs_use_version" "/etc/systemd/system/$app.service"
-ynh_replace_string "__ENV_PATH__" "$PATH" "/etc/systemd/system/$app.service"
-sudo systemctl daemon-reload
+ynh_replace_string "__NODEJS__" "$nodejs_use_version" "../conf/systemd.service"
+ynh_replace_string "__ENV_PATH__" "$PATH" "../conf/systemd.service"
+ynh_add_systemd_config
 
 #=================================================
 # ENABLE SERVICE IN ADMIN PANEL
 #=================================================
 
 # Ajoute le service au monitoring de Yunohost.
-sudo yunohost service add $app --log "/var/log/$app/etherpad.log"
+yunohost service add $app --log "/var/log/$app/etherpad.log"
 
 #=================================================
 # INSTALL FRAMAPAD'S PLUGINS
@@ -202,22 +208,22 @@ sudo yunohost service add $app --log "/var/log/$app/etherpad.log"
 
 script_dir="$PWD"
 cd "$final_path"
-sudo_path npm install ep_align	# Add Left/Center/Right/Justify to lines of text in a pad
-sudo_path npm install ep_author_hover >> $install_log 2>&1	# Framapad - Adds author names to span titles
-sudo_path npm install ep_automatic_logut >> $install_log 2>&1	# Automatically disconnects user after some period of time (Prevent server overload)
-sudo_path npm install ep_comments_page >> $install_log 2>&1	# Framapad - Adds comments on sidebar and link it to the text.
-sudo_path npm install ep_countable >> $install_log 2>&1	# Framapad - Displays paragraphs, sentences, words and characters counts.
-sudo_path npm install ep_delete_empty_pads >> $install_log 2>&1	# Framapad - Delete pads which were never edited
-sudo_path npm install ep_font_color >> $install_log 2>&1	# Framapad - Apply colors to fonts
-sudo_path npm install ep_headings2 >> $install_log 2>&1	# Framapad - Adds heading support to Etherpad Lite.
-sudo_path npm install ep_markdown >> $install_log 2>&1	# Framapad - Edit and Export as Markdown in Etherpad
-sudo_path npm install ep_mypads >> $install_log 2>&1	# Framapad - Groups and private pads for etherpad
-sudo_path npm install ep_page_view >> $install_log 2>&1	# Framapad - Add support to do 'page view', with a toggle on/off option in Settings, also Page Breaks with Control Enter
-sudo_path npm install ep_spellcheck >> $install_log 2>&1	# Framapad - Add support to do 'Spell checking'
-sudo_path npm install ep_subscript_and_superscript >> $install_log 2>&1	# Framapad - Add support for Subscript and Superscript
-sudo_path npm install ep_table_of_contents >> $install_log 2>&1	# Framapad - View a table of contents for your pad
-sudo_path npm install ep_user_font_size >> $install_log 2>&1	# Framapad - User Pad Contents font size can be set in settings, this does not effect other peoples views
-sudo chown -R $app: $final_path/node_modules
+npm install ep_align	# Add Left/Center/Right/Justify to lines of text in a pad
+npm install ep_author_hover >> $install_log 2>&1	# Framapad - Adds author names to span titles
+npm install ep_automatic_logut >> $install_log 2>&1	# Automatically disconnects user after some period of time (Prevent server overload)
+npm install ep_comments_page >> $install_log 2>&1	# Framapad - Adds comments on sidebar and link it to the text.
+npm install ep_countable >> $install_log 2>&1	# Framapad - Displays paragraphs, sentences, words and characters counts.
+npm install ep_delete_empty_pads >> $install_log 2>&1	# Framapad - Delete pads which were never edited
+npm install ep_font_color >> $install_log 2>&1	# Framapad - Apply colors to fonts
+npm install ep_headings2 >> $install_log 2>&1	# Framapad - Adds heading support to Etherpad Lite.
+npm install ep_markdown >> $install_log 2>&1	# Framapad - Edit and Export as Markdown in Etherpad
+npm install ep_mypads >> $install_log 2>&1	# Framapad - Groups and private pads for etherpad
+npm install ep_page_view >> $install_log 2>&1	# Framapad - Add support to do 'page view', with a toggle on/off option in Settings, also Page Breaks with Control Enter
+npm install ep_spellcheck >> $install_log 2>&1	# Framapad - Add support to do 'Spell checking'
+npm install ep_subscript_and_superscript >> $install_log 2>&1	# Framapad - Add support for Subscript and Superscript
+npm install ep_table_of_contents >> $install_log 2>&1	# Framapad - View a table of contents for your pad
+npm install ep_user_font_size >> $install_log 2>&1	# Framapad - User Pad Contents font size can be set in settings, this does not effect other peoples views
+chown -R $app: $final_path/node_modules
 
 #=================================================
 # SOME HACKS
@@ -231,7 +237,7 @@ ynh_replace_string "^ *\"FOOTER\": .*2.0" "& | <a href='../admin'>Etherpad admin
 ynh_replace_string "^ *\"FOOTER\": .*2.0" "& | <a href='../admin'>Etherpad admin</a>" $final_path/node_modules/ep_mypads/static/l10n/fr.json
 
 mod_line=$(grep -nA5 "index.createOpenPad" $final_path/src/templates/index.html | grep "</div>" | cut -d '-' -f 1)	# Recherche le /div situé sous le champs d'ouverture de pad.
-sudo sed -i "$mod_line s@div>@&\n\t<center><br><font size="5"><a href="./mypads">Mypads</a></font></center>@" $final_path/src/templates/index.html	# Pour ajouter un lien vers le plugin mypads depuis la page d'Etherpad.
+sed -i "$mod_line s@div>@&\n\t<center><br><font size="5"><a href="./mypads">Mypads</a></font></center>@" $final_path/src/templates/index.html	# Pour ajouter un lien vers le plugin mypads depuis la page d'Etherpad.
 
 #=================================================
 # START ETHERPAD IN BACKGROUND
@@ -241,7 +247,7 @@ WARNING echo "Démarrage d'etherpad"
 tempfile="$(mktemp)"
 tail -f -n1 /var/log/$app/etherpad.log > "$tempfile" &	# Suit le démarrage dans le log
 PID_TAIL=$!	# Récupère le PID de la commande tail, qui est passée en arrière plan.
-sudo systemctl start $app	# Démarre etherpad. Le démarrage est fait le plus tôt possible, car il est très long...
+systemctl start $app	# Démarre etherpad. Le démarrage est fait le plus tôt possible, car il est très long...
 
 #=================================================
 # SETUP SSOWAT
@@ -257,7 +263,7 @@ fi
 # RELOAD NGINX
 #=================================================
 
-sudo systemctl reload nginx
+systemctl reload nginx
 
 #=================================================
 # CHECK ETHERPAD STARTING
@@ -272,7 +278,7 @@ do	# La boucle attend le démarrage d'etherpad. Ou 2 minutes. Cette boucle évit
 		ynh_replace_string "__LANGUAGE__" "$language" "$script_dir/../conf/lang_mypads.sql"
 		mysql -u $db_name -p$db_pwd $db_name < "$script_dir/../conf/lang_mypads.sql"
 		echo ""
-		sudo systemctl restart $app
+		systemctl restart $app
 		cat /dev/null > "$tempfile"	# Purge le log de suivi du démarrage.
 		lang_OK=1
 		i=1;
