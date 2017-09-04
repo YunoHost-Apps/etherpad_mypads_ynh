@@ -1,0 +1,10 @@
+#!/bin/bash
+
+# Dependencies for abiword
+abiword_app_depencencies="abiword"
+
+# Dependencies for libre office
+libreoffice_app_dependencies="unoconv libreoffice-writer"
+
+# Version of nodejs
+nodejs_version=4

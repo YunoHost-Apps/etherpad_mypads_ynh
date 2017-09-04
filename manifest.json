@@ -2,9 +2,6 @@
 	"name": "Etherpad Mypads",
 	"id": "etherpad_mypads",
 	"packaging_format": 1,
-	"requirements": {
-		"yunohost": ">= 2.4"
-	},
 	"description": {
 		"en": "Framapad clone, a online editor providing collaborative editing in real-time.",
 		"fr": "Clone de Framapad, un éditeur en ligne fournissant l'édition collaborative en temps réel."
@@ -15,6 +12,9 @@
 	"maintainer": {
 		"name": "Maniack Crudelis",
 		"email": "maniackc_dev@crudelis.fr"
+	},
+	"requirements": {
+        "yunohost": ">= 2.7.2"
 	},
 	"multi_instance": true,
 	"services": [
