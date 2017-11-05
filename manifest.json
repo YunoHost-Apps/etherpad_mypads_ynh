@@ -14,7 +14,7 @@
 		"email": "maniackc_dev@crudelis.fr"
 	},
 	"requirements": {
-        "yunohost": ">= 2.7.2"
+		"yunohost": ">= 2.7.2"
 	},
 	"multi_instance": true,
 	"services": [
@@ -31,6 +31,20 @@
 					"fr": "Choisissez un domaine dédié pour Etherpad Mypads."
 				},
 				"example": "sub.domain.org"
+			},
+			{
+				"name": "path",
+				"type": "path",
+				"ask": {
+					"en": "Choose a path for Etherpad",
+					"fr": "Choisissez un chemin pour Etherpad"
+				},
+				"help": {
+					"en": "If you choose to install mypads plugin, etherpad has to be on /",
+					"fr": "Si vous choisissez d'installer le plugin mypads, etherpad doit être sur /"
+				},
+				"example": "/",
+				"default": "/"
 			},
 			{
 				"name": "admin",
@@ -68,7 +82,7 @@
 				},
 				"default": true
 			},
-            {
+			{
 				"name": "export",
 				"ask": {
 					"en": "Use abiword (~260Mo) or libreoffice (~400Mo) (more stable) to expand export possibilities (pdf, doc) ?",
@@ -76,6 +90,18 @@
 				},
 				"choices" : ["none", "abiword", "libreoffice"],
 				"default" : "none"
+			},
+			{
+				"name": "mypads",
+				"type": "boolean",
+				"ask": {
+					"en": "Do you want to install mypads plugin ?",
+					"fr": "Voulez-vous installer le plugin mypads ?"
+				},
+				"help": {
+					"en": "<a href=https://git.framasoft.org/framasoft/ep_mypads target=_blank>mypads plugin</a>"
+				},
+				"default": true
 			}
 		]
 	}

@@ -18,6 +18,7 @@ source _variables
 app=$YNH_APP_INSTANCE_NAME
 
 domain=$(ynh_app_setting_get $app domain)
+path_url=$(ynh_app_setting_get $app path)
 admin=$(ynh_app_setting_get $app admin)
 language=$(ynh_app_setting_get $app language)
 is_public=$(ynh_app_setting_get $app is_public)
@@ -25,6 +26,7 @@ final_path=$(ynh_app_setting_get $app final_path)
 port=$(ynh_app_setting_get $app port)
 export=$(ynh_app_setting_get $app export)
 db_name=$(ynh_app_setting_get $app db_name)
+mypads=$(ynh_app_setting_get $app mypads)
 
 #=================================================
 # FIX OLD THINGS
@@ -61,6 +63,16 @@ if [ -z $export ]; then	# Si export n'est pas renseigné dans app setting
 	ynh_app_setting_set $app export $export
 fi
 
+if [ -z $mypads ]; then	# Si mypads n'est pas renseigné dans app setting
+	mypads=1
+	ynh_app_setting_set $app mypads $mypads
+fi
+
+if [ -z $path_url ]; then	# Si path_url n'est pas renseigné dans app setting
+	path_url="/"
+	ynh_app_setting_set $app path $path_url
+fi
+
 #=================================================
 # BACKUP BEFORE UPGRADE THEN ACTIVE TRAP
 #=================================================
@@ -92,6 +104,11 @@ ynh_setup_source "$final_path"	# Télécharge la source, décompresse et copie d
 # NGINX CONFIGURATION
 #=================================================
 
+if [ "$path_url" != "/" ]
+then
+	ynh_replace_string "^#sub_path_only" "" "../conf/nginx.conf"
+fi
+ynh_replace_string "__PATH__/" "${path_url%/}/" "../conf/nginx.conf"
 ynh_add_nginx_config
 
 #=================================================
@@ -185,8 +202,11 @@ ynh_add_systemd_config
 # SOME HACKS
 #=================================================
 
-mod_line=$(grep -nA5 "index.createOpenPad" $final_path/src/templates/index.html | grep "</div>" | cut -d '-' -f 1)	# Recherche le /div situé sous le champs d'ouverture de pad.
-sed -i "$mod_line s@div>@&\n\t<center><br><font size="5"><a href="./mypads">Mypads</a></font></center>@" $final_path/src/templates/index.html	# Pour ajouter un lien vers le plugin mypads depuis la page d'Etherpad.
+if [ $mypads -eq 1 ]
+then
+	mod_line=$(grep -nA5 "index.createOpenPad" $final_path/src/templates/index.html | grep "</div>" | cut -d '-' -f 1)	# Recherche le /div situé sous le champs d'ouverture de pad.
+	sed -i "$mod_line s@div>@&\n\t<center><br><font size="5"><a href="./mypads">Mypads</a></font></center>@" $final_path/src/templates/index.html	# Pour ajouter un lien vers le plugin mypads depuis la page d'Etherpad.
+fi
 
 #=================================================
 # START ETHERPAD IN BACKGROUND
