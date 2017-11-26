@@ -80,6 +80,13 @@ fi
 # Backup the current version of the app
 ynh_backup_before_upgrade
 ynh_clean_setup () {
+	# Nettoyage des résidus d'installation non pris en charge par le script remove.
+	if test -n "$PID_TAIL"
+	then
+		SUPPRESS_WARNING kill -s 15 $PID_TAIL	# Arrête l'exécution de tail.
+		ynh_secure_remove "$tempfile"
+	fi
+
 	# restore it if the upgrade fails
 	ynh_restore_upgradebackup
 }
@@ -240,8 +247,9 @@ systemctl reload nginx
 # CHECK ETHERPAD STARTING
 #=================================================
 
-for i in `seq 1 60`
-do	# La boucle attend le démarrage d'etherpad. Ou 1 minute. Cette boucle évite simplement un 502 au début, car le démarrage est long...
+
+for i in `seq 1 120`
+do	# La boucle attend le démarrage d'etherpad. Ou 2 minutes. Cette boucle évite simplement un 502 au début, car le démarrage est long...
 	if grep -q "You can access your Etherpad instance at" "$tempfile"; then
 		WARNING echo "Le service $app a démarré correctement."
 		break	# Si le log annonce le démarrage d'etherpad, sort de la boucle.
