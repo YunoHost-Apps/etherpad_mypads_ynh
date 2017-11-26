@@ -3,6 +3,8 @@
 [![Integration level](https://dash.yunohost.org/integration/etherpad_mypads.svg)](https://ci-apps.yunohost.org/jenkins/job/etherpad_mypads%20%28Community%29/lastBuild/consoleFull)  
 [![Install Etherpad with YunoHost](https://install-app.yunohost.org/install-with-yunohost.png)](https://install-app.yunohost.org/?app=etherpad_mypads)
 
+*[Lire ce readme en français.](./README_fr.md)*
+
 > *This package allow you to install etherpad quickly and simply on a YunoHost server.  
 If you don't have YunoHost, please see [here](https://yunohost.org/#/install) to know how to install and enjoy it.*
 
@@ -18,8 +20,8 @@ This package will install the same plugins than [Framapad](https://framapad.org/
 
 ## Configuration
 
-You can access to 2 different admin panels, for etherpad by accessing `domain.tld/admin` and for mypads by `domain.tld/mypads/?/admin`  
-Or, you can find a config file for etherpad at this path `/var/www/etherpad_mypads/settings.json`
+You can access to 2 different admin panels, for etherpad by accessing `domain.tld/admin` and for mypads by `domain.tld/mypads/?/admin`.  
+Or, you can find a config file for etherpad at this path `/var/www/etherpad_mypads/settings.json`.
 
 ## Documentation
 
