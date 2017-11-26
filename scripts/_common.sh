@@ -78,6 +78,19 @@ node_version_path="/opt/node_n/n/versions/node"
 # N_PREFIX est le dossier de n, il doit être chargé dans les variables d'environnement pour n.
 export N_PREFIX="$n_install_dir"
 
+ynh_install_n () {
+	echo "Installation of N - Node.js version management" >&2
+	# Build an app.src for n
+	mkdir -p "../conf"
+	echo "SOURCE_URL=https://github.com/tj/n/archive/v2.1.7.tar.gz
+SOURCE_SUM=2ba3c9d4dd3c7e38885b37e02337906a1ee91febe6d5c9159d89a9050f2eea8f" > "../conf/n.src"
+	# Download and extract n
+	ynh_setup_source "$n_install_dir/git" n
+	# Install n
+	(cd "$n_install_dir/git"
+	PREFIX=$N_PREFIX make install 2>&1)
+}
+
 ynh_use_nodejs () {
 	nodejs_version=$(ynh_app_setting_get $app nodejs_version)
 
@@ -113,9 +126,10 @@ ynh_install_nodejs () {
 	test -x /usr/bin/npm && mv /usr/bin/npm /usr/bin/npm_n
 
 	# If n is not previously setup, install it
-	n --version > /dev/null 2>&1 || \
-	( echo "Installation of N - Node.js version management" >&2; \
-	curl -sL $n_install_script | N_PREFIX=$N_PREFIX bash -s -- -y - 2>&1 )
+	if ! test n --version > /dev/null 2>&1
+	then
+		ynh_install_n
+	fi
 
 	# Modify the default N_PREFIX in n script
 	ynh_replace_string "^N_PREFIX=\${N_PREFIX-.*}$" "N_PREFIX=\${N_PREFIX-$N_PREFIX}" "$n_install_dir/bin/n"
@@ -218,4 +232,20 @@ $n_install_dir/node_update.sh >> $n_install_dir/node_update.log
 EOF
 
 	chmod +x "/etc/cron.daily/node_update"
+}
+
+
+#=================================================
+#============= FUTURE YUNOHOST HELPER ============
+#=================================================
+
+# Delete a file checksum from the app settings
+#
+# $app should be defined when calling this helper
+#
+# usage: ynh_remove_file_checksum file
+# | arg: file - The file for which the checksum will be deleted
+ynh_delete_file_checksum () {
+	local checksum_setting_name=checksum_${1//[\/ ]/_}	# Replace all '/' and ' ' by '_'
+	ynh_app_setting_delete $app $checksum_setting_name
 }
