@@ -58,27 +58,19 @@ then
 fi
 
 #=================================================
-# BACKUP BEFORE UPGRADE THEN ACTIVE TRAP
+# MANAGE FAILURE OF THE SCRIPT
 #=================================================
 
-if [ $change_domain -eq 0 ]
-then
-	# Backup the current version of the app
-	ynh_backup_before_upgrade
-	ynh_clean_setup () {
-		# Nettoyage des résidus d'installation non pris en charge par le script remove.
-		if test -n "$PID_TAIL"
-		then
-			SUPPRESS_WARNING kill -s 15 $PID_TAIL	# Arrête l'exécution de tail.
-			ynh_secure_remove "$tempfile"
-		fi
-
-		# restore it if the upgrade fails
-		ynh_restore_upgradebackup
-	}
-	# Exit if an error occurs during the execution of the script
-	ynh_abort_if_errors
-fi
+ynh_clean_setup () {
+# Nettoyage des résidus d'installation non pris en charge par le script remove.
+	if test -n "$PID_TAIL"
+	then
+		SUPPRESS_WARNING kill -s 15 $PID_TAIL	# Arrête l'exécution de tail.
+		ynh_secure_remove "$tempfile"
+	fi
+}
+# Exit if an error occurs during the execution of the script
+ynh_abort_if_errors
 
 #=================================================
 # STANDARD MODIFICATIONS
