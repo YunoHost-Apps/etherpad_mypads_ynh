@@ -10,6 +10,7 @@ source _common.sh
 source /usr/share/yunohost/helpers
 # Load common variables for all scripts.
 source _variables
+source _sed
 
 #=================================================
 # MANAGE FAILURE OF THE SCRIPT
@@ -17,12 +18,7 @@ source _variables
 
 ynh_clean_setup () {
 # Nettoyage des résidus d'installation non pris en charge par le script remove.
-	if test -n "$PID_TAIL"
-	then
-		SUPPRESS_WARNING kill -s 15 $PID_TAIL	# Arrête l'exécution de tail.
-		ynh_secure_remove "$tempfile"
-	fi
-	echo ""
+	ynh_clean_check_starting
 }
 ynh_abort_if_errors	# Active trap pour arrêter le script si une erreur est détectée.
 
@@ -171,7 +167,7 @@ ynh_replace_string "__PORT__" "$port" "$final_path/settings.json"
 ynh_replace_string "__DB_USER__" "$db_name" "$final_path/credentials.json"
 ynh_replace_string "__DB_PWD__" "$db_pwd" "$final_path/credentials.json"
 ynh_replace_string "__ADMIN__" "$admin" "$final_path/credentials.json"
-ynh_replace_string "__PASSWD__" "$password" "$final_path/credentials.json"
+ynh_replace_password_string "__PASSWD__" "$password" "$final_path/credentials.json"
 if [ "$export" = "abiword" ]
 then
 	abiword_path=`which abiword`	# Récupère l'emplacement de l'exécutable de abiword
@@ -252,16 +248,6 @@ then
 fi
 
 #=================================================
-# START ETHERPAD IN BACKGROUND
-#=================================================
-
-WARNING echo "Démarrage d'etherpad"
-tempfile="$(mktemp)"
-tail -f -n1 /var/log/$app/etherpad.log > "$tempfile" &	# Suit le démarrage dans le log
-PID_TAIL=$!	# Récupère le PID de la commande tail, qui est passée en arrière plan.
-systemctl start $app	# Démarre etherpad. Le démarrage est fait le plus tôt possible, car il est très long...
-
-#=================================================
 # SETUP SSOWAT
 #=================================================
 
@@ -281,34 +267,43 @@ systemctl reload nginx
 # CHECK ETHERPAD STARTING
 #=================================================
 
+# Wait for etherpad fully started
+ynh_check_starting "You can access your Etherpad instance at" "/var/log/$app/etherpad.log" "120"
+
 if [ $mypads -eq 1 ]
 then
-	lang_OK=0
-else
-	lang_OK=1
+	ynh_replace_string "__LANGUAGE__" "$language" "$script_dir/../conf/lang_mypads.sql"
+	mysql -u $db_name -p$db_pwd $db_name < "$script_dir/../conf/lang_mypads.sql"
+
+	# Wait for etherpad fully started
+	ynh_check_starting "You can access your Etherpad instance at" "/var/log/$app/etherpad.log" "120"
 fi
-for i in `seq 1 120`
-do	# La boucle attend le démarrage d'etherpad. Ou 2 minutes. Cette boucle évite simplement un 502 au début, car le démarrage est long...
-	if [ $mypads -eq 1 ]
-	then
-		if grep -q "You can access your Etherpad instance at" "$tempfile" && [ "$lang_OK" -eq 0 ] ; then
-			# Si le log annonce une première fois le démarrage d'etherpad, applique la langue de mypads et redémarre le service.
-			WARNING echo "Le service $app a démarré correctement."
-			ynh_replace_string "__LANGUAGE__" "$language" "$script_dir/../conf/lang_mypads.sql"
-			mysql -u $db_name -p$db_pwd $db_name < "$script_dir/../conf/lang_mypads.sql"
-			echo ""
-			systemctl restart $app
-			cat /dev/null > "$tempfile"	# Purge le log de suivi du démarrage.
-			lang_OK=1
-			i=1;
-		fi
-	fi
-	if grep -q "You can access your Etherpad instance at" "$tempfile" && [ "$lang_OK" -eq 1 ]; then
-		WARNING echo "Le service $app a démarré correctement."
-		break	# Si le log annonce une deuxième fois le démarrage d'etherpad, sort de la boucle.
-	fi
-	WARNING echo -n "."
-	sleep 1
-done
-SUPPRESS_WARNING kill -s 15 $PID_TAIL	# Arrête l'exécution de tail.
-ynh_secure_remove "$tempfile"
+
+#=================================================
+# SEND A README FOR THE ADMIN
+#=================================================
+
+if [ $mypads -eq 1 ]
+then
+	Informations1="You can access to 2 different admin panels, for etherpad by accessing https://$domain${path_url%/}/admin and for mypads by https://$domain${path_url%/}/mypads/?/admin."
+
+	Informations2="
+Because there's no ldap support with mypads plugin, no user is created at the installation.
+You have to connect to the admin panel to create the first users.
+"
+else
+	Informations1="You can access to the admin panel, by accessing https://$domain${path_url%/}/admin."
+
+	Informations2=""
+fi
+
+message="$Informations1
+Or, you can find a config file for etherpad at this path /var/www/etherpad_mypads/settings.json.
+
+Your credentials for the admin panel are:
+- login		: $admin
+- password	: $password
+$Informations2
+If you facing an issue or want to improve this app, please open a new issue in this project: https://github.com/YunoHost-Apps/etherpad_mypads_ynh"
+
+ynh_send_readme_to_admin "$message" "$admin"

@@ -20,6 +20,10 @@ source ../settings/scripts/_variables
 # MANAGE SCRIPT FAILURE
 #=================================================
 
+ynh_clean_setup () {
+# Nettoyage des résidus d'installation non pris en charge par le script remove.
+	ynh_clean_check_starting
+}
 # Exit if an error occurs during the execution of the script
 ynh_abort_if_errors
 
@@ -30,16 +34,19 @@ ynh_abort_if_errors
 app=$YNH_APP_INSTANCE_NAME
 
 domain=$(ynh_app_setting_get $app domain)
-path_url=$(ynh_app_setting_get $app path_url)
+path_url=$(ynh_app_setting_get $app path)
 final_path=$(ynh_app_setting_get $app final_path)
 db_name=$(ynh_app_setting_get $app db_name)
 export=$(ynh_app_setting_get $app export)
+mypads=$(ynh_app_setting_get $app mypads)
+admin=$(ynh_app_setting_get $app admin)
+password=$(ynh_app_setting_get $app password)
 
 #=================================================
 # CHECK IF THE APP CAN BE RESTORED
 #=================================================
 
-yunohost app checkurl "${domain}${path_url}" -a "$app" \
+ynh_webpath_available $domain $path_url \
 	|| ynh_die "Path not available: ${domain}${path_url}"
 test ! -d $final_path \
 	|| ynh_die "There is already a directory: $final_path "
@@ -127,16 +134,6 @@ ynh_restore_file "/etc/systemd/system/$app.service"
 systemctl enable $app.service
 
 #=================================================
-# START ETHERPAD IN BACKGROUND
-#=================================================
-
-echo "Démarrage d'etherpad" >&2
-tempfile="$(mktemp)"
-tail -f -n1 /var/log/$app/etherpad.log > "$tempfile" &	# Suit le démarrage dans le log
-PID_TAIL=$!	# Récupère le PID de la commande tail, qui est passée en arrière plan.
-systemctl start $app	# Démarre etherpad. Le démarrage est fait le plus tôt possible, car il est très long...
-
-#=================================================
 # RELOAD NGINX
 #=================================================
 
@@ -146,16 +143,34 @@ systemctl reload nginx
 # CHECK ETHERPAD STARTING
 #=================================================
 
-# Surveille le démarrage du service.
-for i in `seq 1 60`
-do	# La boucle attend le démarrage d'etherpad. Ou 1 minute. Cette boucle évite simplement un 502 au début, car le démarrage est long...
-	if grep -q "You can access your Etherpad instance at" "$tempfile"; then
-		echo "Le service $app a démarré correctement." >&2
-		break	# Si le log annonce le démarrage d'etherpad, sort de la boucle.
-	fi
-	echo -n "." >&2
-	sleep 1
-done
-echo ""
-kill -s 15 $PID_TAIL > /dev/null	# Arrête l'exécution de tail.
-ynh_secure_remove "$tempfile"
+# Wait for etherpad fully started
+ynh_check_starting "You can access your Etherpad instance at" "/var/log/$app/etherpad.log" "120"
+
+#=================================================
+# SEND A README FOR THE ADMIN
+#=================================================
+
+if [ $mypads -eq 1 ]
+then
+	Informations1="You can access to 2 different admin panels, for etherpad by accessing https://$domain${path_url%/}/admin and for mypads by https://$domain${path_url%/}/mypads/?/admin."
+
+	Informations2="
+Because there's no ldap support with mypads plugin, no user is created at the installation.
+You have to connect to the admin panel to create the first users.
+"
+else
+	Informations1="You can access to the admin panel, by accessing https://$domain${path_url%/}/admin."
+
+	Informations2=""
+fi
+
+message="$Informations1
+Or, you can find a config file for etherpad at this path /var/www/etherpad_mypads/settings.json.
+
+Your credentials for the admin panel are:
+- login		: $admin
+- password	: $password
+$Informations2
+If you facing an issue or want to improve this app, please open a new issue in this project: https://github.com/YunoHost-Apps/etherpad_mypads_ynh"
+
+ynh_send_readme_to_admin "$message" "$admin"
