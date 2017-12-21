@@ -40,7 +40,7 @@ db_name=$(ynh_app_setting_get $app db_name)
 export=$(ynh_app_setting_get $app export)
 mypads=$(ynh_app_setting_get $app mypads)
 admin=$(ynh_app_setting_get $app admin)
-password=$(ynh_app_setting_get $app password)
+ynh_print_OFF; password=$(ynh_app_setting_get $app password); ynh_print_ON
 
 #=================================================
 # CHECK IF THE APP CAN BE RESTORED
@@ -164,6 +164,7 @@ else
 	Informations2=""
 fi
 
+ynh_print_OFF
 message="$Informations1
 Or, you can find a config file for etherpad at this path /var/www/etherpad_mypads/settings.json.
 
@@ -174,3 +175,4 @@ $Informations2
 If you facing an issue or want to improve this app, please open a new issue in this project: https://github.com/YunoHost-Apps/etherpad_mypads_ynh"
 
 ynh_send_readme_to_admin "$message" "$admin"
+ynh_print_ON
