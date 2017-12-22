@@ -8,6 +8,7 @@
 
 source _common.sh
 source /usr/share/yunohost/helpers
+source _sed
 
 #=================================================
 # RETRIEVE ARGUMENTS
@@ -58,27 +59,15 @@ then
 fi
 
 #=================================================
-# BACKUP BEFORE UPGRADE THEN ACTIVE TRAP
+# MANAGE FAILURE OF THE SCRIPT
 #=================================================
 
-if [ $change_domain -eq 0 ]
-then
-	# Backup the current version of the app
-	ynh_backup_before_upgrade
-	ynh_clean_setup () {
-		# Nettoyage des résidus d'installation non pris en charge par le script remove.
-		if test -n "$PID_TAIL"
-		then
-			SUPPRESS_WARNING kill -s 15 $PID_TAIL	# Arrête l'exécution de tail.
-			ynh_secure_remove "$tempfile"
-		fi
-
-		# restore it if the upgrade fails
-		ynh_restore_upgradebackup
-	}
-	# Exit if an error occurs during the execution of the script
-	ynh_abort_if_errors
-fi
+ynh_clean_setup () {
+# Nettoyage des résidus d'installation non pris en charge par le script remove.
+	ynh_clean_check_starting
+}
+# Exit if an error occurs during the execution of the script
+ynh_abort_if_errors
 
 #=================================================
 # STANDARD MODIFICATIONS
@@ -139,29 +128,8 @@ fi
 systemctl reload nginx
 
 #=================================================
-# START ETHERPAD IN BACKGROUND
-#=================================================
-
-# Démarre etherpad
-WARNING echo "Redémarrage d'etherpad"
-tempfile="$(mktemp)"
-tail -f -n1 /var/log/$app/etherpad.log > "$tempfile" &	# Suit le démarrage dans le log
-PID_TAIL=$!	# Récupère le PID de la commande tail, qui est passée en arrière plan.
-systemctl start $app	# Redémarre etherpad. Le démarrage est fait le plus tôt possible, car il est très long...
-
-#=================================================
 # CHECK ETHERPAD STARTING
 #=================================================
 
-for i in `seq 1 120`
-do	# La boucle attend le démarrage d'etherpad. Ou 2 minutes. Cette boucle évite simplement un 502 au début, car le démarrage est long...
-	if grep -q "You can access your Etherpad instance at" "$tempfile"; then
-		WARNING echo "Le service $app a démarré correctement."
-		break	# Si le log annonce le démarrage d'etherpad, sort de la boucle.
-	fi
-	WARNING echo -n "."
-	sleep 1
-done
-echo ""
-QUIET kill -s 15 $PID_TAIL	# Arrête l'exécution de tail.
-ynh_secure_remove "$tempfile"
+# Wait for etherpad fully started
+ynh_check_starting "You can access your Etherpad instance at" "/var/log/$app/etherpad.log" "120"

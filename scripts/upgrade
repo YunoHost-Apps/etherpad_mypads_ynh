@@ -10,6 +10,7 @@ source _common.sh
 source /usr/share/yunohost/helpers
 # Load common variables for all scripts.
 source _variables
+source _sed
 
 #=================================================
 # LOAD SETTINGS
@@ -27,6 +28,12 @@ port=$(ynh_app_setting_get $app port)
 export=$(ynh_app_setting_get $app export)
 db_name=$(ynh_app_setting_get $app db_name)
 mypads=$(ynh_app_setting_get $app mypads)
+
+#=================================================
+# CHECK VERSION
+#=================================================
+
+ynh_abort_if_up_to_date
 
 #=================================================
 # FIX OLD THINGS
@@ -81,11 +88,7 @@ fi
 ynh_backup_before_upgrade
 ynh_clean_setup () {
 	# Nettoyage des résidus d'installation non pris en charge par le script remove.
-	if test -n "$PID_TAIL"
-	then
-		SUPPRESS_WARNING kill -s 15 $PID_TAIL	# Arrête l'exécution de tail.
-		ynh_secure_remove "$tempfile"
-	fi
+	ynh_clean_check_starting
 
 	# restore it if the upgrade fails
 	ynh_restore_upgradebackup
@@ -152,10 +155,10 @@ cp ../conf/credentials.json "$final_path/credentials.json"
 ynh_replace_string "__PORT__" "$port" "$final_path/settings.json"
 ynh_replace_string "__DB_USER__" "$app" "$final_path/credentials.json"
 db_pwd=$(ynh_app_setting_get $app mysqlpwd)
-password=$(ynh_app_setting_get $app password)
+ynh_print_OFF; password=$(ynh_app_setting_get $app password); ynh_print_ON
 ynh_replace_string "__DB_PWD__" "$db_pwd" "$final_path/credentials.json"
 ynh_replace_string "__ADMIN__" "$admin" "$final_path/credentials.json"
-ynh_replace_string "__PASSWD__" "$password" "$final_path/credentials.json"
+ynh_print_OFF; ynh_replace_password_string "__PASSWD__" "$password" "$final_path/credentials.json"; ynh_print_ON
 if [ "$export" = "abiword" ]
 then
 	abiword_path=`which abiword`	# Récupère l'emplacement de l'exécutable de abiword
@@ -192,10 +195,7 @@ chown $app -R /var/log/$app/etherpad.log
 # SETUP LOGROTATE
 #=================================================
 
-# Remove logrotate config
-ynh_remove_logrotate
-# And replace it
-ynh_use_logrotate
+ynh_use_logrotate --non-append
 
 #=================================================
 # SETUP SYSTEMD
@@ -214,17 +214,6 @@ then
 	mod_line=$(grep -nA5 "index.createOpenPad" $final_path/src/templates/index.html | grep "</div>" | cut -d '-' -f 1)	# Recherche le /div situé sous le champs d'ouverture de pad.
 	sed -i "$mod_line s@div>@&\n\t<center><br><font size="5"><a href="./mypads">Mypads</a></font></center>@" $final_path/src/templates/index.html	# Pour ajouter un lien vers le plugin mypads depuis la page d'Etherpad.
 fi
-
-#=================================================
-# START ETHERPAD IN BACKGROUND
-#=================================================
-
-# Démarre etherpad
-WARNING echo "Redémarrage d'etherpad"
-tempfile="$(mktemp)"
-tail -f -n1 /var/log/$app/etherpad.log > "$tempfile" &	# Suit le démarrage dans le log
-PID_TAIL=$!	# Récupère le PID de la commande tail, qui est passée en arrière plan.
-systemctl start $app	# Redémarre etherpad. Le démarrage est fait le plus tôt possible, car il est très long...
 
 #=================================================
 # SETUP SSOWAT
@@ -247,16 +236,5 @@ systemctl reload nginx
 # CHECK ETHERPAD STARTING
 #=================================================
 
-
-for i in `seq 1 120`
-do	# La boucle attend le démarrage d'etherpad. Ou 2 minutes. Cette boucle évite simplement un 502 au début, car le démarrage est long...
-	if grep -q "You can access your Etherpad instance at" "$tempfile"; then
-		WARNING echo "Le service $app a démarré correctement."
-		break	# Si le log annonce le démarrage d'etherpad, sort de la boucle.
-	fi
-	WARNING echo -n "."
-	sleep 1
-done
-echo ""
-QUIET kill -s 15 $PID_TAIL	# Arrête l'exécution de tail.
-ynh_secure_remove "$tempfile"
+# Wait for etherpad fully started
+ynh_check_starting "You can access your Etherpad instance at" "/var/log/$app/etherpad.log" "120"
