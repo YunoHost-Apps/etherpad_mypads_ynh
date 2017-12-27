@@ -33,6 +33,9 @@ mypads=$(ynh_app_setting_get $app mypads)
 # CHECK VERSION
 #=================================================
 
+# Wait for etherpad fully started
+ynh_check_starting "You can access your Etherpad instance at" "/var/log/$app/etherpad.log" "120"
+
 ynh_abort_if_up_to_date
 
 #=================================================
