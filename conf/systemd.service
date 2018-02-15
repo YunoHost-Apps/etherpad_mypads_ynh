@@ -1,6 +1,6 @@
 [Unit]
 Description=Etherpad-lite, the collaborative editor.
-After=network.target
+After=syslog.target network.target
 
 [Service]
 Type=simple
@@ -9,6 +9,7 @@ Group=__APP__
 ExecStartPre=__NODEJS__
 Environment="PATH=__ENV_PATH__"
 ExecStart=__FINALPATH__/bin/safeRun.sh /var/log/__APP__/etherpad.log
+Restart=always
 
 [Install]
 WantedBy=multi-user.target

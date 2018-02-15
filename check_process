@@ -36,7 +36,7 @@
 	; Checks
 		setup_root=1
 		upgrade=1
-		upgrade=1	from_commit=b86b9d09ed97bf04b7e1afad72376d8d695b418b
+		upgrade=1	from_commit=8bf300413ec3adcb416d168d2e9e98975dd9405b
 		backup_restore=1
 ;; Test abiword
 	auto_remove=1
@@ -81,6 +81,6 @@
 Email=
 Notification=down
 ;;; Upgrade options
-	; commit=b86b9d09ed97bf04b7e1afad72376d8d695b418b
-		name=20 Jan 2017 b86b9d09ed97bf04b7e1afad72376d8d695b418b
-		manifest_arg=domain=DOMAIN&admin=USER&password=password&language=en&is_public=Yes&abiword=0&
+	; commit=8bf300413ec3adcb416d168d2e9e98975dd9405b
+		name= Fix nodejs & global update
+		manifest_arg=domain=DOMAIN&admin=USER&password=password&language=en&is_public=1&abiword=0&
