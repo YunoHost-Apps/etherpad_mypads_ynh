@@ -102,6 +102,19 @@
 					"en": "<a href=https://git.framasoft.org/framasoft/ep_mypads target=_blank>mypads plugin</a>"
 				},
 				"default": true
+			},
+			{
+				"name": "useldap",
+				"type": "boolean",
+				"ask": {
+					"en": "Do you want to use ldap with mypads ?",
+					"fr": "Voulez-vous utiliser ldap avec mypads ?"
+				},
+				"help": {
+					"en": "Using ldap won't let you add new user aside from YunoHost users.",
+					"fr": "Utiliser ldap ne vous permettra pas d'ajouter un nouvel utilisateur en dehors des utilisateurs de YunoHost."
+				},
+				"default": true
 			}
 		]
 	}

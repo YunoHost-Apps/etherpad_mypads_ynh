@@ -87,6 +87,30 @@
 		"ep_comments_page": {
 			"highlightSelectedText": false
 		},
+		// ep_mypads
+//noldap		"ep_mypads": {
+//noldap			"ldap": {
+//noldap				// Your LDAP URL
+//noldap				"url": "ldap://127.0.0.1",
+//noldap				// Where to search your users
+//noldap				"searchBase": "ou=users,dc=yunohost,dc=org",
+//noldap				// A LDAP filter ({{username}} is replaced by user's login)
+//noldap				"searchFilter": "(&(|(objectclass=posixAccount))(uid={{username}}))",
+//noldap				// LDAP properties mapping for MyPads
+//noldap				"properties": {
+//noldap					// Which LDAP property will be used as user's login?
+//noldap					"login": "uid",
+//noldap					// as user's email
+//noldap					"email": "mail",
+//noldap					// as user's firstname
+//noldap					"firstname": "givenName",
+//noldap					// as users's lastname
+//noldap					"lastname": "sn"
+//noldap				},
+//noldap				// Default langage for LDAP created users
+//noldap				"defaultLang": "__LANGUAGE__"
+//noldap			}
+//noldap		},
 
   /* Should we suppress errors from being visible in the default Pad Text? */
   "suppressErrorsInPadText" : false,

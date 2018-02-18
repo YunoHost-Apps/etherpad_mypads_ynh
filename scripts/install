@@ -10,7 +10,6 @@ source _common.sh
 source /usr/share/yunohost/helpers
 # Load common variables for all scripts.
 source _variables
-source _sed
 
 #=================================================
 # MANAGE FAILURE OF THE SCRIPT
@@ -34,6 +33,7 @@ language=$YNH_APP_ARG_LANGUAGE
 is_public=$YNH_APP_ARG_IS_PUBLIC
 export=$YNH_APP_ARG_EXPORT
 mypads=$YNH_APP_ARG_MYPADS
+useldap=$YNH_APP_ARG_USELDAP
 
 app=$YNH_APP_INSTANCE_NAME
 
@@ -76,6 +76,7 @@ ynh_print_OFF; ynh_app_setting_set $app password $password; ynh_print_ON
 ynh_app_setting_set $app language $language
 ynh_app_setting_set $app export $export
 ynh_app_setting_set $app mypads $mypads
+ynh_app_setting_set $app useldap $useldap
 
 #=================================================
 # STANDARD MODIFICATIONS
@@ -180,6 +181,13 @@ then
 	ynh_replace_string "\"soffice\" : null" "\"soffice\" : \"$soffice_path\"" "$final_path/settings.json"	# Renseigne l'emplacement de abiword dans la config de etherpad
 fi
 ynh_replace_string "__LANGUAGE__" "$language" "$final_path/settings.json"
+
+# Use ldap for mypads
+if [ $mypads -eq 1 ] && [ $useldap -eq 1 ]
+then
+	ynh_replace_string "//noldap" "" "$final_path/settings.json"
+fi
+
 ynh_store_file_checksum "$final_path/settings.json"	# Enregistre la somme de contrôle du fichier de config
 ynh_store_file_checksum "$final_path/credentials.json"	# Enregistre la somme de contrôle du fichier de config
 
