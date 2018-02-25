@@ -33,15 +33,6 @@ new_path=$(ynh_normalize_url_path $new_path)
 old_path=$(ynh_normalize_url_path $old_path)
 
 #=================================================
-# CHECK IF THE PATH CAN BE CHANGED
-#=================================================
-
-if [ "$new_path" != "/" ] && [ $mypads -eq 1 ]
-then
-	ynh_die "Mypads needs to be installed on the root of a domain or a subdomain."
-fi
-
-#=================================================
 # CHECK WHICH PARTS SHOULD BE CHANGED
 #=================================================
 

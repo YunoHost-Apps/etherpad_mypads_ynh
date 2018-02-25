@@ -39,12 +39,8 @@
 					"en": "Choose a path for Etherpad",
 					"fr": "Choisissez un chemin pour Etherpad"
 				},
-				"help": {
-					"en": "If you choose to install mypads plugin, etherpad has to be on /",
-					"fr": "Si vous choisissez d'installer le plugin mypads, etherpad doit être sur /"
-				},
-				"example": "/",
-				"default": "/"
+				"example": "/pad",
+				"default": "/pad"
 			},
 			{
 				"name": "admin",

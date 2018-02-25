@@ -40,8 +40,6 @@ Supported, **without LDAP nor SSO**.
 
 ## Limitations
 
-* If you ask to install the plugin mypads, you have to install in the root of a dedicated domain or a sub domain. Else, mypads will be inaccessible.
-
 ## Additionnal informations
 
 * This package will install the following plugins:
@@ -61,10 +59,6 @@ Supported, **without LDAP nor SSO**.
   * ep_subscript_and_superscript - *Add support for Subscript and Superscript*
   * ep_table_of_contents - *View a table of contents for your pad*
   * ep_user_font_size - *User Pad Contents font size can be set in settings, this does not effect other peoples views*
-
-* Because there's no ldap support with mypads plugin, no user is created at the installation.  
-You have to connect to the admin panel to create the first users.  
-Login and password are those you chose during the installation.
 
 ## Links
 

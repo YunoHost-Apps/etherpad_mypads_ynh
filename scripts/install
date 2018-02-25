@@ -48,11 +48,6 @@ then
 fi
 ynh_print_ON
 
-if [ "$path_url" != "/" ] && [ $mypads -eq 1 ]
-then
-	ynh_die "Mypads needs to be installed on the root of a domain or a subdomain."
-fi
-
 final_path=/var/www/$app
 test ! -e "$final_path" || ynh_die "This path already contains a folder"
 
@@ -253,7 +248,7 @@ then
 	ynh_replace_string "^ *\"FOOTER\": .*2.0" "& | <a href='../admin'>Etherpad admin</a>" $final_path/node_modules/ep_mypads/static/l10n/fr.json
 
 	mod_line=$(grep -nA5 "index.createOpenPad" $final_path/src/templates/index.html | grep "</div>" | cut -d '-' -f 1)	# Recherche le /div situé sous le champs d'ouverture de pad.
-	sed -i "$mod_line s@div>@&\n\t<center><br><font size="5"><a href="./mypads">Mypads</a></font></center>@" $final_path/src/templates/index.html	# Pour ajouter un lien vers le plugin mypads depuis la page d'Etherpad.
+	sed -i "$mod_line s@div>@&\n\t<center><br><font size="5"><a href="./mypads/">Mypads</a></font></center>@" $final_path/src/templates/index.html	# Pour ajouter un lien vers le plugin mypads depuis la page d'Etherpad.
 fi
 
 #=================================================
