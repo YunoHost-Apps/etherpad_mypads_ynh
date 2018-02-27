@@ -23,14 +23,6 @@ CHECK_SIZE () {	# Vérifie avant chaque backup que l'espace est suffisant
 }
 
 #=================================================
-# PACKAGE CHECK BYPASSING...
-#=================================================
-
-IS_PACKAGE_CHECK () {	# Détermine une exécution en conteneur (Non testé)
-	return $(uname -n | grep -c 'pchecker_lxc')
-}
-
-#=================================================
 # EXPERIMENTAL HELPERS
 #=================================================
 
@@ -212,15 +204,17 @@ EOF
 
 # Start or restart a service and follow its booting
 #
-# usage: ynh_check_starting "Line to match" [Log file] [Timeout]
+# usage: ynh_check_starting "Line to match" [Log file] [Timeout] [Service name]
 #
 # | arg: Line to match - The line to find in the log to attest the service have finished to boot.
 # | arg: Log file - The log file to watch
+# | arg: Service name
 # /var/log/$app/$app.log will be used if no other log is defined.
 # | arg: Timeout - The maximum time to wait before ending the watching. Defaut 300 seconds.
 ynh_check_starting () {
 	local line_to_match="$1"
-	local app_log="${2:-/var/log/$app/$app.log}"
+	local service_name="${4:-$app}"
+	local app_log="${2:-/var/log/$service_name/$service_name.log}"
 	local timeout=${3:-300}
 
 	ynh_clean_check_starting () {
@@ -229,13 +223,14 @@ ynh_check_starting () {
 		ynh_secure_remove "$templog" 2>&1
 	}
 
-	echo "Starting of $app" >&2
-	systemctl restart $app
+	echo "Starting of $service_name" >&2
+	systemctl stop $service_name
 	local templog="$(mktemp)"
 	# Following the starting of the app in its log
-	tail -f -n1 "$app_log" > "$templog" &
+	tail -F -n0 "$app_log" > "$templog" &
 	# Get the PID of the tail command
 	local pid_tail=$!
+	systemctl start $service_name
 
 	local i=0
 	for i in `seq 1 $timeout`
@@ -243,7 +238,7 @@ ynh_check_starting () {
 		# Read the log until the sentence is found, that means the app finished to start. Or run until the timeout
 		if grep --quiet "$line_to_match" "$templog"
 		then
-			echo "The service $app has correctly started." >&2
+			echo "The service $service_name has correctly started." >&2
 			break
 		fi
 		echo -n "." >&2
@@ -251,7 +246,7 @@ ynh_check_starting () {
 	done
 	if [ $i -eq $timeout ]
 	then
-		echo "The service $app didn't fully started before the timeout." >&2
+		echo "The service $service_name didn't fully started before the timeout." >&2
 	fi
 
 	echo ""
@@ -272,75 +267,12 @@ ynh_print_info () {
   ynh_print_log "[INFO] ${1}"
 }
 
-# Print a warning on stderr
-#
-# usage: ynh_print_warn "Text to print"
-# | arg: text - The text to print
-ynh_print_warn () {
-  ynh_print_log "[WARN] ${1}" >&2
-}
-
 # Print a error on stderr
 #
 # usage: ynh_print_err "Text to print"
 # | arg: text - The text to print
 ynh_print_err () {
   ynh_print_log "[ERR] ${1}" >&2
-}
-
-# Execute a command and print the result as an error
-#
-# usage: ynh_exec_err command to execute
-# usage: ynh_exec_err "command to execute | following command"
-# In case of use of pipes, you have to use double quotes. Otherwise, this helper will be executed with the first command, then be send to the next pipe.
-#
-# | arg: command - command to execute
-ynh_exec_err () {
-	ynh_print_err "$(eval $@)"
-}
-
-# Execute a command and print the result as a warning
-#
-# usage: ynh_exec_warn command to execute
-# usage: ynh_exec_warn "command to execute | following command"
-# In case of use of pipes, you have to use double quotes. Otherwise, this helper will be executed with the first command, then be send to the next pipe.
-#
-# | arg: command - command to execute
-ynh_exec_warn () {
-	ynh_print_warn "$(eval $@)"
-}
-
-# Execute a command and force the result to be printed on stdout
-#
-# usage: ynh_exec_warn_less command to execute
-# usage: ynh_exec_warn_less "command to execute | following command"
-# In case of use of pipes, you have to use double quotes. Otherwise, this helper will be executed with the first command, then be send to the next pipe.
-#
-# | arg: command - command to execute
-ynh_exec_warn_less () {
-	eval $@ 2>&1
-}
-
-# Execute a command and redirect stdout in /dev/null
-#
-# usage: ynh_exec_quiet command to execute
-# usage: ynh_exec_quiet "command to execute | following command"
-# In case of use of pipes, you have to use double quotes. Otherwise, this helper will be executed with the first command, then be send to the next pipe.
-#
-# | arg: command - command to execute
-ynh_exec_quiet () {
-	eval $@ > /dev/null
-}
-
-# Execute a command and redirect stdout and stderr in /dev/null
-#
-# usage: ynh_exec_fully_quiet command to execute
-# usage: ynh_exec_fully_quiet "command to execute | following command"
-# In case of use of pipes, you have to use double quotes. Otherwise, this helper will be executed with the first command, then be send to the next pipe.
-#
-# | arg: command - command to execute
-ynh_exec_fully_quiet () {
-	eval $@ > /dev/null 2>&1
 }
 
 # Remove any logs for all the following commands.
@@ -362,55 +294,6 @@ ynh_print_ON () {
 
 #=================================================
 
-# Install or update the main directory yunohost.multimedia
-#
-# usage: ynh_multimedia_build_main_dir
-ynh_multimedia_build_main_dir () {
-	wget -nv https://github.com/YunoHost-Apps/yunohost.multimedia/archive/master.zip 2>&1
-	unzip -q master.zip
-	./yunohost.multimedia-master/script/ynh_media_build.sh
-}
-
-# Add a directory in yunohost.multimedia
-# This "directory" will be a symbolic link to a existing directory.
-#
-# usage: ynh_multimedia_addfolder "Source directory" "Destination directory"
-#
-# | arg: Source directory - The real directory which contains your medias.
-# | arg: Destination directory - The name and the place of the symbolic link, relative to "/home/yunohost.multimedia"
-ynh_multimedia_addfolder () {
-	local source_dir="$1"
-	local dest_dir="$2"
-	./yunohost.multimedia-master/script/ynh_media_addfolder.sh --source="$source_dir" --dest="$dest_dir"
-}
-
-# Move a directory in yunohost.multimedia, and replace by a symbolic link
-#
-# usage: ynh_multimedia_movefolder "Source directory" "Destination directory"
-#
-# | arg: Source directory - The real directory which contains your medias.
-# It will be moved to "Destination directory"
-# A symbolic link will replace it.
-# | arg: Destination directory - The new name and place of the directory, relative to "/home/yunohost.multimedia"
-ynh_multimedia_movefolder () {
-	local source_dir="$1"
-	local dest_dir="$2"
-	./yunohost.multimedia-master/script/ynh_media_addfolder.sh --inv --source="$source_dir" --dest="$dest_dir"
-}
-
-# Allow an user to have an write authorisation in multimedia directories
-#
-# usage: ynh_multimedia_addaccess user_name
-#
-# | arg: user_name - The name of the user which gain this access.
-ynh_multimedia_addaccess () {
-	local user_name=$1
-	groupadd -f multimedia
-	usermod -a -G multimedia $user_name
-}
-
-#=================================================
-
 # Create a dedicated fail2ban config (jail and filter conf files)
 #
 # usage: ynh_add_fail2ban_config log_file filter [max_retry [ports]]
@@ -419,55 +302,56 @@ ynh_multimedia_addaccess () {
 # | arg: max_retry - Maximum number of retries allowed before banning IP address - default: 3
 # | arg: ports - Ports blocked for a banned IP address - default: http,https
 ynh_add_fail2ban_config () {
-	# Process parameters
-	logpath=$1
-	failregex=$2
-	max_retry=${3:-3}
-	ports=${4:-http,https}
-
-	test -n "$logpath" || ynh_die "ynh_add_fail2ban_config expects a logfile path as first argument and received nothing."
-	test -n "$failregex" || ynh_die "ynh_add_fail2ban_config expects a failure regex as second argument and received nothing."
-
-	finalfail2banjailconf="/etc/fail2ban/jail.d/$app.conf"
-	finalfail2banfilterconf="/etc/fail2ban/filter.d/$app.conf"
-	ynh_backup_if_checksum_is_different "$finalfail2banjailconf" 1
-	ynh_backup_if_checksum_is_different "$finalfail2banfilterconf" 1
-
-	sudo tee $finalfail2banjailconf <<EOF
+   # Process parameters
+   logpath=$1
+   failregex=$2
+   max_retry=${3:-3}
+   ports=${4:-http,https}
+   
+  test -n "$logpath" || ynh_die "ynh_add_fail2ban_config expects a logfile path as first argument and received nothing."
+  test -n "$failregex" || ynh_die "ynh_add_fail2ban_config expects a failure regex as second argument and received nothing."
+  
+  finalfail2banjailconf="/etc/fail2ban/jail.d/$app.conf"
+  finalfail2banfilterconf="/etc/fail2ban/filter.d/$app.conf"
+  ynh_backup_if_checksum_is_different "$finalfail2banjailconf" 1
+  ynh_backup_if_checksum_is_different "$finalfail2banfilterconf" 1
+  
+  sudo tee $finalfail2banjailconf <<EOF
 [$app]
 enabled = true
 port = $ports
 filter = $app
 logpath = $logpath
-maxretry = $max_retry" 
+maxretry = $max_retry
 EOF
 
-	sudo tee $finalfail2banfilterconf <<EOF
+  sudo tee $finalfail2banfilterconf <<EOF
 [INCLUDES]
 before = common.conf
 [Definition]
 failregex = $failregex
-ignoreregrex =" 
+ignoreregex =
 EOF
 
-	ynh_store_file_checksum "$finalfail2banjailconf"
-	ynh_store_file_checksum "$finalfail2banfilterconf"
-
-	sudo systemctl restart fail2ban
-	if local fail2ban_error="$(tail -n50 /var/log/fail2ban.log | grep "WARNING Command.*$app.*addfailregex")"
-	then
-		echo "[ERR] Fail2ban fail to load the jail for $app" >&2
-		echo "WARNING${fail2ban_error#*WARNING}" >&2
-	fi
+  ynh_store_file_checksum "$finalfail2banjailconf"
+  ynh_store_file_checksum "$finalfail2banfilterconf"
+  
+  systemctl restart fail2ban
+  local fail2ban_error="$(journalctl -u fail2ban | tail -n50 | grep "WARNING.*$app.*")"
+  if [ -n "$fail2ban_error" ]
+  then
+    echo "[ERR] Fail2ban failed to load the jail for $app" >&2
+    echo "WARNING${fail2ban_error#*WARNING}" >&2
+  fi
 }
 
 # Remove the dedicated fail2ban config (jail and filter conf files)
 #
 # usage: ynh_remove_fail2ban_config
 ynh_remove_fail2ban_config () {
-	ynh_secure_remove "/etc/fail2ban/jail.d/$app.conf"
-	ynh_secure_remove "/etc/fail2ban/filter.d/$app.conf"
-	sudo systemctl restart fail2ban
+  ynh_secure_remove "/etc/fail2ban/jail.d/$app.conf"
+  ynh_secure_remove "/etc/fail2ban/filter.d/$app.conf"
+  sudo systemctl restart fail2ban
 }
 
 #=================================================
@@ -525,7 +409,7 @@ ynh_abort_if_up_to_date () {
 #	If you give the name of a YunoHost user, ynh_send_readme_to_admin will find its email adress for you
 #	example: "root admin@domain user1 user2"
 ynh_send_readme_to_admin() {
-	local app_message="${1:-...No specific informations...}"
+	local app_message="${1:-...No specific information...}"
 	local recipients="${2:-root}"
 
 	# Retrieve the email of users
@@ -556,7 +440,7 @@ ynh_send_readme_to_admin() {
 
 	local mail_message="This is an automated message from your beloved YunoHost server.
 
-Specific informations for the application $app.
+Specific information for the application $app.
 
 $app_message
 

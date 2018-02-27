@@ -36,11 +36,10 @@ Supportée, **sans LDAP ni SSO**.
 
 #### Architectures supportées.
 
-* Testé sur x86_64
+* x86-64b - [![Build Status](https://ci-apps.yunohost.org/jenkins/job/etherpad_mypads%20(Community)/badge/icon)](https://ci-apps.yunohost.org/jenkins/job/etherpad_mypads%20(Community)/)
+* ARMv8-A - [![Build Status](https://ci-apps.yunohost.org/jenkins/job/etherpad_mypads%20(Community)%20(%7EARM%7E)/badge/icon)](https://ci-apps.yunohost.org/jenkins/job/etherpad_mypads%20(Community)%20(%7EARM%7E)/)
 
 ## Limitations
-
-* Si vous demandez d'installer le plugin mypads, vous devez installer à la racine d'un domaine ou d'un sous-domaine dédié. Sinon, mypads sera inaccessible.
 
 ## Informations additionnelles
 
@@ -61,10 +60,6 @@ Supportée, **sans LDAP ni SSO**.
   * ep_subscript_and_superscript - *Ajouter la prise en charge de Subscript et Superscript*.
   * ep_table_of_contents - *Voir une table des matières pour votre pad*
   * ep_user_font_size - *Permet de définir taille de la police dans les paramètres, cela n'affecte pas les vues des autres personnes*.
-
-* Parce qu'il n'y a pas de support ldap avec le plugin mypads, aucun utilisateur n'est créé lors de l'installation.  
-Vous devez vous connecter au panneau d'administration pour créer les premiers utilisateurs.  
-Login et mot de passe sont ceux que vous avez choisis lors de l'installation.
 
 ## Liens
 

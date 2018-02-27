@@ -78,6 +78,12 @@ ynh_remove_nginx_config	# Suppression de la configuration nginx
 ynh_remove_logrotate	# Suppression de la configuration de logrotate
 
 #=================================================
+# REMOVE FAIL2BAN CONFIGURATION
+#=================================================
+
+ynh_remove_fail2ban_config
+
+#=================================================
 # GENERIC FINALISATION
 #=================================================
 # REMOVE DEDICATED USER

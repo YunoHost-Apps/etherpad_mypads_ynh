@@ -10,7 +10,6 @@ source _common.sh
 source /usr/share/yunohost/helpers
 # Load common variables for all scripts.
 source _variables
-source _sed
 
 #=================================================
 # LOAD SETTINGS
@@ -28,6 +27,7 @@ port=$(ynh_app_setting_get $app port)
 export=$(ynh_app_setting_get $app export)
 db_name=$(ynh_app_setting_get $app db_name)
 mypads=$(ynh_app_setting_get $app mypads)
+useldap=$(ynh_app_setting_get $app useldap)
 
 #=================================================
 # CHECK VERSION
@@ -76,6 +76,11 @@ fi
 if [ -z $mypads ]; then	# Si mypads n'est pas renseigné dans app setting
 	mypads=1
 	ynh_app_setting_set $app mypads $mypads
+fi
+
+if [ -z $useldap ]; then	# If useldap doesn't exist yet in settings.yml
+	useldap=0
+	ynh_app_setting_set $app useldap $useldap
 fi
 
 if [ -z $path_url ]; then	# Si path_url n'est pas renseigné dans app setting
@@ -161,7 +166,7 @@ db_pwd=$(ynh_app_setting_get $app mysqlpwd)
 ynh_print_OFF; password=$(ynh_app_setting_get $app password); ynh_print_ON
 ynh_replace_string "__DB_PWD__" "$db_pwd" "$final_path/credentials.json"
 ynh_replace_string "__ADMIN__" "$admin" "$final_path/credentials.json"
-ynh_print_OFF; ynh_replace_password_string "__PASSWD__" "$password" "$final_path/credentials.json"; ynh_print_ON
+ynh_print_OFF; ynh_replace_special_string "__PASSWD__" "$password" "$final_path/credentials.json"; ynh_print_ON
 if [ "$export" = "abiword" ]
 then
 	abiword_path=`which abiword`	# Récupère l'emplacement de l'exécutable de abiword
@@ -176,6 +181,13 @@ if test -z $language; then
 	ynh_app_setting_set $app language $language
 fi
 ynh_replace_string "__LANGUAGE__" "$language" "$final_path/settings.json"
+
+# Use ldap for mypads
+if [ $mypads -eq 1 ] && [ $useldap -eq 1 ]
+then
+	ynh_replace_string "//noldap" "" "$final_path/settings.json"
+fi
+
 ynh_store_file_checksum "$final_path/settings.json"	# Réenregistre la somme de contrôle du fichier de config
 ynh_store_file_checksum "$final_path/credentials.json"	# Réenregistre la somme de contrôle du fichier de config
 
@@ -193,6 +205,12 @@ ynh_system_user_create $app $final_path	# Create the dedicated user, if not exis
 chown -R $app: $final_path
 chmod 600 "$final_path/credentials.json"	# Restreint l'accès à credentials.json
 chown $app -R /var/log/$app/etherpad.log
+
+#=================================================
+# UPGRADE FAIL2BAN
+#=================================================
+
+ynh_add_fail2ban_config "/var/log/nginx/$domain-access.log" "<HOST> .* \"POST /mypads/api/auth/login HTTP/1.1\" 400" 5
 
 #=================================================
 # SETUP LOGROTATE
@@ -215,7 +233,7 @@ ynh_add_systemd_config
 if [ $mypads -eq 1 ]
 then
 	mod_line=$(grep -nA5 "index.createOpenPad" $final_path/src/templates/index.html | grep "</div>" | cut -d '-' -f 1)	# Recherche le /div situé sous le champs d'ouverture de pad.
-	sed -i "$mod_line s@div>@&\n\t<center><br><font size="5"><a href="./mypads">Mypads</a></font></center>@" $final_path/src/templates/index.html	# Pour ajouter un lien vers le plugin mypads depuis la page d'Etherpad.
+	sed -i "$mod_line s@div>@&\n\t<center><br><font size="5"><a href="./mypads/">Mypads</a></font></center>@" $final_path/src/templates/index.html	# Pour ajouter un lien vers le plugin mypads depuis la page d'Etherpad.
 fi
 
 #=================================================

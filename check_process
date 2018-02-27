@@ -1,5 +1,4 @@
-;; Test complet avec libreoffice sans mypads
-	auto_remove=1
+;; Test complet avec libreoffice et mypads
 	; Manifest
 		domain="domain.tld"	(DOMAIN)
 		path="/path"	(PATH)
@@ -8,7 +7,8 @@
 		language="en"
 		is_public=1	(PUBLIC|public=1|private=0)
 		export="libreoffice"
-		mypads=0
+		mypads=1
+		useldap=1
 	; Checks
 		pkg_linter=1
 		setup_sub_dir=1
@@ -22,8 +22,7 @@
 		incorrect_path=1
 		port_already_use=1	(9001)
 		change_url=1
-;; Test avec mypads
-	auto_remove=1
+;; Test sans mypads
 	; Manifest
 		domain="domain.tld"	(DOMAIN)
 		path="/path"	(PATH)
@@ -32,14 +31,14 @@
 		language="en"
 		is_public=1	(PUBLIC|public=1|private=0)
 		export="libreoffice"
-		mypads=1
+		mypads=0
+		useldap=0
 	; Checks
+		setup_sub_dir=1
 		setup_root=1
 		upgrade=1
-		upgrade=1	from_commit=8bf300413ec3adcb416d168d2e9e98975dd9405b
 		backup_restore=1
 ;; Test abiword
-	auto_remove=1
 	; Manifest
 		domain="domain.tld"	(DOMAIN)
 		path="/path"	(PATH)
@@ -49,10 +48,11 @@
 		is_public=1	(PUBLIC|public=1|private=0)
 		export="abiword"
 		mypads=1
+		useldap=0
 	; Checks
 		setup_root=1
+		upgrade=1	from_commit=8bf300413ec3adcb416d168d2e9e98975dd9405b
 ;; Test sans export
-	auto_remove=1
 	; Manifest
 		domain="domain.tld"	(DOMAIN)
 		path="/path"	(PATH)
@@ -62,6 +62,7 @@
 		is_public=1	(PUBLIC|public=1|private=0)
 		export="none"
 		mypads=1
+		useldap=0
 	; Checks
 		setup_root=1
 ;;; Levels

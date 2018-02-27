@@ -6,7 +6,7 @@
 		"en": "Framapad clone, a online editor providing collaborative editing in real-time.",
 		"fr": "Clone de Framapad, un éditeur en ligne fournissant l'édition collaborative en temps réel."
 	},
-	"version": "1.6.3~ynh1",
+	"version": "1.6.3~ynh2",
 	"url": "https://framapad.org",
 	"license": "Apache-2.0",
 	"maintainer": {
@@ -39,12 +39,8 @@
 					"en": "Choose a path for Etherpad",
 					"fr": "Choisissez un chemin pour Etherpad"
 				},
-				"help": {
-					"en": "If you choose to install mypads plugin, etherpad has to be on /",
-					"fr": "Si vous choisissez d'installer le plugin mypads, etherpad doit être sur /"
-				},
-				"example": "/",
-				"default": "/"
+				"example": "/pad",
+				"default": "/pad"
 			},
 			{
 				"name": "admin",
@@ -100,6 +96,19 @@
 				},
 				"help": {
 					"en": "<a href=https://git.framasoft.org/framasoft/ep_mypads target=_blank>mypads plugin</a>"
+				},
+				"default": true
+			},
+			{
+				"name": "useldap",
+				"type": "boolean",
+				"ask": {
+					"en": "Do you want to use ldap with mypads ?",
+					"fr": "Voulez-vous utiliser ldap avec mypads ?"
+				},
+				"help": {
+					"en": "Using ldap won't let you add new user aside from YunoHost users.",
+					"fr": "Utiliser ldap ne vous permettra pas d'ajouter un nouvel utilisateur en dehors des utilisateurs de YunoHost."
 				},
 				"default": true
 			}

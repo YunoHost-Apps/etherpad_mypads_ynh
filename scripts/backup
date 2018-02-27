@@ -66,3 +66,10 @@ ynh_backup "/etc/logrotate.d/$app"
 #=================================================
 
 ynh_backup "/etc/systemd/system/$app.service"
+
+#=================================================
+# BACKUP FAIL2BAN CONFIGURATION
+#=================================================
+
+ynh_backup "/etc/fail2ban/jail.d/$app.conf"
+ynh_backup "/etc/fail2ban/filter.d/$app.conf"
