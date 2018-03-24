@@ -66,7 +66,7 @@ ynh_restore_file "/etc/nginx/conf.d/$domain.d/$app.conf"
 ynh_restore_file "$final_path"
 
 #=================================================
-# RESTORE OF THE SQL BDD
+# RESTORE THE SQL DB
 #=================================================
 
 db_pwd=$(ynh_app_setting_get $app mysqlpwd)
@@ -74,10 +74,10 @@ ynh_mysql_setup_db $db_name $db_name $db_pwd
 ynh_mysql_connect_as $db_name $db_pwd $db_name < ./db.sql
 
 #=================================================
-# RECREATE OF THE DEDICATED USER
+# RECREATE THE DEDICATED USER
 #=================================================
 
-ynh_system_user_create $app $final_path	# Recreate the dedicated user, if not exist
+ynh_system_user_create $app $final_path	# Recreate the dedicated user, if it doesn't exist
 
 #=================================================
 # SPECIFIC RESTORE
@@ -92,7 +92,7 @@ touch $install_log
 chown $app -R /var/log/$app
 chown admin -R $install_log
 
-# Restaure la configuration de logrotate
+# Restore logrotate configuration
 ynh_restore_file "/etc/logrotate.d/$app"
 
 #=================================================
@@ -151,7 +151,7 @@ systemctl reload nginx
 # CHECK ETHERPAD STARTING
 #=================================================
 
-# Wait for etherpad fully started
+# Wait for etherpad to be fully started
 ynh_check_starting "You can access your Etherpad instance at" "/var/log/$app/etherpad.log" "120"
 
 #=================================================
@@ -160,7 +160,7 @@ ynh_check_starting "You can access your Etherpad instance at" "/var/log/$app/eth
 
 if [ $mypads -eq 1 ]
 then
-	Informations1="You can access to 2 different admin panels, for etherpad by accessing https://$domain${path_url%/}/admin and for mypads by https://$domain${path_url%/}/mypads/?/admin."
+	Informations1="You can access 2 different admin panels, for etherpad by accessing https://$domain${path_url%/}/admin and for mypads by accessing https://$domain${path_url%/}/mypads/?/admin."
 
 	Informations2="
 Because there's no ldap support with mypads plugin, no user is created at the installation.
@@ -180,7 +180,7 @@ Your credentials for the admin panel are:
 - login		: $admin
 - password	: $password
 $Informations2
-If you facing an issue or want to improve this app, please open a new issue in this project: https://github.com/YunoHost-Apps/etherpad_mypads_ynh"
+If you are facing an issue or want to improve this app, please open a new issue in this project: https://github.com/YunoHost-Apps/etherpad_mypads_ynh"
 
 ynh_send_readme_to_admin "$message" "$admin"
 ynh_print_ON
