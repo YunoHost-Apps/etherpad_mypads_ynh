@@ -45,21 +45,21 @@ Supportée, **sans LDAP ni SSO**.
 
 * Ce paquet installera les plugins suivants:
 
-  * ep_align - *Ajoute Gauche/Centre/Droite/Justifier à des lignes de texte dans un pad*
-  * ep_author_hover - *Ajoute des noms d'auteurs*
-  * ep_automatic_logut - *Déconnecte automatiquement l'utilisateur après une certaine période de temps (Prévient la surcharge du serveur)*
-  * ep_comments_page - *Ajoute des commentaires sur la sidebar et le lie au texte.*
-  * ep_countable - *Affiche les paragraphes, phrases, mots et nombres de caractères.*
-  * ep_delete_empty_pads - *Supprimer les pads qui n'ont jamais été édités*
-  * ep_font_color - *Appliquer les couleurs aux polices de caractères*
-  * ep_headings2 - *Ajoute le support de titre à Etherpad Lite.*
-  * ep_markdown - *Modifier et exporter en tant que Markdown dans Etherpad*
-  * ep_mypads - *Groupes et pads privés pour etherpad*
-  * ep_page_view - *Ajouter la prise en charge de 'page view', avec une option d'activation/désactivation dans Paramètres, ainsi que 'Page Breaks' avec Control + Entrée*
-  * ep_spellcheck - *Ajouter le support pour faire de la vérification orthographique*
-  * ep_subscript_and_superscript - *Ajouter la prise en charge de Subscript et Superscript*.
-  * ep_table_of_contents - *Voir une table des matières pour votre pad*
-  * ep_user_font_size - *Permet de définir taille de la police dans les paramètres, cela n'affecte pas les vues des autres personnes*.
+  * [ep_align](https://www.npmjs.com/package/ep_align) - *Ajoute Gauche/Centre/Droite/Justifier à des lignes de texte dans un pad*
+  * [ep_author_hover](https://www.npmjs.com/package/ep_author_hover) - *Ajoute des noms d'auteurs*
+  * [ep_automatic_logut](https://www.npmjs.com/package/ep_automatic_logut) - *Déconnecte automatiquement l'utilisateur après une certaine période de temps (Prévient la surcharge du serveur)*
+  * [ep_comments_page](https://www.npmjs.com/package/ep_comments_page) - *Ajoute des commentaires sur la sidebar et le lie au texte.*
+  * [ep_countable](https://www.npmjs.com/package/ep_countable) - *Affiche les paragraphes, phrases, mots et nombres de caractères.*
+  * [ep_delete_empty_pads](https://www.npmjs.com/package/ep_delete_empty_pads) - *Supprimer les pads qui n'ont jamais été édités*
+  * [ep_font_color](https://www.npmjs.com/package/ep_font_color) - *Appliquer les couleurs aux polices de caractères*
+  * [ep_headings2](https://www.npmjs.com/package/ep_headings2) - *Ajoute le support de titre à Etherpad Lite.*
+  * [ep_markdown](https://www.npmjs.com/package/ep_markdown) - *Modifier et exporter en tant que Markdown dans Etherpad*
+  * [ep_mypads](https://www.npmjs.com/package/ep_mypads) - *Groupes et pads privés pour etherpad*
+  * [ep_page_view](https://www.npmjs.com/package/ep_page_view) - *Ajouter la prise en charge de 'page view', avec une option d'activation/désactivation dans Paramètres, ainsi que 'Page Breaks' avec Control + Entrée*
+  * [ep_spellcheck](https://www.npmjs.com/package/ep_spellcheck) - *Ajouter le support pour faire de la vérification orthographique*
+  * [ep_subscript_and_superscript](https://www.npmjs.com/package/ep_subscript_and_superscript) - *Ajouter la prise en charge de Subscript et Superscript*.
+  * [ep_table_of_contents](https://www.npmjs.com/package/ep_table_of_contents) - *Voir une table des matières pour votre pad*
+  * [ep_user_font_size](https://www.npmjs.com/package/ep_user_font_size)- *Permet de définir taille de la police dans les paramètres, cela n'affecte pas les vues des autres personnes*.
 
 ## Liens
 
