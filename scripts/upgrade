@@ -146,8 +146,19 @@ ynh_install_nodejs $nodejs_version
 # UPGRADE NPM MODULES
 #=================================================
 
+# Update the main modules of etherpad
+(cd "$final_path/src"
 npm cache clean
-npm update
+ynh_exec_warn_less npm update)
+
+# Then update the additionnal modules
+while read node_module
+do
+	echo "Update $node_module"
+	(cd "$final_path/node_modules/$node_module"
+	npm cache clean
+	ynh_exec_warn_less npm update)
+done <<< "$(ls -1 "$final_path/node_modules")"
 
 #=================================================
 # SPECIFIC UPGRADE
