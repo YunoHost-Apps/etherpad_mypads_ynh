@@ -32,7 +32,7 @@ Ou, vous pouvez trouver un fichier de configuration pour etherpad à `/var/www/e
 
 #### Support multi-utilisateurs
 
-Supportée, **sans LDAP ni SSO**.
+Supportée, avec LDAP.
 
 #### Architectures supportées.
 

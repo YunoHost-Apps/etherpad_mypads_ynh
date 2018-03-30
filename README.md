@@ -32,7 +32,7 @@ Or, you can find a config file for etherpad at this path `/var/www/etherpad_mypa
 
 #### Multi-users support
 
-Supported, **without LDAP nor SSO**.
+Supported, with LDAP.
 
 #### Supported architectures
 
