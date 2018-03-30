@@ -213,8 +213,7 @@ yunohost service add $app --log "/var/log/$app/etherpad.log"
 # INSTALL FRAMAPAD'S PLUGINS
 #=================================================
 
-script_dir="$PWD"
-cd "$final_path"
+pushd "$final_path"
 npm install ep_align	# Add Left/Center/Right/Justify to lines of text in a pad
 npm install ep_author_hover >> $install_log 2>&1	# Framapad - Adds author names to span titles
 npm install ep_automatic_logut >> $install_log 2>&1	# Automatically disconnects user after some period of time (Prevent server overload)
@@ -225,13 +224,14 @@ npm install ep_font_color >> $install_log 2>&1	# Framapad - Apply colors to font
 npm install ep_headings2 >> $install_log 2>&1	# Framapad - Adds heading support to Etherpad Lite.
 npm install ep_markdown >> $install_log 2>&1	# Framapad - Edit and Export as Markdown in Etherpad
 if [ $mypads -eq 1 ]; then
-	npm install ep_mypads >> $install_log 2>&1	# Framapad - Groups and private pads for etherpad
+	npm install ep_mypads@${mypads_version} >> $install_log 2>&1	# Framapad - Groups and private pads for etherpad
 fi
 npm install ep_page_view >> $install_log 2>&1	# Framapad - Add support to do 'page view', with a toggle on/off option in Settings, also Page Breaks with Control Enter
 npm install ep_spellcheck >> $install_log 2>&1	# Framapad - Add support to do 'Spell checking'
 npm install ep_subscript_and_superscript >> $install_log 2>&1	# Framapad - Add support for Subscript and Superscript
 npm install ep_table_of_contents >> $install_log 2>&1	# Framapad - View a table of contents for your pad
 npm install ep_user_font_size >> $install_log 2>&1	# Framapad - User Pad Contents font size can be set in settings, this does not effect other peoples views
+popd
 chown -R $app: $final_path/node_modules
 
 #=================================================
@@ -282,8 +282,8 @@ ynh_check_starting "You can access your Etherpad instance at" "/var/log/$app/eth
 
 if [ $mypads -eq 1 ]
 then
-	ynh_replace_string "__LANGUAGE__" "$language" "$script_dir/../conf/lang_mypads.sql"
-	mysql -u $db_name -p$db_pwd $db_name < "$script_dir/../conf/lang_mypads.sql"
+	ynh_replace_string "__LANGUAGE__" "$language" "../conf/lang_mypads.sql"
+	mysql -u $db_name -p$db_pwd $db_name < "../conf/lang_mypads.sql"
 
 	# Wait for etherpad to be fully started
 	ynh_check_starting "You can access your Etherpad instance at" "/var/log/$app/etherpad.log" "120"
