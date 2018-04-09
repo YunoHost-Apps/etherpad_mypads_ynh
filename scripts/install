@@ -198,7 +198,6 @@ chmod 600 $final_path/credentials.json	# Restrict access to credentials.json
 # SETUP SYSTEMD
 #=================================================
 
-ynh_replace_string "__NODEJS__" "$nodejs_use_version" "../conf/systemd.service"
 ynh_replace_string "__ENV_PATH__" "$PATH" "../conf/systemd.service"
 ynh_add_systemd_config
 

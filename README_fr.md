@@ -18,6 +18,10 @@ Ce paquet installera les mêmes plugins que [Framapad](https://framapad.org/).
 
 ![](http://etherpad.org/img/screenshot.png)
 
+## Démo
+
+* [Démo officielle](https://oasis.sandstorm.io/appdemo/h37dm17aa89yrd8zuqpdn36p6zntumtv08fjpu8a8zrte7q1cn60)
+
 ## Configuration
 
 Vous pouvez accéder à 2 panneaux d'administration différents, pour etherpad en accédant à `domain.tld/admin` et pour mypads par `domain.tld/mypads/?/admin`.  
@@ -37,7 +41,7 @@ Supportée, avec LDAP.
 #### Architectures supportées.
 
 * x86-64b - [![Build Status](https://ci-apps.yunohost.org/jenkins/job/etherpad_mypads%20(Community)/badge/icon)](https://ci-apps.yunohost.org/jenkins/job/etherpad_mypads%20(Community)/)
-* ARMv8-A - [![Build Status](https://ci-apps.yunohost.org/jenkins/job/etherpad_mypads%20(Community)%20(%7EARM%7E)/badge/icon)](https://ci-apps.yunohost.org/jenkins/job/etherpad_mypads%20(Community)%20(%7EARM%7E)/)
+* ARMv8-A - [![Build Status](https://ci-apps-arm.yunohost.org/jenkins/job/etherpad_mypads%20(Community)%20(%7EARM%7E)/badge/icon)](https://ci-apps-arm.yunohost.org/jenkins/job/etherpad_mypads%20(Community)%20(%7EARM%7E)/)
 
 ## Limitations
 
