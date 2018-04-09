@@ -59,7 +59,7 @@ SOURCE_SUM=2ba3c9d4dd3c7e38885b37e02337906a1ee91febe6d5c9159d89a9050f2eea8f" > "
 # And 2 alias stored in variables:
 #   - $nodejs_use_version: An old variable, not used anymore. Keep here to not break old apps
 #     NB: $PATH will contain the path to node, it has to be propagated to any other shell which needs to use it.
-#     That's means it have to be added to any systemd script.
+#     That's means it has to be added to any systemd script.
 #
 # usage: ynh_use_nodejs
 ynh_use_nodejs () {
@@ -150,7 +150,7 @@ ynh_install_nodejs () {
 #
 # usage: ynh_remove_nodejs
 ynh_remove_nodejs () {
-	ynh_use_nodejs
+	nodejs_version=$(ynh_app_setting_get $app nodejs_version)
 
 	# Remove the line for this app
 	sed --in-place "/$YNH_APP_ID:$nodejs_version/d" "$n_install_dir/ynh_app_version"
@@ -158,7 +158,7 @@ ynh_remove_nodejs () {
 	# If no other app uses this version of nodejs, remove it.
 	if ! grep --quiet "$nodejs_version" "$n_install_dir/ynh_app_version"
 	then
-		n rm $nodejs_version
+		$n_install_dir/bin/n rm $nodejs_version
 	fi
 
 	# If no other app uses n, remove n
