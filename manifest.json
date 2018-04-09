@@ -6,7 +6,7 @@
 		"en": "Framapad clone, a online editor providing collaborative editing in real-time.",
 		"fr": "Clone de Framapad, un éditeur en ligne fournissant l'édition collaborative en temps réel."
 	},
-	"version": "1.6.3~ynh2",
+	"version": "1.6.4~ynh2",
 	"url": "https://framapad.org",
 	"license": "Apache-2.0",
 	"maintainer": {
