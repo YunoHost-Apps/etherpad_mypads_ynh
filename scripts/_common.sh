@@ -26,24 +26,16 @@ CHECK_SIZE () {	# Vérifie avant chaque backup que l'espace est suffisant
 # EXPERIMENTAL HELPERS
 #=================================================
 
-# INFOS
-# n (Node version management) utilise la variable PATH pour stocker le path de la version de node à utiliser.
-# C'est ainsi qu'il change de version
-# ynh_install_nodejs installe la version de nodejs demandée en argument, avec n
-# ynh_use_nodejs active une version de nodejs dans le script courant
-# 3 variables sont mises à disposition, et 2 sont stockées dans la config de l'app
-# - nodejs_path: Le chemin absolu de cette version de node
-# Utilisé pour des appels directs à node.
-# - nodejs_version: Simplement le numéro de version de nodejs pour cette application
-# - nodejs_use_version: Un alias pour charger une version de node dans le shell courant.
-# Utilisé pour démarrer un service ou un script qui utilise node ou npm
-# Dans ce cas, c'est $PATH qui contient le chemin de la version de node. Il doit être propagé sur les autres shell si nécessaire.
-
 n_install_dir="/opt/node_n"
-node_version_path="/opt/node_n/n/versions/node"
-# N_PREFIX est le dossier de n, il doit être chargé dans les variables d'environnement pour n.
+node_version_path="$n_install_dir/n/versions/node"
+# N_PREFIX is the directory of n, it needs to be loaded as a environment variable.
 export N_PREFIX="$n_install_dir"
 
+# Install Node version management
+#
+# [internal]
+#
+# usage: ynh_install_n
 ynh_install_n () {
 	echo "Installation of N - Node.js version management" >&2
 	# Build an app.src for n
@@ -57,34 +49,52 @@ SOURCE_SUM=2ba3c9d4dd3c7e38885b37e02337906a1ee91febe6d5c9159d89a9050f2eea8f" > "
 	PREFIX=$N_PREFIX make install 2>&1)
 }
 
+# Load the version of node for an app, and set variables.
+#
+# ynh_use_nodejs has to be used in any app scripts before using node for the first time.
+#
+# 2 variables are available:
+#   - $nodejs_path: The absolute path of node for the chosen version.
+#   - $nodejs_version: Just the version number of node for this app. Stored as 'nodejs_version' in settings.yml.
+# And 2 alias stored in variables:
+#   - $nodejs_use_version: An old variable, not used anymore. Keep here to not break old apps
+#     NB: $PATH will contain the path to node, it has to be propagated to any other shell which needs to use it.
+#     That's means it has to be added to any systemd script.
+#
+# usage: ynh_use_nodejs
 ynh_use_nodejs () {
 	nodejs_version=$(ynh_app_setting_get $app nodejs_version)
 
-	load_n_path="[[ :$PATH: == *\":$n_install_dir/bin:\"* ]] || PATH=\"$n_install_dir/bin:$PATH\"; N_PREFIX="$n_install_dir""
-
-	nodejs_use_version="$n_install_dir/bin/n -q $nodejs_version"
-
-	# "Load" a version of node
-	eval $load_n_path; $nodejs_use_version
+	nodejs_use_version="echo \"Deprecated command, should be removed\""
 
 	# Get the absolute path of this version of node
-	nodejs_path="$(n bin $nodejs_version)"
+	nodejs_path="$node_version_path/$nodejs_version/bin"
 
-	# Make an alias for node use
-	ynh_node_exec="eval $load_n_path; n use $nodejs_version"
+	# Load the path of this version of node in $PATH
+	[[ :$PATH: == *":$nodejs_path"* ]] || PATH="$nodejs_path:$PATH"
 }
 
+# Install a specific version of nodejs
+#
+# n (Node version management) uses the PATH variable to store the path of the version of node it is going to use.
+# That's how it changes the version
+#
+# ynh_install_nodejs will install the version of node provided as argument by using n.
+#
+# usage: ynh_install_nodejs [nodejs_version]
+# | arg: nodejs_version - Version of node to install.
+#        If possible, prefer to use major version number (e.g. 8 instead of 8.10.0).
+#        The crontab will handle the update of minor versions when needed.
 ynh_install_nodejs () {
 	# Use n, https://github.com/tj/n to manage the nodejs versions
 	nodejs_version="$1"
-	local n_install_script="https://git.io/n-install"
 
 	# Create $n_install_dir
 	mkdir -p "$n_install_dir"
 
 	# Load n path in PATH
 	CLEAR_PATH="$n_install_dir/bin:$PATH"
-	# Remove /usr/local/bin in PATH in case of node has already setup.
+	# Remove /usr/local/bin in PATH in case of node prior installation
 	PATH=$(echo $CLEAR_PATH | sed 's@/usr/local/bin:@@')
 
 	# Move an existing node binary, to avoid to block n.
@@ -92,7 +102,7 @@ ynh_install_nodejs () {
 	test -x /usr/bin/npm && mv /usr/bin/npm /usr/bin/npm_n
 
 	# If n is not previously setup, install it
-	if ! test n --version > /dev/null 2>&1
+	if ! test $(n --version > /dev/null 2>&1)
 	then
 		ynh_install_n
 	fi
@@ -114,7 +124,7 @@ ynh_install_nodejs () {
 	real_nodejs_version=$(find $node_version_path/$nodejs_version* -maxdepth 0 | sort --version-sort | tail --lines=1)
 	real_nodejs_version=$(basename $real_nodejs_version)
 
-	# Create a symbolic link for this major version. If the file doesn't already exist
+	# Create a symbolic link for this major version if the file doesn't already exist
 	if [ ! -e "$node_version_path/$nodejs_version" ]
 	then
 		ln --symbolic --force --no-target-directory $node_version_path/$real_nodejs_version $node_version_path/$nodejs_version
@@ -132,27 +142,40 @@ ynh_install_nodejs () {
 	ynh_use_nodejs
 }
 
+# Remove the version of node used by the app.
+#
+# This helper will check if another app uses the same version of node,
+# if not, this version of node will be removed.
+# If no other app uses node, n will be also removed.
+#
+# usage: ynh_remove_nodejs
 ynh_remove_nodejs () {
-	ynh_use_nodejs
+	nodejs_version=$(ynh_app_setting_get $app nodejs_version)
 
 	# Remove the line for this app
 	sed --in-place "/$YNH_APP_ID:$nodejs_version/d" "$n_install_dir/ynh_app_version"
 
-	# If none another app uses this version of nodejs, remove it.
+	# If no other app uses this version of nodejs, remove it.
 	if ! grep --quiet "$nodejs_version" "$n_install_dir/ynh_app_version"
 	then
-		n rm $nodejs_version
+		$n_install_dir/bin/n rm $nodejs_version
 	fi
 
-	# If none another app uses n, remove n
+	# If no other app uses n, remove n
 	if [ ! -s "$n_install_dir/ynh_app_version" ]
 	then
 		ynh_secure_remove "$n_install_dir"
 		ynh_secure_remove "/usr/local/n"
-		sed --in-place "/N_PREFIX/d" /root/.bashrc
 	fi
 }
 
+# Set a cron design to update your node versions
+#
+# [internal]
+#
+# This cron will check and update all minor node versions used by your apps.
+#
+# usage: ynh_cron_upgrade_node
 ynh_cron_upgrade_node () {
 	# Build the update script
 	cat > "$n_install_dir/node_update.sh" << EOF
@@ -273,6 +296,17 @@ ynh_print_info () {
 # | arg: text - The text to print
 ynh_print_err () {
   ynh_print_log "[ERR] ${1}" >&2
+}
+
+# Execute a command and force the result to be printed on stdout
+#
+# usage: ynh_exec_warn_less command to execute
+# usage: ynh_exec_warn_less "command to execute | following command"
+# In case of use of pipes, you have to use double quotes. Otherwise, this helper will be executed with the first command, then be send to the next pipe.
+#
+# | arg: command - command to execute
+ynh_exec_warn_less () {
+	eval $@ 2>&1
 }
 
 # Remove any logs for all the following commands.
@@ -449,8 +483,16 @@ Automatic diagnosis data from YunoHost
 
 $(yunohost tools diagnosis | grep -B 100 "services:" | sed '/services:/d')"
 
+	# Define binary to use for mail command
+	if [ -e /usr/bin/bsd-mailx ]
+	then
+		local mail_bin=/usr/bin/bsd-mailx
+	else
+		local mail_bin=/usr/bin/mail.mailutils
+	fi
+
 	# Send the email to the recipients
-	echo "$mail_message" | mail -a "Content-Type: text/plain; charset=UTF-8" -s "$mail_subject" "$recipients"
+	echo "$mail_message" | $mail_bin -a "Content-Type: text/plain; charset=UTF-8" -s "$mail_subject" "$recipients"
 }
 
 #=================================================

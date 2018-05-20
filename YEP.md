@@ -32,7 +32,7 @@
 
 #### [Level 4](https://github.com/YunoHost/doc/blob/master/packaging_apps_levels_fr.md#niveau-4)  
 [YEP 4.1 - Lier au ldap](https://github.com/YunoHost/doc/blob/master/packaging_apps_guidelines_fr.md#yep-41)  
-`Not yet validated`  
+`Validated`  
 [YEP 4.2 - Lier l'authentification au sso](https://github.com/YunoHost/doc/blob/master/packaging_apps_guidelines_fr.md#yep-42)  
 `Not yet validated`  
 

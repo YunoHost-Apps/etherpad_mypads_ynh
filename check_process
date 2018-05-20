@@ -69,9 +69,8 @@
 	Level 1=auto
 	Level 2=auto
 	Level 3=auto
-# Level 4: Pas de support ldap. https://framagit.org/framasoft/ep_mypads/issues/31#note_30898
-	Level 4=na
-# Level 5: https://github.com/YunoHost-Apps/etherpad_mypads_ynh/issues/11
+# Level 4: https://github.com/YunoHost-Apps/etherpad_mypads_ynh/blob/51ddcd64d68398018e3af6637339e2c20c4dc9a7/conf/settings.json#L90-L113
+	Level 4=1
 	Level 5=auto
 	Level 6=auto
 	Level 7=auto

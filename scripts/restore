@@ -160,26 +160,19 @@ ynh_check_starting "You can access your Etherpad instance at" "/var/log/$app/eth
 
 if [ $mypads -eq 1 ]
 then
-	Informations1="You can access 2 different admin panels, for etherpad by accessing https://$domain${path_url%/}/admin and for mypads by accessing https://$domain${path_url%/}/mypads/?/admin."
-
-	Informations2="
-Because there's no ldap support with mypads plugin, no user is created at the installation.
-You have to connect to the admin panel to create the first users.
-"
+	Informations="You can access 2 different admin panels, for etherpad by accessing https://$domain${path_url%/}/admin and for mypads by accessing https://$domain${path_url%/}/mypads/?/admin."
 else
-	Informations1="You can access to the admin panel, by accessing https://$domain${path_url%/}/admin."
-
-	Informations2=""
+	Informations="You can access to the admin panel, by accessing https://$domain${path_url%/}/admin."
 fi
 
 ynh_print_OFF
-message="$Informations1
+message="$Informations
 Or, you can find a config file for etherpad at this path /var/www/etherpad_mypads/settings.json.
 
 Your credentials for the admin panel are:
 - login		: $admin
 - password	: $password
-$Informations2
+
 If you are facing an issue or want to improve this app, please open a new issue in this project: https://github.com/YunoHost-Apps/etherpad_mypads_ynh"
 
 ynh_send_readme_to_admin "$message" "$admin"
