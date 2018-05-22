@@ -1,6 +1,6 @@
 # Etherpad with mypads plugin for YunoHost
 
-[![Integration level](https://dash.yunohost.org/integration/etherpad_mypads.svg)](https://ci-apps.yunohost.org/jenkins/job/etherpad_mypads%20%28Community%29/lastBuild/consoleFull)  
+[![Integration level](https://dash.yunohost.org/integration/etherpad_mypads.svg)](https://ci-apps.yunohost.org/jenkins/job/etherpad_mypads%20%28Official%29/lastBuild/consoleFull)  
 [![Install Etherpad with YunoHost](https://install-app.yunohost.org/install-with-yunohost.png)](https://install-app.yunohost.org/?app=etherpad_mypads)
 
 *[Lire ce readme en français.](./README_fr.md)*
@@ -40,8 +40,8 @@ Supported, with LDAP.
 
 #### Supported architectures
 
-* x86-64b - [![Build Status](https://ci-apps.yunohost.org/jenkins/job/etherpad_mypads%20(Community)/badge/icon)](https://ci-apps.yunohost.org/jenkins/job/etherpad_mypads%20(Community)/)
-* ARMv8-A - [![Build Status](https://ci-apps-arm.yunohost.org/jenkins/job/etherpad_mypads%20(Community)%20(%7EARM%7E)/badge/icon)](https://ci-apps-arm.yunohost.org/jenkins/job/etherpad_mypads%20(Community)%20(%7EARM%7E)/)
+* x86-64b - [![Build Status](https://ci-apps.yunohost.org/jenkins/job/etherpad_mypads%20(Official)/badge/icon)](https://ci-apps.yunohost.org/jenkins/job/etherpad_mypads%20(Official)/)
+* ARMv8-A - [![Build Status](https://ci-apps-arm.yunohost.org/jenkins/job/etherpad_mypads%20(Official)%20(%7EARM%7E)/badge/icon)](https://ci-apps-arm.yunohost.org/jenkins/job/etherpad_mypads%20(Official)%20(%7EARM%7E)/)
 
 ## Limitations
 
