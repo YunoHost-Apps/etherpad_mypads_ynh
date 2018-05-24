@@ -33,6 +33,14 @@ new_path=$(ynh_normalize_url_path $new_path)
 old_path=$(ynh_normalize_url_path $old_path)
 
 #=================================================
+# ACTIVATE MAINTENANCE MODE
+#=================================================
+
+path_url=$old_path
+domain=$old_domain
+ynh_maintenance_mode_ON
+
+#=================================================
 # CHECK WHICH PARTS SHOULD BE CHANGED
 #=================================================
 
@@ -115,7 +123,7 @@ fi
 # RELOAD NGINX
 #=================================================
 
-systemctl reload nginx
+ynh_system_reload nginx
 
 #=================================================
 # CHECK ETHERPAD STARTING
@@ -123,3 +131,11 @@ systemctl reload nginx
 
 # Wait for etherpad fully started
 ynh_check_starting "You can access your Etherpad instance at" "/var/log/$app/etherpad.log" "120"
+
+#=================================================
+# DEACTIVE MAINTENANCE MODE
+#=================================================
+
+path_url=$old_path
+domain=$old_domain
+ynh_maintenance_mode_OFF

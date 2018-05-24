@@ -105,10 +105,16 @@ ynh_clean_setup () {
 ynh_abort_if_errors
 
 #=================================================
+# ACTIVATE MAINTENANCE MODE
+#=================================================
+
+ynh_maintenance_mode_ON
+
+#=================================================
 # STOP ETHERPAD
 #=================================================
 
-systemctl stop $app
+ynh_system_reload $app stop
 
 #=================================================
 # STANDARD UPGRADE STEPS
@@ -260,7 +266,7 @@ fi
 # RELOAD NGINX
 #=================================================
 
-systemctl reload nginx
+ynh_system_reload nginx
 
 #=================================================
 # CHECK ETHERPAD STARTING
@@ -268,3 +274,9 @@ systemctl reload nginx
 
 # Wait for etherpad to be fully started
 ynh_check_starting "You can access your Etherpad instance at" "/var/log/$app/etherpad.log" "120"
+
+#=================================================
+# DEACTIVE MAINTENANCE MODE
+#=================================================
+
+ynh_maintenance_mode_OFF

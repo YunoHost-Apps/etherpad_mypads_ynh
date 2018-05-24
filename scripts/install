@@ -74,6 +74,12 @@ ynh_app_setting_set $app mypads $mypads
 ynh_app_setting_set $app useldap $useldap
 
 #=================================================
+# ACTIVATE MAINTENANCE MODE
+#=================================================
+
+ynh_maintenance_mode_ON
+
+#=================================================
 # STANDARD MODIFICATIONS
 #=================================================
 # FIND AND OPEN A PORT
@@ -270,7 +276,7 @@ fi
 # RELOAD NGINX
 #=================================================
 
-systemctl reload nginx
+ynh_system_reload nginx
 
 #=================================================
 # CHECK ETHERPAD STARTING
@@ -287,6 +293,12 @@ then
 	# Wait for etherpad to be fully started
 	ynh_check_starting "You can access your Etherpad instance at" "/var/log/$app/etherpad.log" "120"
 fi
+
+#=================================================
+# DEACTIVE MAINTENANCE MODE
+#=================================================
+
+ynh_maintenance_mode_OFF
 
 #=================================================
 # SEND A README FOR THE ADMIN
