@@ -163,7 +163,7 @@ do
 	echo "Update $node_module"
 	(cd "$final_path/node_modules/$node_module"
 	npm cache clean
-	ynh_exec_warn_less npm update)
+	ynh_exec_warn_less npm update || true)
 done <<< "$(ls -1 "$final_path/node_modules")"
 
 #=================================================
