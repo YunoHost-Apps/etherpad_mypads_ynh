@@ -1,0 +1,33 @@
+[{
+		"id": "add_remove_abiword",
+		"name": "Install/remove abiword",
+		"command": "/bin/bash scripts/actions/add_remove_abiword",
+		"user": "root",
+		"accepted_return_codes": [0],
+		"description": {
+			"en": "Install or remove abiword.",
+			"fr": "Installe ou supprime abiword."
+		}
+},
+{
+		"id": "add_remove_libreoffice",
+		"name": "Install/remove libreoffice",
+		"command": "/bin/bash scripts/actions/add_remove_libreoffice",
+		"user": "root",
+		"accepted_return_codes": [0],
+		"description": {
+			"en": "Install or remove libreoffice.",
+			"fr": "Installe ou supprime libreoffice."
+		}
+},
+{
+		"id": "list_all_pads",
+		"name": "List all existing pads",
+		"command": "/bin/bash scripts/actions/list_all_pads",
+		"user": "root",
+		"accepted_return_codes": [0],
+		"description": {
+			"en": "List all existing pads.",
+			"fr": "Liste tout les pads existants."
+		}
+}]

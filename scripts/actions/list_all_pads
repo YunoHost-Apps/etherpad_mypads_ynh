@@ -1,0 +1,35 @@
+#!/bin/bash
+
+#=================================================
+# GENERIC STARTING
+#=================================================
+# IMPORT GENERIC HELPERS
+#=================================================
+
+source scripts/_common.sh
+source /usr/share/yunohost/helpers
+
+#=================================================
+# RETRIEVE ARGUMENTS
+#=================================================
+
+app=$YNH_APP_ID
+
+db_name=$(ynh_app_setting_get $app db_name)
+db_pwd=$(ynh_app_setting_get $app mysqlpwd)
+
+#=================================================
+# CHECK IF ARGUMENTS ARE CORRECT
+#=================================================
+
+#=================================================
+# CHECK IF AN ACTION HAS TO BE DONE
+#=================================================
+
+#=================================================
+# SPECIFIC ACTION
+#=================================================
+# LIST ALL PADS FROM THE DATABASE
+#=================================================
+
+mysql -u $db_name -p$db_pwd $db_name --silent -e 'select distinct substring(store.key,5,locate(":",store.key,5)-5) as "pads" from store where store.key like "pad:%"' | sed 's/^/>> /g' >&2

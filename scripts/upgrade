@@ -201,7 +201,7 @@ ynh_replace_string "__LANGUAGE__" "$language" "$final_path/settings.json"
 # Use ldap for mypads
 if [ $mypads -eq 1 ] && [ $useldap -eq 1 ]
 then
-	ynh_replace_string "//noldap" "" "$final_path/settings.json"
+	ynh_replace_string "//noldap\(.*\)" "\1 //useldap" "$final_path/settings.json"
 fi
 
 ynh_store_file_checksum "$final_path/settings.json"	# Recalculate and store the config file checksum into the app settings

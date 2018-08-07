@@ -1,0 +1,87 @@
+{
+	"name": "Etherpad configuration panel",
+	"version": "0.1",
+	"panel": [{
+		"name": "Etherpad configuration",
+		"id": "main",
+		"sections": [{
+			"name": "Export",
+			"id": "export",
+			"options": [{
+				"name": "Use abiword (~260Mo) or libreoffice (~400Mo) (more stable) to expand export possibilities (pdf, doc) ?",
+				"help": "We can't use a choices field for now. In the meantime please choose between one of this values:<br>none, abiword, libreoffice.",
+				"id": "export",
+				"type": "text",
+				"//": "\"choices\" : [\"none\", \"abiword\", \"libreoffice\"]",
+				"default" : "none"
+			}]
+		},
+		{
+			"name": "Default pad configuration",
+			"id": "pad_configuration",
+			"options": [{
+				"name": "Hide authorship colors ?",
+				"id": "pad_config_nocolors",
+				"type": "bool",
+				"default": false
+			},
+			{
+				"name": "Show line numbers ?",
+				"id": "pad_config_showlinenumbers",
+				"type": "bool",
+				"default": true
+			},
+			{
+				"name": "Show chat and users ?",
+				"id": "pad_config_chatandusers",
+				"type": "bool",
+				"default": false
+			},
+			{
+				"name": "Always show chat ?",
+				"id": "pad_config_alwaysshowchat",
+				"type": "bool",
+				"default": false
+			},
+			{
+				"name": "Show markdown syntax ?",
+				"id": "pad_config_show_markdown",
+				"type": "bool",
+				"default": false
+			},
+			{
+				"name": "Page view ?",
+				"id": "pad_config_pageview",
+				"type": "bool",
+				"default": false
+			}]
+		},
+		{
+			"name": "Mypads configuration",
+			"id": "mypads_configuration",
+			"options": [{
+				"name": "Enable Mypads plugin ?",
+				"id": "mypads",
+				"type": "bool",
+				"default": true
+			},
+			{
+				"name": "Use ldap with Mypads ?",
+				"id": "useldap",
+				"type": "bool",
+				"default": true
+			}]
+		},
+		{
+			"name": "Public access",
+			"id": "is_public",
+			"options": [{
+				"name": "Is it a public website ?",
+				"id": "is_public",
+				"type": "bool",
+				"default": true
+			}]
+		}]
+	}
+]
+}
