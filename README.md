@@ -12,7 +12,7 @@ If you don't have YunoHost, please see [here](https://yunohost.org/#/install) to
 Etherpad is a highly customizable Open Source online editor providing collaborative editing in really real-time.  
 This package will install the same plugins than [Framapad](https://framapad.org/).
 
-**Shipped version:** 1.6.5
+**Shipped version:** 1.7.0
 
 ## Screenshots
 
@@ -29,7 +29,7 @@ Or, you can find a config file for etherpad at this path `/var/www/etherpad_mypa
 
 ## Documentation
 
- * Official documentation: http://etherpad.org/doc/v1.6.5
+ * Official documentation: http://etherpad.org/doc/v1.7.0
  * YunoHost documentation: There no other documentations, feel free to contribute.
 
 ## YunoHost specific features
