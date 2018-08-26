@@ -158,13 +158,13 @@ npm cache clean
 ynh_exec_warn_less npm update)
 
 # Then update the additionnal modules
+(cd "$final_path"
+npm cache clean
 while read node_module
 do
 	echo "Update $node_module"
-	(cd "$final_path/node_modules/$node_module"
-	npm cache clean
-	ynh_exec_warn_less npm update || true)
-done <<< "$(ls -1 "$final_path/node_modules")"
+        ynh_exec_warn_less npm install --upgrade $node_module || true
+done <<< "$(ls -1 "$final_path/node_modules" | grep "^ep_")")
 
 #=================================================
 # SPECIFIC UPGRADE
