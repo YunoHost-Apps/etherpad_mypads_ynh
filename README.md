@@ -1,6 +1,6 @@
 # Etherpad with mypads plugin for YunoHost
 
-[![Integration level](https://dash.yunohost.org/integration/etherpad_mypads.svg)](https://ci-apps.yunohost.org/jenkins/job/etherpad_mypads%20%28Community%29/lastBuild/consoleFull)  
+[![Integration level](https://dash.yunohost.org/integration/etherpad_mypads.svg)](https://ci-apps.yunohost.org/jenkins/job/etherpad_mypads%20%28Official%29/lastBuild/consoleFull)  
 [![Install Etherpad with YunoHost](https://install-app.yunohost.org/install-with-yunohost.png)](https://install-app.yunohost.org/?app=etherpad_mypads)
 
 *[Lire ce readme en français.](./README_fr.md)*
@@ -12,7 +12,7 @@ If you don't have YunoHost, please see [here](https://yunohost.org/#/install) to
 Etherpad is a highly customizable Open Source online editor providing collaborative editing in really real-time.  
 This package will install the same plugins than [Framapad](https://framapad.org/).
 
-**Shipped version:** 1.6.5
+**Shipped version:** 1.7.0
 
 ## Screenshots
 
@@ -29,7 +29,7 @@ Or, you can find a config file for etherpad at this path `/var/www/etherpad_mypa
 
 ## Documentation
 
- * Official documentation: http://etherpad.org/doc/v1.6.5
+ * Official documentation: http://etherpad.org/doc/v1.7.0
  * YunoHost documentation: There no other documentations, feel free to contribute.
 
 ## YunoHost specific features
@@ -40,8 +40,8 @@ Supported, with LDAP.
 
 #### Supported architectures
 
-* x86-64b - [![Build Status](https://ci-apps.yunohost.org/jenkins/job/etherpad_mypads%20(Community)/badge/icon)](https://ci-apps.yunohost.org/jenkins/job/etherpad_mypads%20(Community)/)
-* ARMv8-A - [![Build Status](https://ci-apps-arm.yunohost.org/jenkins/job/etherpad_mypads%20(Community)%20(%7EARM%7E)/badge/icon)](https://ci-apps-arm.yunohost.org/jenkins/job/etherpad_mypads%20(Community)%20(%7EARM%7E)/)
+* x86-64b - [![Build Status](https://ci-apps.yunohost.org/jenkins/job/etherpad_mypads%20(Official)/badge/icon)](https://ci-apps.yunohost.org/jenkins/job/etherpad_mypads%20(Official)/)
+* ARMv8-A - [![Build Status](https://ci-apps-arm.yunohost.org/jenkins/job/etherpad_mypads%20(Official)%20(%7EARM%7E)/badge/icon)](https://ci-apps-arm.yunohost.org/jenkins/job/etherpad_mypads%20(Official)%20(%7EARM%7E)/)
 
 ## Limitations
 
