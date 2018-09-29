@@ -6,17 +6,16 @@
 # IMPORT GENERIC HELPERS
 #=================================================
 
-source scripts/_common.sh
 source /usr/share/yunohost/helpers
 
 #=================================================
 # RETRIEVE ARGUMENTS
 #=================================================
 
-app=${YNH_APP_INSTANCE_NAME:-$YNH_APP_ID}
+# Get is_public
+is_public=${YNH_ACTION_IS_PUBLIC}
 
-db_name=$(ynh_app_setting_get $app db_name)
-db_pwd=$(ynh_app_setting_get $app mysqlpwd)
+app=${YNH_APP_INSTANCE_NAME:-$YNH_APP_ID}
 
 #=================================================
 # CHECK IF ARGUMENTS ARE CORRECT
@@ -26,10 +25,34 @@ db_pwd=$(ynh_app_setting_get $app mysqlpwd)
 # CHECK IF AN ACTION HAS TO BE DONE
 #=================================================
 
+is_public_old=$(ynh_app_setting_get $app is_public)
+
+if [ $is_public -eq $is_public_old ]
+then
+	ynh_die "is_public is already set as $is_public." 0
+fi
+
 #=================================================
 # SPECIFIC ACTION
 #=================================================
-# LIST ALL PADS FROM THE DATABASE
+# MOVE TO PUBLIC OR PRIVATE
 #=================================================
 
-mysql -u $db_name -p$db_pwd $db_name --silent -e 'select distinct substring(store.key,5,locate(":",store.key,5)-5) as "pads" from store where store.key like "pad:%"' | sed 's/^/>> /g' >&2
+if [ $is_public -eq 0 ]
+then
+	ynh_app_setting_set $app skipped_uris "/admin"	# etherpad admin page doesn't support SSO...
+else
+	ynh_app_setting_set $app skipped_uris "/"
+fi
+
+# Regen ssowat configuration
+yunohost app ssowatconf
+
+# Update the config of the app
+ynh_app_setting_set $app is_public $is_public
+
+#=================================================
+# RELOAD NGINX
+#=================================================
+
+systemctl reload nginx

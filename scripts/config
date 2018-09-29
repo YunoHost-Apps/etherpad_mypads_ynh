@@ -15,7 +15,7 @@ source _variables
 # RETRIEVE ARGUMENTS
 #=================================================
 
-app=$YNH_APP_INSTANCE_NAME
+app=${YNH_APP_INSTANCE_NAME:-$YNH_APP_ID}
 
 final_path=$(ynh_app_setting_get $app final_path)
 
@@ -38,60 +38,75 @@ get_config_value() {
 # LOAD VALUES
 #=================================================
 
-	# Load the real value from the app config or elsewhere.
-	# Then get the value from the form.
-	# If the form has a value for a variable, take the value from the form,
-	# Otherwise, keep the value from the app config.
+# Load the real value from the app config or elsewhere.
+# Then get the value from the form.
+# If the form has a value for a variable, take the value from the form,
+# Otherwise, keep the value from the app config.
 
-	# Export
-	old_export="$(ynh_app_setting_get $app export)"
-	export="${YNH_CONFIG_MAIN_EXPORT_EXPORT:-$old_export}"
+# Export
+old_export="$(ynh_app_setting_get $app export)"
+export="${YNH_CONFIG_MAIN_EXPORT_EXPORT:-$old_export}"
 
-	# padOptions noColors
-	old_pad_config_nocolors="$(get_config_value noColors)"
-	pad_config_nocolors="${YNH_CONFIG_MAIN_PAD_CONFIGURATION_PAD_CONFIG_NOCOLORS:-$old_pad_config_nocolors}"
-	# padOptions showLineNumbers
-	old_pad_config_showlinenumbers="$(get_config_value showLineNumbers)"
-	pad_config_showlinenumbers="${YNH_CONFIG_MAIN_PAD_CONFIGURATION_PAD_CONFIG_SHOWLINENUMBERS:-$old_pad_config_showlinenumbers}"
-	# padOptions chatAndUsers
-	old_pad_config_chatandusers="$(get_config_value chatAndUsers)"
-	pad_config_chatandusers="${YNH_CONFIG_MAIN_PAD_CONFIGURATION_PAD_CONFIG_CHATANDUSERS:-$old_pad_config_chatandusers}"
-	# padOptions alwaysShowChat
-	old_pad_config_alwaysshowchat="$(get_config_value alwaysShowChat)"
-	pad_config_alwaysshowchat="${YNH_CONFIG_MAIN_PAD_CONFIGURATION_PAD_CONFIG_ALWAYSSHOWCHAT:-$old_pad_config_alwaysshowchat}"
-	# Plugin option ep_markdown_default
-	old_pad_config_show_markdown="$(get_config_value ep_markdown_default)"
-	pad_config_show_markdown="${YNH_CONFIG_MAIN_PAD_CONFIGURATION_PAD_CONFIG_SHOW_MARKDOWN:-$old_pad_config_show_markdown}"
-	# Plugin option ep_page_view_default
-	old_pad_config_pageview="$(get_config_value ep_page_view_default)"
-	pad_config_pageview="${YNH_CONFIG_MAIN_PAD_CONFIGURATION_PAD_CONFIG_PAGEVIEW:-$old_pad_config_pageview}"
+# padOptions noColors
+old_pad_config_nocolors="$(get_config_value noColors)"
+pad_config_nocolors="${YNH_CONFIG_MAIN_PAD_CONFIGURATION_PAD_CONFIG_NOCOLORS:-$old_pad_config_nocolors}"
+# padOptions showLineNumbers
+old_pad_config_showlinenumbers="$(get_config_value showLineNumbers)"
+pad_config_showlinenumbers="${YNH_CONFIG_MAIN_PAD_CONFIGURATION_PAD_CONFIG_SHOWLINENUMBERS:-$old_pad_config_showlinenumbers}"
+# padOptions chatAndUsers
+old_pad_config_chatandusers="$(get_config_value chatAndUsers)"
+pad_config_chatandusers="${YNH_CONFIG_MAIN_PAD_CONFIGURATION_PAD_CONFIG_CHATANDUSERS:-$old_pad_config_chatandusers}"
+# padOptions alwaysShowChat
+old_pad_config_alwaysshowchat="$(get_config_value alwaysShowChat)"
+pad_config_alwaysshowchat="${YNH_CONFIG_MAIN_PAD_CONFIGURATION_PAD_CONFIG_ALWAYSSHOWCHAT:-$old_pad_config_alwaysshowchat}"
+# Plugin option ep_markdown_default
+old_pad_config_show_markdown="$(get_config_value ep_markdown_default)"
+pad_config_show_markdown="${YNH_CONFIG_MAIN_PAD_CONFIGURATION_PAD_CONFIG_SHOW_MARKDOWN:-$old_pad_config_show_markdown}"
+# Plugin option ep_page_view_default
+old_pad_config_pageview="$(get_config_value ep_page_view_default)"
+pad_config_pageview="${YNH_CONFIG_MAIN_PAD_CONFIGURATION_PAD_CONFIG_PAGEVIEW:-$old_pad_config_pageview}"
 
-	# Mypads
-	if [ -d $final_path/node_modules/ep_mypads ]
-	then
-		old_mypads=true
-	else
-		old_mypads=false
-	fi
-	mypads="${YNH_CONFIG_MAIN_MYPADS_CONFIGURATION_MYPADS:-$old_mypads}"
-	# Ldap for Mypads
-	if grep -q "//noldap" $config_file
-	then
-		old_useldap=false
-	else
-		old_useldap=true
-	fi
-	useldap="${YNH_CONFIG_MAIN_MYPADS_CONFIGURATION_USELDAP:-$old_useldap}"
+# Mypads
+if [ -d $final_path/node_modules/ep_mypads ]
+then
+	old_mypads=true
+else
+	old_mypads=false
+fi
+mypads="${YNH_CONFIG_MAIN_MYPADS_CONFIGURATION_MYPADS:-$old_mypads}"
+# Ldap for Mypads
+if grep -q "//noldap" $config_file
+then
+	old_useldap=false
+else
+	old_useldap=true
+fi
+useldap="${YNH_CONFIG_MAIN_MYPADS_CONFIGURATION_USELDAP:-$old_useldap}"
 
-	# is_public
-	old_is_public="$(ynh_app_setting_get $app is_public)"
-	if [ $old_is_public -eq 1 ]
-	then
-		old_is_public=true
-	else
-		old_is_public=false
-	fi
-	is_public="${YNH_CONFIG_MAIN_IS_PUBLIC_IS_PUBLIC:-$old_is_public}"
+# is_public
+old_is_public="$(ynh_app_setting_get $app is_public)"
+old_is_public=$(bool_to_true_false $old_is_public)
+is_public="${YNH_CONFIG_MAIN_IS_PUBLIC_IS_PUBLIC:-$old_is_public}"
+
+# Overwrite settings.json file
+old_overwrite_settings="$(ynh_app_setting_get $app overwrite_settings)"
+old_overwrite_settings=$(bool_to_true_false $old_overwrite_settings)
+overwrite_settings="${YNH_CONFIG_MAIN_OVERWRITE_FILES_OVERWRITE_SETTINGS:-$old_overwrite_settings}"
+
+# Overwrite credentials.json file
+old_overwrite_credentials="$(ynh_app_setting_get $app overwrite_credentials)"
+old_overwrite_credentials=$(bool_to_true_false $old_overwrite_credentials)
+overwrite_credentials="${YNH_CONFIG_MAIN_OVERWRITE_FILES_OVERWRITE_CREDENTIALS:-$old_overwrite_credentials}"
+
+# Overwrite nginx configuration
+old_overwrite_nginx="$(ynh_app_setting_get $app overwrite_nginx)"
+old_overwrite_nginx=$(bool_to_true_false $old_overwrite_nginx)
+overwrite_nginx="${YNH_CONFIG_MAIN_OVERWRITE_FILES_OVERWRITE_NGINX:-$old_overwrite_nginx}"
+
+# Overwrite systemd configuration
+old_overwrite_systemd="$(ynh_app_setting_get $app overwrite_systemd)"
+old_overwrite_systemd=$(bool_to_true_false $old_overwrite_systemd)
+overwrite_systemd="${YNH_CONFIG_MAIN_OVERWRITE_FILES_OVERWRITE_SYSTEMD:-$old_overwrite_systemd}"
 
 #=================================================
 # SHOW_CONFIG FUNCTION FOR 'SHOW' COMMAND
@@ -114,6 +129,11 @@ show_config() {
 	echo "YNH_CONFIG_MAIN_MYPADS_CONFIGURATION_USELDAP=$useldap"
 
 	echo "YNH_CONFIG_MAIN_IS_PUBLIC_IS_PUBLIC=$is_public"
+
+	echo "YNH_CONFIG_MAIN_OVERWRITE_FILES_OVERWRITE_SETTINGS=$overwrite_settings"
+	echo "YNH_CONFIG_MAIN_OVERWRITE_FILES_OVERWRITE_CREDENTIALS=$overwrite_credentials"
+	echo "YNH_CONFIG_MAIN_OVERWRITE_FILES_OVERWRITE_NGINX=$overwrite_nginx"
+	echo "YNH_CONFIG_MAIN_OVERWRITE_FILES_OVERWRITE_SYSTEMD=$overwrite_systemd"
 }
 
 #=================================================
@@ -128,6 +148,7 @@ apply_config() {
 	if [ "$pad_config_nocolors" != "$old_pad_config_nocolors" ]
 	then
 		ynh_replace_string "\(\"noColors\" *: \).*," "\1$pad_config_nocolors," "$config_file"
+		ynh_app_setting_set $app pad_config_nocolors "$pad_config_nocolors"
 		restart_etherpad=1
 	fi
 
@@ -135,6 +156,7 @@ apply_config() {
 	if [ "$pad_config_showlinenumbers" != "$old_pad_config_showlinenumbers" ]
 	then
 		ynh_replace_string "\(\"showLineNumbers\" *: \).*," "\1$pad_config_showlinenumbers," "$config_file"
+		ynh_app_setting_set $app pad_config_showlinenumbers "$pad_config_showlinenumbers"
 		restart_etherpad=1
 	fi
 
@@ -142,6 +164,7 @@ apply_config() {
 	if [ "$pad_config_chatandusers" != "$old_pad_config_chatandusers" ]
 	then
 		ynh_replace_string "\(\"chatAndUsers\" *: \).*," "\1$pad_config_chatandusers," "$config_file"
+		ynh_app_setting_set $app pad_config_chatandusers "$pad_config_chatandusers"
 		restart_etherpad=1
 	fi
 
@@ -149,6 +172,7 @@ apply_config() {
 	if [ "$pad_config_alwaysshowchat" != "$old_pad_config_alwaysshowchat" ]
 	then
 		ynh_replace_string "\(\"alwaysShowChat\" *: \).*," "\1$pad_config_alwaysshowchat," "$config_file"
+		ynh_app_setting_set $app pad_config_alwaysshowchat "$pad_config_alwaysshowchat"
 		restart_etherpad=1
 	fi
 
@@ -156,6 +180,7 @@ apply_config() {
 	if [ "$pad_config_show_markdown" != "$old_pad_config_show_markdown" ]
 	then
 		ynh_replace_string "\(\"ep_markdown_default\" *: \).*," "\1$pad_config_show_markdown," "$config_file"
+		ynh_app_setting_set $app pad_config_show_markdown "$pad_config_show_markdown"
 		restart_etherpad=1
 	fi
 
@@ -163,6 +188,7 @@ apply_config() {
 	if [ "$pad_config_pageview" != "$old_pad_config_pageview" ]
 	then
 		ynh_replace_string "\(\"ep_page_view_default\" *: \).*," "\1$pad_config_pageview," "$config_file"
+		ynh_app_setting_set $app pad_config_pageview "$pad_config_pageview"
 		restart_etherpad=1
 	fi
 
@@ -232,17 +258,23 @@ apply_config() {
 	# Change public accessibility
 	if [ "$is_public" = "true" ]
 	then
-		is_public=1
+		yunohost app action run $app public_private --args is_public=1
 	else
-		is_public=0
+		yunohost app action run $app public_private --args is_public=0
 	fi
-	if [ $is_public -eq 1 ]; then
-		ynh_app_setting_set $app skipped_uris "/"
-	else
-		ynh_app_setting_set $app skipped_uris "/admin"	# etherpad admin page doesn't support SSO...
-	fi
-	ynh_app_setting_set $app is_public $is_public
-	yunohost app ssowatconf
+
+	# Set overwrite_settings
+	overwrite_settings=$(bool_to_01 $overwrite_settings)
+	ynh_app_setting_set $app overwrite_settings "$overwrite_settings"
+	# Set overwrite_credentials
+	overwrite_credentials=$(bool_to_01 $overwrite_credentials)
+	ynh_app_setting_set $app overwrite_credentials "$overwrite_credentials"
+	# Set overwrite_nginx
+	overwrite_nginx=$(bool_to_01 $overwrite_nginx)
+	ynh_app_setting_set $app overwrite_nginx "$overwrite_nginx"
+	# Set overwrite_systemd
+	overwrite_systemd=$(bool_to_01 $overwrite_systemd)
+	ynh_app_setting_set $app overwrite_systemd "$overwrite_systemd"
 }
 
 #=================================================

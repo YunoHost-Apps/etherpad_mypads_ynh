@@ -13,7 +13,7 @@ source /usr/share/yunohost/helpers
 # RETRIEVE ARGUMENTS
 #=================================================
 
-app=$YNH_APP_INSTANCE_NAME
+app=${YNH_APP_INSTANCE_NAME:-$YNH_APP_ID}
 
 #=================================================
 # CHECK IF ARGUMENTS ARE CORRECT

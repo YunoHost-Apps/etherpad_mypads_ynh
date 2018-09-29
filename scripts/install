@@ -72,6 +72,10 @@ ynh_app_setting_set $app language $language
 ynh_app_setting_set $app export $export
 ynh_app_setting_set $app mypads $mypads
 ynh_app_setting_set $app useldap $useldap
+ynh_app_setting_set $app overwrite_settings "1"
+ynh_app_setting_set $app overwrite_credentials "1"
+ynh_app_setting_set $app overwrite_nginx "1"
+ynh_app_setting_set $app overwrite_systemd "1"
 
 #=================================================
 # ACTIVATE MAINTENANCE MODE

@@ -28,6 +28,17 @@ export=$(ynh_app_setting_get $app export)
 db_name=$(ynh_app_setting_get $app db_name)
 mypads=$(ynh_app_setting_get $app mypads)
 useldap=$(ynh_app_setting_get $app useldap)
+overwrite_settings=$(ynh_app_setting_get $app overwrite_settings)
+overwrite_credentials=$(ynh_app_setting_get $app overwrite_credentials)
+overwrite_nginx=$(ynh_app_setting_get $app overwrite_nginx)
+overwrite_systemd=$(ynh_app_setting_get $app overwrite_systemd)
+
+# Optional parameters from config-panel feature
+pad_config_nocolors=$(ynh_app_setting_get $app pad_config_nocolors)
+pad_config_showlinenumbers=$(ynh_app_setting_get $app pad_config_showlinenumbers)
+pad_config_chatandusers=$(ynh_app_setting_get $app pad_config_chatandusers)
+pad_config_alwaysshowchat=$(ynh_app_setting_get $app pad_config_alwaysshowchat)
+pad_config_show_markdown=$(ynh_app_setting_get $app pad_config_show_markdown)
 
 #=================================================
 # CHECK VERSION
@@ -39,7 +50,7 @@ ynh_check_starting "You can access your Etherpad instance at" "/var/log/$app/eth
 ynh_abort_if_up_to_date
 
 #=================================================
-# FIX OLD THINGS
+# ENSURE DOWNWARD COMPATIBILITY
 #=================================================
 
 if [ "$is_public" = "Yes" ]; then
@@ -50,17 +61,17 @@ elif [ "$is_public" = "No" ]; then
 	is_public=0
 fi
 
-if [ -z $db_name ]; then	# If db_name setting doesn't exist
+if [ -z "$db_name" ]; then	# If db_name setting doesn't exist
 	db_name=$(ynh_sanitize_dbid $app)
 	ynh_app_setting_set $app db_name $db_name
 fi
 
-if [ -z $abiword ]; then	# If abiword setting doesn't exist
+if [ -z "$abiword" ]; then	# If abiword setting doesn't exist
 	abiword=0
 	ynh_app_setting_set $app abiword $abiword
 fi
 
-if [ -n $abiword ]; then	# If abiword setting exists
+if [ -n "$abiword" ]; then	# If abiword setting exists
 	if [ $abiword -eq 1 ]; then
 		export=abiword
 	fi
@@ -68,24 +79,48 @@ if [ -n $abiword ]; then	# If abiword setting exists
 	ynh_app_setting_delete $app abiword
 fi
 
-if [ -z $export ]; then	# If export setting doesn't exist
+if [ -z "$export" ]; then	# If export setting doesn't exist
 	export=none
 	ynh_app_setting_set $app export $export
 fi
 
-if [ -z $mypads ]; then	# If mypads setting doesn't exist
+if [ -z "$mypads" ]; then	# If mypads setting doesn't exist
 	mypads=1
 	ynh_app_setting_set $app mypads $mypads
 fi
 
-if [ -z $useldap ]; then	# If useldap setting doesn't exist
+if [ -z "$useldap" ]; then	# If useldap setting doesn't exist
 	useldap=0
 	ynh_app_setting_set $app useldap $useldap
 fi
 
-if [ -z $path_url ]; then	# If path_url setting doesn't exist
+if [ -z "$path_url" ]; then	# If path_url setting doesn't exist
 	path_url="/"
 	ynh_app_setting_set $app path $path_url
+fi
+
+# If overwrite_settings doesn't exist, create it
+if [ -z "$overwrite_settings" ]; then
+	overwrite_settings=1
+	ynh_app_setting_set $app overwrite_settings $overwrite_settings
+fi
+
+# If overwrite_credentials doesn't exist, create it
+if [ -z "$overwrite_credentials" ]; then
+	overwrite_credentials=1
+	ynh_app_setting_set $app overwrite_credentials $overwrite_credentials
+fi
+
+# If overwrite_nginx doesn't exist, create it
+if [ -z "$overwrite_nginx" ]; then
+	overwrite_nginx=1
+	ynh_app_setting_set $app overwrite_nginx $overwrite_nginx
+fi
+
+# If overwrite_systemd doesn't exist, create it
+if [ -z "$overwrite_systemd" ]; then
+	overwrite_systemd=1
+	ynh_app_setting_set $app overwrite_systemd $overwrite_systemd
 fi
 
 #=================================================
@@ -128,12 +163,16 @@ ynh_setup_source "$final_path"	# Download, check integrity and uncompress the so
 # NGINX CONFIGURATION
 #=================================================
 
-if [ "$path_url" != "/" ]
+# Overwrite the nginx configuration only if it's allowed
+if [ $overwrite_nginx -eq 1 ]
 then
-	ynh_replace_string "^#sub_path_only" "" "../conf/nginx.conf"
+	if [ "$path_url" != "/" ]
+	then
+		ynh_replace_string "^#sub_path_only" "" "../conf/nginx.conf"
+	fi
+	ynh_replace_string "__PATH__/" "${path_url%/}/" "../conf/nginx.conf"
+	ynh_add_nginx_config
 fi
-ynh_replace_string "__PATH__/" "${path_url%/}/" "../conf/nginx.conf"
-ynh_add_nginx_config
 
 #=================================================
 # UPGRADE NODEJS
@@ -172,40 +211,66 @@ done <<< "$(ls -1 "$final_path/node_modules" | grep "^ep_")")
 # CONFIGURE ETHERPAD
 #=================================================
 
-ynh_backup_if_checksum_is_different "$final_path/settings.json"	# Verify the checksum and backup the file if it's different
-ynh_backup_if_checksum_is_different "$final_path/credentials.json"	# Verify the checksum and backup the file if it's different
-cp ../conf/settings.json "$final_path/settings.json"
-cp ../conf/credentials.json "$final_path/credentials.json"
-ynh_replace_string "__PORT__" "$port" "$final_path/settings.json"
-ynh_replace_string "__DB_USER__" "$app" "$final_path/credentials.json"
-db_pwd=$(ynh_app_setting_get $app mysqlpwd)
-ynh_print_OFF; password=$(ynh_app_setting_get $app password); ynh_print_ON
-ynh_replace_string "__DB_PWD__" "$db_pwd" "$final_path/credentials.json"
-ynh_replace_string "__ADMIN__" "$admin" "$final_path/credentials.json"
-ynh_print_OFF; ynh_replace_special_string "__PASSWD__" "$password" "$final_path/credentials.json"; ynh_print_ON
-if [ "$export" = "abiword" ]
+# Overwrite the settings config file only if it's allowed
+if [ $overwrite_settings -eq 1 ]
 then
-	abiword_path=`which abiword`	# Get abiword binary path
-	ynh_replace_string "\"abiword\" : null" "\"abiword\" : \"$abiword_path\"" "$final_path/settings.json"	# Renseigne l'emplacement de abiword dans la config de etherpad
-elif [ "$export" = "libreoffice" ]
-then
-	soffice_path=`which soffice`	# Get soffice binary path
-	ynh_replace_string "\"soffice\" : null" "\"soffice\" : \"$soffice_path\"" "$final_path/settings.json"	# Renseigne l'emplacement de abiword dans la config de etherpad
-fi
-if test -z $language; then
-	language=en # If upgrading from a version which doesn't support translations, set language to English by default
-	ynh_app_setting_set $app language $language
-fi
-ynh_replace_string "__LANGUAGE__" "$language" "$final_path/settings.json"
+	ynh_backup_if_checksum_is_different "$final_path/settings.json"	# Verify the checksum and backup the file if it's different
+	cp ../conf/settings.json "$final_path/settings.json"
+	ynh_replace_string "__PORT__" "$port" "$final_path/settings.json"
+	if [ "$export" = "abiword" ]
+	then
+		abiword_path=`which abiword`	# Get abiword binary path
+		ynh_replace_string "\"abiword\" : null" "\"abiword\" : \"$abiword_path\"" "$final_path/settings.json"	# Renseigne l'emplacement de abiword dans la config de etherpad
+	elif [ "$export" = "libreoffice" ]
+	then
+		soffice_path=`which soffice`	# Get soffice binary path
+		ynh_replace_string "\"soffice\" : null" "\"soffice\" : \"$soffice_path\"" "$final_path/settings.json"	# Renseigne l'emplacement de abiword dans la config de etherpad
+	fi
+	if test -z $language; then
+		language=en # If upgrading from a version which doesn't support translations, set language to English by default
+		ynh_app_setting_set $app language $language
+	fi
+	ynh_replace_string "__LANGUAGE__" "$language" "$final_path/settings.json"
+	# Use ldap for mypads
+	if [ $mypads -eq 1 ] && [ $useldap -eq 1 ]
+	then
+		ynh_replace_string "//noldap\(.*\)" "\1 //useldap" "$final_path/settings.json"
+	fi
 
-# Use ldap for mypads
-if [ $mypads -eq 1 ] && [ $useldap -eq 1 ]
-then
-	ynh_replace_string "//noldap\(.*\)" "\1 //useldap" "$final_path/settings.json"
+	# Optional parameters from config-panel feature
+	if [ -n "$pad_config_nocolors" ]; then
+		ynh_replace_string "\(\"noColors\" *: \).*," "\1$pad_config_nocolors," "$final_path/settings.json"
+	fi
+	if [ -n "$pad_config_showlinenumbers" ]; then
+		ynh_replace_string "\(\"showLineNumbers\" *: \).*," "\1$pad_config_showlinenumbers," "$final_path/settings.json"
+	fi
+	if [ -n "$pad_config_chatandusers" ]; then
+		ynh_replace_string "\(\"chatAndUsers\" *: \).*," "\1$pad_config_chatandusers," "$final_path/settings.json"
+	fi
+	if [ -n "$pad_config_alwaysshowchat" ]; then
+		ynh_replace_string "\(\"alwaysShowChat\" *: \).*," "\1$pad_config_alwaysshowchat," "$final_path/settings.json"
+	fi
+	if [ -n "$pad_config_show_markdown" ]; then
+		ynh_replace_string "\(\"ep_markdown_default\" *: \).*," "\1$pad_config_show_markdown," "$final_path/settings.json"
+	fi
+
+	ynh_store_file_checksum "$final_path/settings.json"	# Recalculate and store the config file checksum into the app settings
 fi
 
-ynh_store_file_checksum "$final_path/settings.json"	# Recalculate and store the config file checksum into the app settings
-ynh_store_file_checksum "$final_path/credentials.json"	# Recalculate and store the config file checksum into the app settings
+# Overwrite the credentials config file only if it's allowed
+if [ $overwrite_credentials -eq 1 ]
+then
+	ynh_backup_if_checksum_is_different "$final_path/credentials.json"	# Verify the checksum and backup the file if it's different
+	cp ../conf/credentials.json "$final_path/credentials.json"
+	ynh_replace_string "__DB_USER__" "$app" "$final_path/credentials.json"
+	db_pwd=$(ynh_app_setting_get $app mysqlpwd)
+	ynh_print_OFF; password=$(ynh_app_setting_get $app password); ynh_print_ON
+	ynh_replace_string "__DB_PWD__" "$db_pwd" "$final_path/credentials.json"
+	ynh_replace_string "__ADMIN__" "$admin" "$final_path/credentials.json"
+	ynh_print_OFF; ynh_replace_special_string "__PASSWD__" "$password" "$final_path/credentials.json"; ynh_print_ON
+
+	ynh_store_file_checksum "$final_path/credentials.json"	# Recalculate and store the config file checksum into the app settings
+fi
 
 #=================================================
 # CREATE DEDICATED USER
@@ -238,8 +303,12 @@ ynh_use_logrotate --non-append
 # SETUP SYSTEMD
 #=================================================
 
-ynh_replace_string "__ENV_PATH__" "$PATH" "../conf/systemd.service"
-ynh_add_systemd_config
+# Overwrite the systemd configuration only if it's allowed
+if [ $overwrite_systemd -eq 1 ]
+then
+	ynh_replace_string "__ENV_PATH__" "$PATH" "../conf/systemd.service"
+	ynh_add_systemd_config
+fi
 
 #=================================================
 # SOME HACKS
