@@ -11,4 +11,4 @@ nodejs_version=6
 
 # Version of mypads
 # This variable is mostly used to force an upgrade of the package in case of new versions of mypads.
-mypads_version=1.6.2
+mypads_version=1.6.8
