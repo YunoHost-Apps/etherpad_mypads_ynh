@@ -126,6 +126,13 @@ npm cache clean
 npm install forever -g >> $install_log 2>&1
 
 #=================================================
+# SECURING FILES AND DIRECTORIES
+#=================================================
+
+# Set files ownership to etherpad
+chown -R $app: $final_path
+
+#=================================================
 # ENABLE SERVICE IN ADMIN PANEL
 #=================================================
 
