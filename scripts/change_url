@@ -21,6 +21,11 @@ new_path=$YNH_APP_NEW_PATH
 
 app=$YNH_APP_INSTANCE_NAME
 
+#=================================================
+# LOAD SETTINGS
+#=================================================
+
+final_path=$(ynh_app_setting_get $app final_path)
 mypads=$(ynh_app_setting_get $app mypads)
 
 #=================================================
@@ -81,30 +86,15 @@ then
 	# Make a backup of the original nginx config file if modified
 	ynh_backup_if_checksum_is_different "$nginx_conf_path"
 
-	# Move from sub path to root
-	if [ "$new_path" == "/" ]
-	then
-		ynh_replace_string "^location $old_path/" "location $new_path" "$nginx_conf_path"
-		ynh_replace_string "^.*rewrite.*\^/" "#sub_path_only&" "$nginx_conf_path"
-		ynh_replace_string "^location ~\* $old_path/" "location ~* $new_path" "$nginx_conf_path"
+	# Set global variables for nginx helper
+	domain="$old_domain"
+	path_url="$new_path"
 
-		# Change the path in the two rewrite instructions
-		ynh_replace_string "\(rewrite *\^\)$old_path\$ $old_path/*" "\1$new_path$ $new_path" "$nginx_conf_path"
-		ynh_replace_string "\(rewrite *\^\)$old_path/*admin\$ $old_path/*" "\1${new_path}admin\$ $new_path" "$nginx_conf_path"
+	# Store path_url setting
+	ynh_app_setting_set $app path "$path_url"
 
-	# Move to a sub path
-	else
-		ynh_replace_string "^location $old_path.*" "location $new_path/ {" "$nginx_conf_path"
-		ynh_replace_string "^#sub_path_only" "" "$nginx_conf_path"
-		ynh_replace_string "^location ~\* $old_path/*" "location ~* $new_path/" "$nginx_conf_path"
-
-		# Change the path in the two rewrite instructions
-		ynh_replace_string "\(rewrite *\^\)$old_path\$ $old_path/*" "\1$new_path$ $new_path/" "$nginx_conf_path"
-		ynh_replace_string "\(rewrite *\^\)$old_path/*admin\$ $old_path/*" "\1$new_path/admin\$ $new_path/" "$nginx_conf_path"
-	fi
-
-	# Calculate and store the nginx config file checksum
-	ynh_store_file_checksum "$nginx_conf_path"
+	# Create a dedicated nginx config
+	ynh_add_nginx_config
 fi
 
 # Change the domain for nginx
@@ -114,23 +104,22 @@ then
 	ynh_delete_file_checksum "$nginx_conf_path"
 	mv $nginx_conf_path /etc/nginx/conf.d/$new_domain.d/$app.conf
 
-	nginx_conf_path=/etc/nginx/conf.d/$new_domain.d/$app.conf
-	# Calculate and store the nginx config file checksum
-	ynh_store_file_checksum "$nginx_conf_path"
+	# Store file checksum for the new config file location
+	ynh_store_file_checksum "/etc/nginx/conf.d/$new_domain.d/$app.conf"
 fi
 
 #=================================================
 # RELOAD NGINX
 #=================================================
 
-ynh_system_reload nginx
+ynh_systemd_action --action=reload --service_name=nginx
 
 #=================================================
 # CHECK ETHERPAD STARTING
 #=================================================
 
 # Wait for etherpad fully started
-ynh_check_starting "You can access your Etherpad instance at" "/var/log/$app/etherpad.log" "120"
+ynh_systemd_action --action=restart --line_match="You can access your Etherpad instance at" --log_path="/var/log/$app/etherpad.log" --timeout="120"
 
 #=================================================
 # DEACTIVE MAINTENANCE MODE

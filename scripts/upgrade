@@ -34,9 +34,9 @@ useldap=$(ynh_app_setting_get $app useldap)
 #=================================================
 
 # Wait for etherpad to be fully started
-ynh_check_starting "You can access your Etherpad instance at" "/var/log/$app/etherpad.log" "120"
+ynh_systemd_action --action=restart --line_match="You can access your Etherpad instance at" --log_path="/var/log/$app/etherpad.log" --timeout="120"
 
-ynh_abort_if_up_to_date
+upgrade_type=$(ynh_check_app_version_changed)
 
 #=================================================
 # FIX OLD THINGS
@@ -114,7 +114,7 @@ ynh_maintenance_mode_ON
 # STOP ETHERPAD
 #=================================================
 
-ynh_system_reload $app stop
+ynh_systemd_action --action=stop
 
 #=================================================
 # STANDARD UPGRADE STEPS
@@ -122,17 +122,15 @@ ynh_system_reload $app stop
 # DOWNLOAD, CHECK AND UNPACK SOURCE
 #=================================================
 
-ynh_setup_source "$final_path"	# Download, check integrity and uncompress the source from app.src
+if [ "$upgrade_type" == "UPGRADE_APP" ]
+then
+	ynh_setup_source "$final_path"	# Download, check integrity and uncompress the source from app.src
+fi
 
 #=================================================
 # NGINX CONFIGURATION
 #=================================================
 
-if [ "$path_url" != "/" ]
-then
-	ynh_replace_string "^#sub_path_only" "" "../conf/nginx.conf"
-fi
-ynh_replace_string "__PATH__/" "${path_url%/}/" "../conf/nginx.conf"
 ynh_add_nginx_config
 
 #=================================================
@@ -172,40 +170,43 @@ done <<< "$(ls -1 "$final_path/node_modules" | grep "^ep_")")
 # CONFIGURE ETHERPAD
 #=================================================
 
-ynh_backup_if_checksum_is_different "$final_path/settings.json"	# Verify the checksum and backup the file if it's different
-ynh_backup_if_checksum_is_different "$final_path/credentials.json"	# Verify the checksum and backup the file if it's different
-cp ../conf/settings.json "$final_path/settings.json"
-cp ../conf/credentials.json "$final_path/credentials.json"
-ynh_replace_string "__PORT__" "$port" "$final_path/settings.json"
-ynh_replace_string "__DB_USER__" "$app" "$final_path/credentials.json"
-db_pwd=$(ynh_app_setting_get $app mysqlpwd)
-ynh_print_OFF; password=$(ynh_app_setting_get $app password); ynh_print_ON
-ynh_replace_string "__DB_PWD__" "$db_pwd" "$final_path/credentials.json"
-ynh_replace_string "__ADMIN__" "$admin" "$final_path/credentials.json"
-ynh_print_OFF; ynh_replace_special_string "__PASSWD__" "$password" "$final_path/credentials.json"; ynh_print_ON
-if [ "$export" = "abiword" ]
+if [ "$upgrade_type" == "UPGRADE_APP" ]
 then
-	abiword_path=`which abiword`	# Get abiword binary path
-	ynh_replace_string "\"abiword\" : null" "\"abiword\" : \"$abiword_path\"" "$final_path/settings.json"	# Renseigne l'emplacement de abiword dans la config de etherpad
-elif [ "$export" = "libreoffice" ]
-then
-	soffice_path=`which soffice`	# Get soffice binary path
-	ynh_replace_string "\"soffice\" : null" "\"soffice\" : \"$soffice_path\"" "$final_path/settings.json"	# Renseigne l'emplacement de abiword dans la config de etherpad
-fi
-if test -z $language; then
-	language=en # If upgrading from a version which doesn't support translations, set language to English by default
-	ynh_app_setting_set $app language $language
-fi
-ynh_replace_string "__LANGUAGE__" "$language" "$final_path/settings.json"
+	ynh_backup_if_checksum_is_different "$final_path/settings.json"	# Verify the checksum and backup the file if it's different
+	ynh_backup_if_checksum_is_different "$final_path/credentials.json"	# Verify the checksum and backup the file if it's different
+	cp ../conf/settings.json "$final_path/settings.json"
+	cp ../conf/credentials.json "$final_path/credentials.json"
+	ynh_replace_string "__PORT__" "$port" "$final_path/settings.json"
+	ynh_replace_string "__DB_USER__" "$app" "$final_path/credentials.json"
+	db_pwd=$(ynh_app_setting_get $app mysqlpwd)
+	ynh_print_OFF; password=$(ynh_app_setting_get $app password); ynh_print_ON
+	ynh_replace_string "__DB_PWD__" "$db_pwd" "$final_path/credentials.json"
+	ynh_replace_string "__ADMIN__" "$admin" "$final_path/credentials.json"
+	ynh_print_OFF; ynh_replace_special_string "__PASSWD__" "$password" "$final_path/credentials.json"; ynh_print_ON
+	if [ "$export" = "abiword" ]
+	then
+		abiword_path=`which abiword`	# Get abiword binary path
+		ynh_replace_string "\"abiword\" : null" "\"abiword\" : \"$abiword_path\"" "$final_path/settings.json"	# Renseigne l'emplacement de abiword dans la config de etherpad
+	elif [ "$export" = "libreoffice" ]
+	then
+		soffice_path=`which soffice`	# Get soffice binary path
+		ynh_replace_string "\"soffice\" : null" "\"soffice\" : \"$soffice_path\"" "$final_path/settings.json"	# Renseigne l'emplacement de abiword dans la config de etherpad
+	fi
+	if test -z $language; then
+		language=en # If upgrading from a version which doesn't support translations, set language to English by default
+		ynh_app_setting_set $app language $language
+	fi
+	ynh_replace_string "__LANGUAGE__" "$language" "$final_path/settings.json"
 
-# Use ldap for mypads
-if [ $mypads -eq 1 ] && [ $useldap -eq 1 ]
-then
-	ynh_replace_string "//noldap" "" "$final_path/settings.json"
-fi
+	# Use ldap for mypads
+	if [ $mypads -eq 1 ] && [ $useldap -eq 1 ]
+	then
+		ynh_replace_string "//noldap" "" "$final_path/settings.json"
+	fi
 
-ynh_store_file_checksum "$final_path/settings.json"	# Recalculate and store the config file checksum into the app settings
-ynh_store_file_checksum "$final_path/credentials.json"	# Recalculate and store the config file checksum into the app settings
+	ynh_store_file_checksum "$final_path/settings.json"	# Recalculate and store the config file checksum into the app settings
+	ynh_store_file_checksum "$final_path/credentials.json"	# Recalculate and store the config file checksum into the app settings
+fi
 
 #=================================================
 # CREATE DEDICATED USER
@@ -226,7 +227,7 @@ chown $app -R /var/log/$app/etherpad.log
 # UPGRADE FAIL2BAN
 #=================================================
 
-ynh_add_fail2ban_config "/var/log/nginx/$domain-access.log" "<HOST> .* \"POST /mypads/api/auth/login HTTP/1.1\" 400" 5
+ynh_add_fail2ban_config --logpath="/var/log/nginx/$domain-access.log" --failregex="<HOST> .* \"POST /mypads/api/auth/login HTTP/1.1\" 400" --max_retry=5
 
 #=================================================
 # SETUP LOGROTATE
@@ -266,14 +267,14 @@ fi
 # RELOAD NGINX
 #=================================================
 
-ynh_system_reload nginx
+ynh_systemd_action --action=reload --service_name=nginx
 
 #=================================================
 # CHECK ETHERPAD STARTING
 #=================================================
 
 # Wait for etherpad to be fully started
-ynh_check_starting "You can access your Etherpad instance at" "/var/log/$app/etherpad.log" "120"
+ynh_systemd_action --action=restart --line_match="You can access your Etherpad instance at" --log_path="/var/log/$app/etherpad.log" --timeout="120"
 
 #=================================================
 # DEACTIVE MAINTENANCE MODE
