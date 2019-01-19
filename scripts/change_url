@@ -67,7 +67,7 @@ fi
 #=================================================
 
 ynh_clean_setup () {
-# Nettoyage des résidus d'installation non pris en charge par le script remove.
+# Clean installation remaining that are not handle by the remove script.
 	ynh_clean_check_starting
 }
 # Exit if an error occurs during the execution of the script
@@ -119,7 +119,7 @@ ynh_systemd_action --action=reload --service_name=nginx
 # CHECK ETHERPAD STARTING
 #=================================================
 
-# Wait for etherpad fully started
+# Wait for etherpad to be fully started
 ynh_systemd_action --action=restart --line_match="You can access your Etherpad instance at" --log_path="/var/log/$app/etherpad.log" --timeout="120"
 
 #=================================================

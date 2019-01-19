@@ -26,13 +26,15 @@ export=$(ynh_app_setting_get $app export)
 # STOP AND REMOVE SERVICE
 #=================================================
 
+# Remove the dedicated systemd config
 ynh_remove_systemd_config
 
 #=================================================
-# DISABLE SERVICE IN ADMIN PANEL
+# REMOVE SERVICE FROM ADMIN PANEL
 #=================================================
 
-if yunohost service status | grep -q $app	# Check if service is declared in YunoHost
+# Check if the service is declared in YunoHost
+if yunohost service status | grep -q $app
 then
 	ynh_print_info "Remove $app service" >&2
 	yunohost service remove $app
@@ -44,6 +46,7 @@ fi
 
 if [ "$export" != "none" ]
 then
+	# Remove metapackage and its dependencies
 	ynh_remove_app_dependencies
 fi
 
@@ -54,33 +57,38 @@ fi
 ynh_remove_nodejs
 
 #=================================================
-# REMOVE THE SQL DB
+# REMOVE THE MYSQL DATABASE
 #=================================================
 
-ynh_mysql_remove_db $db_name $db_name	# Remove the database along with the associated user
+# Remove a database if it exists, along with the associated user
+ynh_mysql_remove_db $db_name $db_name
 
 #=================================================
-# REMOVE THE MAIN DIR OF THE APP
+# REMOVE APP MAIN DIR
 #=================================================
 
-ynh_secure_remove "/var/www/$app"	# Remove the app directory securely
+# Remove the app directory securely
+ynh_secure_remove "/var/www/$app"
 
 #=================================================
-# REMOVE THE NGINX CONFIGURATION
+# REMOVE NGINX CONFIGURATION
 #=================================================
 
-ynh_remove_nginx_config	# Remove the dedicated nginx config
+# Remove the dedicated nginx config
+ynh_remove_nginx_config
 
 #=================================================
-# REMOVE THE LOGROTATE CONFIG
+# REMOVE LOGROTATE CONFIGURATION
 #=================================================
 
-ynh_remove_logrotate	# Remove the app-specific logrotate config
+# Remove the app-specific logrotate config
+ynh_remove_logrotate
 
 #=================================================
 # REMOVE FAIL2BAN CONFIGURATION
 #=================================================
 
+# Remove the dedicated fail2ban config
 ynh_remove_fail2ban_config
 
 #=================================================
@@ -89,4 +97,5 @@ ynh_remove_fail2ban_config
 # REMOVE DEDICATED USER
 #=================================================
 
+# Delete dedicated system user
 ynh_system_user_delete $app

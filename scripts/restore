@@ -16,7 +16,7 @@ source ../settings/scripts/_variables
 #=================================================
 
 ynh_clean_setup () {
-# Nettoyage des résidus d'installation non pris en charge par le script remove.
+# Clean installation remaining that are not handle by the remove script.
 	ynh_clean_check_starting
 }
 # Exit if an error occurs during the execution of the script
@@ -55,19 +55,19 @@ ynh_maintenance_mode_ON
 #=================================================
 # STANDARD RESTORE STEPS
 #=================================================
-# RESTORE OF THE NGINX CONFIGURATION
+# RESTORE THE NGINX CONFIGURATION
 #=================================================
 
 ynh_restore_file "/etc/nginx/conf.d/$domain.d/$app.conf"
 
 #=================================================
-# RESTORE OF THE MAIN DIR OF THE APP
+# RESTORE THE APP MAIN DIR
 #=================================================
 
 ynh_restore_file "$final_path"
 
 #=================================================
-# RESTORE THE SQL DB
+# RESTORE THE MYSQL DATABASE
 #=================================================
 
 db_pwd=$(ynh_app_setting_get $app mysqlpwd)
@@ -78,7 +78,8 @@ ynh_mysql_connect_as $db_name $db_pwd $db_name < ./db.sql
 # RECREATE THE DEDICATED USER
 #=================================================
 
-ynh_system_user_create $app $final_path	# Recreate the dedicated user, if it doesn't exist
+# Create the dedicated user (if not existing)
+ynh_system_user_create $app
 
 #=================================================
 # SPECIFIC RESTORE
@@ -121,14 +122,14 @@ npm cache clean
 npm install forever -g >> $install_log 2>&1
 
 #=================================================
-# SECURING FILES AND DIRECTORIES
+# RESTORE USER RIGHTS
 #=================================================
 
-# Set files ownership to etherpad
+# Restore permissions on app files
 chown -R $app: $final_path
 
 #=================================================
-# ENABLE SERVICE IN ADMIN PANEL
+# ADVERTISE SERVICE IN ADMIN PANEL
 #=================================================
 
 yunohost service add $app --log "/var/log/$app/etherpad.log"
@@ -138,7 +139,6 @@ yunohost service add $app --log "/var/log/$app/etherpad.log"
 #=================================================
 
 ynh_restore_file "/etc/systemd/system/$app.service"
-## Démarrage auto du service
 systemctl enable $app.service
 
 #=================================================

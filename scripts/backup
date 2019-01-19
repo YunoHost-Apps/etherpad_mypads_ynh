@@ -29,20 +29,20 @@ db_name=$(ynh_app_setting_get $app db_name)
 #=================================================
 # STANDARD BACKUP STEPS
 #=================================================
-# BACKUP OF THE MAIN DIR OF THE APP
+# BACKUP THE APP MAIN DIR
 #=================================================
 
 CHECK_SIZE "$final_path"
 ynh_backup "$final_path"
 
 #=================================================
-# BACKUP OF THE NGINX CONFIGURATION
+# BACKUP NGINX CONFIGURATION
 #=================================================
 
 ynh_backup "/etc/nginx/conf.d/$domain.d/$app.conf"
 
 #=================================================
-# BACKUP OF THE SQL BDD
+# BACKUP THE MYSQL DATABASE
 #=================================================
 
 ynh_mysql_dump_db "$db_name" > db.sql
