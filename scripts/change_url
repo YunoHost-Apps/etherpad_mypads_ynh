@@ -27,6 +27,7 @@ app=$YNH_APP_INSTANCE_NAME
 
 final_path=$(ynh_app_setting_get $app final_path)
 mypads=$(ynh_app_setting_get $app mypads)
+port=$(ynh_app_setting_get $app port)
 
 #=================================================
 # CHECK THE SYNTAX OF THE PATHS

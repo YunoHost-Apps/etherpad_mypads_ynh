@@ -247,7 +247,7 @@ fi
 # SETUP FAIL2BAN
 #=================================================
 
-ynh_add_fail2ban_config --logpath="/var/log/nginx/$domain-access.log" --failregex="<HOST> .* \"POST /mypads/api/auth/login HTTP/1.1\" 400" --max_retry=5
+ynh_add_fail2ban_config --logpath="/var/log/nginx/$domain-access.log" --failregex="<HOST> .* .POST /mypads/api/auth/login HTTP/1.1. 400" --max_retry=5
 
 #=================================================
 # SETUP SSOWAT
@@ -280,12 +280,6 @@ then
 	# Wait for etherpad to be fully started
 	ynh_systemd_action --action=restart --line_match="You can access your Etherpad instance at" --log_path="/var/log/$app/etherpad.log" --timeout="120"
 fi
-
-#=================================================
-# DEACTIVE MAINTENANCE MODE
-#=================================================
-
-ynh_maintenance_mode_OFF
 
 #=================================================
 # SEND A README FOR THE ADMIN

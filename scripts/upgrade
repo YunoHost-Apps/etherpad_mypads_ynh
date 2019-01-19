@@ -128,6 +128,16 @@ then
 fi
 
 #=================================================
+# UPGRADE DEPENDENCIES
+#=================================================
+
+if [ "$export" = "abiword" ]; then
+	ynh_install_app_dependencies $abiword_app_depencencies
+elif [ "$export" = "libreoffice" ]; then
+	ynh_install_app_dependencies $libreoffice_app_dependencies
+fi
+
+#=================================================
 # NGINX CONFIGURATION
 #=================================================
 
@@ -227,7 +237,7 @@ chown $app -R /var/log/$app/etherpad.log
 # UPGRADE FAIL2BAN
 #=================================================
 
-ynh_add_fail2ban_config --logpath="/var/log/nginx/$domain-access.log" --failregex="<HOST> .* \"POST /mypads/api/auth/login HTTP/1.1\" 400" --max_retry=5
+ynh_add_fail2ban_config --logpath="/var/log/nginx/$domain-access.log" --failregex="<HOST> .* .POST /mypads/api/auth/login HTTP/1.1. 400" --max_retry=5
 
 #=================================================
 # SETUP LOGROTATE
