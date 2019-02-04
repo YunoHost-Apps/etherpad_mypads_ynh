@@ -25,6 +25,7 @@ ynh_abort_if_errors
 #=================================================
 # RETRIEVE ARGUMENTS FROM THE MANIFEST
 #=================================================
+ynh_script_progression --message="Retrieve arguments from the manifest"
 
 domain=$YNH_APP_ARG_DOMAIN
 path_url=$YNH_APP_ARG_PATH
@@ -41,6 +42,7 @@ app=$YNH_APP_INSTANCE_NAME
 #=================================================
 # CHECK IF THE APP CAN BE INSTALLED WITH THIS ARGS
 #=================================================
+ynh_script_progression --message="Check if the app can be installed"
 
 ynh_print_OFF
 if [ "${#password}" -lt 8 ] || [ "${#password}" -gt 30 ]
@@ -61,6 +63,7 @@ ynh_webpath_register $app $domain $path_url
 #=================================================
 # STORE SETTINGS FROM MANIFEST
 #=================================================
+ynh_script_progression --message="Store settings from manifest" --weight=3
 
 ynh_app_setting_set $app domain $domain
 ynh_app_setting_set $app path $path_url
@@ -77,6 +80,7 @@ ynh_app_setting_set $app useldap $useldap
 #=================================================
 # FIND AND OPEN A PORT
 #=================================================
+ynh_script_progression --message="Find a free port" --weight=2
 
 # Find a free port
 port=$(ynh_find_port 9001)
@@ -85,6 +89,7 @@ ynh_app_setting_set $app port $port
 #=================================================
 # INSTALL DEPENDENCIES
 #=================================================
+ynh_script_progression --message="Install dependencies" --weight=120
 
 if [ "$export" = "abiword" ]; then
 	ynh_install_app_dependencies $abiword_app_depencencies
@@ -95,12 +100,14 @@ fi
 #=================================================
 # INSTALL NODEJS
 #=================================================
+ynh_script_progression --message="Install NodeJS" --weight=12
 
 ynh_install_nodejs $nodejs_version
 
 #=================================================
 # CREATE A MYSQL DATABASE
 #=================================================
+ynh_script_progression --message="Create a mysql database"
 
 db_name=$(ynh_sanitize_dbid $app)
 ynh_app_setting_set $app db_name $db_name
@@ -109,6 +116,7 @@ ynh_mysql_setup_db $db_name $db_name
 #=================================================
 # DOWNLOAD, CHECK AND UNPACK SOURCE
 #=================================================
+ynh_script_progression --message="Download, check and unpack source" --weight=4
 
 ynh_app_setting_set $app final_path $final_path
 # Download, check integrity and uncompress the source from app.src
@@ -117,6 +125,7 @@ ynh_setup_source "$final_path"
 #=================================================
 # NGINX CONFIGURATION
 #=================================================
+ynh_script_progression --message="Configure nginx" --weight=2
 
 # Create a dedicated nginx config
 ynh_add_nginx_config
@@ -124,6 +133,7 @@ ynh_add_nginx_config
 #=================================================
 # CREATE DEDICATED USER
 #=================================================
+ynh_script_progression --message="Create a dedicated user" --weight=3
 
 # Create a dedicated system user
 ynh_system_user_create $app $final_path
@@ -133,6 +143,7 @@ ynh_system_user_create $app $final_path
 #=================================================
 # HANDLE LOG FILES AND LOGROTATE
 #=================================================
+ynh_script_progression --message="Configure logrotate"
 
 # Create log directory
 mkdir -p /var/log/$app
@@ -147,6 +158,7 @@ ynh_use_logrotate
 #=================================================
 # INSTALL ETHERPAD
 #=================================================
+ynh_script_progression --message="Install Etherpad" --weight=90
 
 # Install dependencies and proceed to the installation
 ynh_use_nodejs
@@ -156,6 +168,7 @@ npm install forever -g >> $install_log 2>&1
 #=================================================
 # CONFIGURE ETHERPAD
 #=================================================
+ynh_script_progression --message="Configure Etherpad" --weight=6
 
 cp ../conf/settings.json "$final_path/settings.json"
 cp ../conf/credentials.json "$final_path/credentials.json"
@@ -202,6 +215,7 @@ chmod 600 $final_path/credentials.json
 #=================================================
 # SETUP SYSTEMD
 #=================================================
+ynh_script_progression --message="Configure systemd" --weight=4
 
 ynh_replace_string "__ENV_PATH__" "$PATH" "../conf/systemd.service"
 # Create a dedicated systemd config
@@ -216,6 +230,7 @@ yunohost service add $app --log "/var/log/$app/etherpad.log"
 #=================================================
 # INSTALL FRAMAPAD'S PLUGINS
 #=================================================
+ynh_script_progression --message="Install Etherpad plugins" --weight=90
 
 pushd "$final_path"
 # Add Left/Center/Right/Justify to lines of text in a pad
@@ -275,6 +290,7 @@ fi
 #=================================================
 # SETUP FAIL2BAN
 #=================================================
+ynh_script_progression --message="Configure fail2ban" --weight=13
 
 # Create a dedicated fail2ban config
 ynh_add_fail2ban_config --logpath="/var/log/nginx/$domain-access.log" --failregex="<HOST> .* .POST /mypads/api/auth/login HTTP/1.1. 400" --max_retry=5
@@ -282,6 +298,7 @@ ynh_add_fail2ban_config --logpath="/var/log/nginx/$domain-access.log" --failrege
 #=================================================
 # SETUP SSOWAT
 #=================================================
+ynh_script_progression --message="Setup SSOwat"
 
 if [ $is_public -eq 1 ]; then
 	ynh_app_setting_set $app skipped_uris "/"
@@ -293,12 +310,14 @@ fi
 #=================================================
 # RELOAD NGINX
 #=================================================
+ynh_script_progression --message="Reload nginx"
 
 ynh_systemd_action --action=reload --service_name=nginx
 
 #=================================================
 # CHECK ETHERPAD STARTING
 #=================================================
+ynh_script_progression --message="Restart Etherpad" --weight=20
 
 # Wait for etherpad to be fully started
 ynh_systemd_action --action=restart --line_match="You can access your Etherpad instance at" --log_path="/var/log/$app/etherpad.log" --timeout="120"
@@ -335,3 +354,9 @@ If you are facing an issue or want to improve this app, please open a new issue 
 
 ynh_send_readme_to_admin "$message" "$admin"
 ynh_print_ON
+
+#=================================================
+# END OF SCRIPT
+#=================================================
+
+ynh_script_progression --message="Installation completed" --last

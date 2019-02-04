@@ -19,6 +19,7 @@ ynh_abort_if_errors
 #=================================================
 # LOAD SETTINGS
 #=================================================
+ynh_script_progression --message="Load settings" --weight=2
 
 app=$YNH_APP_INSTANCE_NAME
 
@@ -31,6 +32,7 @@ db_name=$(ynh_app_setting_get $app db_name)
 #=================================================
 # BACKUP THE APP MAIN DIR
 #=================================================
+ynh_script_progression --message="Backup the app main dir" --weight=2
 
 CHECK_SIZE "$final_path"
 ynh_backup "$final_path"
@@ -38,12 +40,14 @@ ynh_backup "$final_path"
 #=================================================
 # BACKUP NGINX CONFIGURATION
 #=================================================
+ynh_script_progression --message="Backup nginx configuration"
 
 ynh_backup "/etc/nginx/conf.d/$domain.d/$app.conf"
 
 #=================================================
 # BACKUP THE MYSQL DATABASE
 #=================================================
+ynh_script_progression --message="Backup the mysql database" --weight=3
 
 ynh_mysql_dump_db "$db_name" > db.sql
 CHECK_SIZE "db.sql"
@@ -53,18 +57,27 @@ CHECK_SIZE "db.sql"
 #=================================================
 # BACKUP LOGROTATE
 #=================================================
+ynh_script_progression --message="Backup logrotate configuration"
 
 ynh_backup "/etc/logrotate.d/$app"
 
 #=================================================
 # BACKUP SYSTEMD
 #=================================================
+ynh_script_progression --message="Backup systemd configuration"
 
 ynh_backup "/etc/systemd/system/$app.service"
 
 #=================================================
 # BACKUP FAIL2BAN CONFIGURATION
 #=================================================
+ynh_script_progression --message="Backup fail2ban configuration"
 
 ynh_backup "/etc/fail2ban/jail.d/$app.conf"
 ynh_backup "/etc/fail2ban/filter.d/$app.conf"
+
+#=================================================
+# END OF SCRIPT
+#=================================================
+
+ynh_script_progression --message="Backup completed" --last

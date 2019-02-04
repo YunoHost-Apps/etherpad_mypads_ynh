@@ -14,6 +14,7 @@ source _variables
 #=================================================
 # LOAD SETTINGS
 #=================================================
+ynh_script_progression --message="Load settings" --weight=20
 
 app=$YNH_APP_INSTANCE_NAME
 
@@ -41,6 +42,7 @@ upgrade_type=$(ynh_check_app_version_changed)
 #=================================================
 # ENSURE DOWNWARD COMPATIBILITY
 #=================================================
+ynh_script_progression --message="Ensure downward compatibility" --weight=2
 
 # Convert is_public as a boolean
 if [ "$is_public" = "Yes" ]; then
@@ -99,6 +101,7 @@ fi
 #=================================================
 # BACKUP BEFORE UPGRADE THEN ACTIVE TRAP
 #=================================================
+ynh_script_progression --message="Backup the app before upgrading" --weight=35
 
 # Backup the current version of the app
 ynh_backup_before_upgrade
@@ -115,12 +118,14 @@ ynh_abort_if_errors
 #=================================================
 # ACTIVATE MAINTENANCE MODE
 #=================================================
+ynh_script_progression --message="Activate maintenance mode" --weight=2
 
 ynh_maintenance_mode_ON
 
 #=================================================
 # STOP ETHERPAD
 #=================================================
+ynh_script_progression --message="Stop Etherpad service" --weight=3
 
 ynh_systemd_action --action=stop
 
@@ -139,6 +144,7 @@ fi
 #=================================================
 # UPGRADE DEPENDENCIES
 #=================================================
+ynh_script_progression --message="Download, check and unpack source" --weight=5
 
 if [ "$export" = "abiword" ]; then
 	ynh_install_app_dependencies $abiword_app_depencencies
@@ -149,6 +155,7 @@ fi
 #=================================================
 # NGINX CONFIGURATION
 #=================================================
+ynh_script_progression --message="Reconfigure nginx"
 
 # Create a dedicated nginx config
 ynh_add_nginx_config
@@ -156,6 +163,7 @@ ynh_add_nginx_config
 #=================================================
 # UPGRADE NODEJS
 #=================================================
+ynh_script_progression --message="Upgrade NodeJS" --weight=4
 
 # Remove the old nvm helper.
 if [ -d /opt/nvm ]
@@ -169,6 +177,7 @@ ynh_install_nodejs $nodejs_version
 #=================================================
 # UPGRADE NPM MODULES
 #=================================================
+ynh_script_progression --message="Upgrade Etherpad npm modules" --weight=60
 
 # Update the main modules of etherpad
 (cd "$final_path/src"
@@ -192,6 +201,7 @@ done <<< "$(ls -1 "$final_path/node_modules" | grep "^ep_")")
 
 if [ "$upgrade_type" == "UPGRADE_APP" ]
 then
+	ynh_script_progression --message="Reconfigure Etherpad" --weight=3
 	# Verify the checksum of a file, stored by `ynh_store_file_checksum` in the install script.
 	ynh_backup_if_checksum_is_different "$final_path/settings.json"
 	# Verify the checksum of a file, stored by `ynh_store_file_checksum` in the install script.
@@ -240,6 +250,7 @@ fi
 #=================================================
 # CREATE DEDICATED USER
 #=================================================
+ynh_script_progression --message="Create a dedicated user"
 
 # Create a dedicated user (if not existing)
 ynh_system_user_create $app $final_path
@@ -257,6 +268,7 @@ chown $app -R /var/log/$app/etherpad.log
 #=================================================
 # UPGRADE FAIL2BAN
 #=================================================
+ynh_script_progression --message="Reconfigure fail2ban" --weight=8
 
 # Create a dedicated fail2ban config
 ynh_add_fail2ban_config --logpath="/var/log/nginx/$domain-access.log" --failregex="<HOST> .* .POST /mypads/api/auth/login HTTP/1.1. 400" --max_retry=5
@@ -264,6 +276,7 @@ ynh_add_fail2ban_config --logpath="/var/log/nginx/$domain-access.log" --failrege
 #=================================================
 # SETUP LOGROTATE
 #=================================================
+ynh_script_progression --message="Reconfigure logrotate"
 
 # Use logrotate to manage app-specific logfile(s)
 ynh_use_logrotate --non-append
@@ -271,6 +284,7 @@ ynh_use_logrotate --non-append
 #=================================================
 # SETUP SYSTEMD
 #=================================================
+ynh_script_progression --message="Reconfigure systemd" --weight=2
 
 ynh_replace_string "__ENV_PATH__" "$PATH" "../conf/systemd.service"
 # Create a dedicated systemd config
@@ -291,6 +305,7 @@ fi
 #=================================================
 # SETUP SSOWAT
 #=================================================
+ynh_script_progression --message="Reconfigure SSOwat"
 
 # Make app public if necessary
 if [ $is_public -eq 1 ]; then
@@ -303,12 +318,14 @@ fi
 #=================================================
 # RELOAD NGINX
 #=================================================
+ynh_script_progression --message="Reload nginx"
 
 ynh_systemd_action --action=reload --service_name=nginx
 
 #=================================================
 # CHECK ETHERPAD STARTING
 #=================================================
+ynh_script_progression --message="Restart Etherpad" --weight=9
 
 # Wait for etherpad to be fully started
 ynh_systemd_action --action=restart --line_match="You can access your Etherpad instance at" --log_path="/var/log/$app/etherpad.log" --timeout="120"
@@ -316,5 +333,12 @@ ynh_systemd_action --action=restart --line_match="You can access your Etherpad i
 #=================================================
 # DEACTIVE MAINTENANCE MODE
 #=================================================
+ynh_script_progression --message="Disable maintenance mode" --weight=5
 
 ynh_maintenance_mode_OFF
+
+#=================================================
+# END OF SCRIPT
+#=================================================
+
+ynh_script_progression --message="Upgrade completed" --last

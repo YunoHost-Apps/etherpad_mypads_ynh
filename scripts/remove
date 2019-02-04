@@ -12,6 +12,7 @@ source /usr/share/yunohost/helpers
 #=================================================
 # LOAD SETTINGS
 #=================================================
+ynh_script_progression --message="Load settings" --weight=3
 
 app=$YNH_APP_INSTANCE_NAME
 
@@ -25,6 +26,7 @@ export=$(ynh_app_setting_get $app export)
 #=================================================
 # STOP AND REMOVE SERVICE
 #=================================================
+ynh_script_progression --message="Stop and remove the service" --weight=2
 
 # Remove the dedicated systemd config
 ynh_remove_systemd_config
@@ -36,7 +38,7 @@ ynh_remove_systemd_config
 # Check if the service is declared in YunoHost
 if yunohost service status | grep -q $app
 then
-	ynh_print_info "Remove $app service" >&2
+	ynh_print_info "Remove $app service"
 	yunohost service remove $app
 fi
 
@@ -46,6 +48,7 @@ fi
 
 if [ "$export" != "none" ]
 then
+	ynh_script_progression --message="Remove dependencies" --weight=60
 	# Remove metapackage and its dependencies
 	ynh_remove_app_dependencies
 fi
@@ -53,12 +56,14 @@ fi
 #=================================================
 # REMOVE NODEJS
 #=================================================
+ynh_script_progression --message="Remove NodeJS version for Etherpad" --weight=3
 
 ynh_remove_nodejs
 
 #=================================================
 # REMOVE THE MYSQL DATABASE
 #=================================================
+ynh_script_progression --message="Remove the mysql database" --weight=2
 
 # Remove a database if it exists, along with the associated user
 ynh_mysql_remove_db $db_name $db_name
@@ -66,6 +71,7 @@ ynh_mysql_remove_db $db_name $db_name
 #=================================================
 # REMOVE APP MAIN DIR
 #=================================================
+ynh_script_progression --message="Remove app main directory"
 
 # Remove the app directory securely
 ynh_secure_remove "/var/www/$app"
@@ -73,6 +79,7 @@ ynh_secure_remove "/var/www/$app"
 #=================================================
 # REMOVE NGINX CONFIGURATION
 #=================================================
+ynh_script_progression --message="Remove nginx configuration" --weight=2
 
 # Remove the dedicated nginx config
 ynh_remove_nginx_config
@@ -80,6 +87,7 @@ ynh_remove_nginx_config
 #=================================================
 # REMOVE LOGROTATE CONFIGURATION
 #=================================================
+ynh_script_progression --message="Remove logrotate configuration"
 
 # Remove the app-specific logrotate config
 ynh_remove_logrotate
@@ -87,6 +95,7 @@ ynh_remove_logrotate
 #=================================================
 # REMOVE FAIL2BAN CONFIGURATION
 #=================================================
+ynh_script_progression --message="Remove fail2ban configuration" --weight=7
 
 # Remove the dedicated fail2ban config
 ynh_remove_fail2ban_config
@@ -96,6 +105,13 @@ ynh_remove_fail2ban_config
 #=================================================
 # REMOVE DEDICATED USER
 #=================================================
+ynh_script_progression --message="Remove the dedicated user" --weight=2
 
 # Delete dedicated system user
 ynh_system_user_delete $app
+
+#=================================================
+# END OF SCRIPT
+#=================================================
+
+ynh_script_progression --message="Deletion completed" --last
