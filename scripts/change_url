@@ -71,7 +71,7 @@ fi
 #=================================================
 
 ynh_clean_setup () {
-# Clean installation remaining that are not handle by the remove script.
+# Clean installation remainings that are not handled by the remove script.
 	ynh_clean_check_starting
 }
 # Exit if an error occurs during the execution of the script
