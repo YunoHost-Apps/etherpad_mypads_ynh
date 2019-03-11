@@ -6,12 +6,7 @@
 # IMPORT GENERIC HELPERS
 #=================================================
 
-if [ ! -e _common.sh ]; then
-	# Get the _common.sh file if it's not in the current directory
-	cp ../settings/scripts/_common.sh ./_common.sh
-	chmod a+rx _common.sh
-fi
-source _common.sh
+source ../settings/scripts/_common.sh
 source /usr/share/yunohost/helpers
 # Load common variables for all scripts.
 source ../settings/scripts/_variables
@@ -21,7 +16,7 @@ source ../settings/scripts/_variables
 #=================================================
 
 ynh_clean_setup () {
-# Nettoyage des résidus d'installation non pris en charge par le script remove.
+# Clean installation remainings that are not handled by the remove script.
 	ynh_clean_check_starting
 }
 # Exit if an error occurs during the execution of the script
@@ -30,6 +25,7 @@ ynh_abort_if_errors
 #=================================================
 # LOAD SETTINGS
 #=================================================
+ynh_script_progression --message="Load settings" --weight=4
 
 app=$YNH_APP_INSTANCE_NAME
 
@@ -54,26 +50,29 @@ test ! -d $final_path \
 #=================================================
 # ACTIVATE MAINTENANCE MODE
 #=================================================
+ynh_script_progression --message="Activate maintenance mode" --weight=2
 
 ynh_maintenance_mode_ON
 
 #=================================================
 # STANDARD RESTORE STEPS
 #=================================================
-# RESTORE OF THE NGINX CONFIGURATION
+# RESTORE THE NGINX CONFIGURATION
 #=================================================
 
 ynh_restore_file "/etc/nginx/conf.d/$domain.d/$app.conf"
 
 #=================================================
-# RESTORE OF THE MAIN DIR OF THE APP
+# RESTORE THE APP MAIN DIR
 #=================================================
+ynh_script_progression --message="Restore the app main directory"
 
 ynh_restore_file "$final_path"
 
 #=================================================
-# RESTORE THE SQL DB
+# RESTORE THE MYSQL DATABASE
 #=================================================
+ynh_script_progression --message="Restore the mysql database"
 
 db_pwd=$(ynh_app_setting_get $app mysqlpwd)
 ynh_mysql_setup_db $db_name $db_name $db_pwd
@@ -82,8 +81,10 @@ ynh_mysql_connect_as $db_name $db_pwd $db_name < ./db.sql
 #=================================================
 # RECREATE THE DEDICATED USER
 #=================================================
+ynh_script_progression --message="Recreate the dedicated user" --weight=2
 
-ynh_system_user_create $app $final_path	# Recreate the dedicated user, if it doesn't exist
+# Create the dedicated user (if not existing)
+ynh_system_user_create $app $final_path
 
 #=================================================
 # SPECIFIC RESTORE
@@ -104,6 +105,7 @@ ynh_restore_file "/etc/logrotate.d/$app"
 #=================================================
 # INSTALL DEPENDENCIES
 #=================================================
+ynh_script_progression --message="Reinstall dependencies" --weight=60
 
 if [ "$export" = "abiword" ]; then
 	ynh_install_app_dependencies $abiword_app_depencencies
@@ -114,26 +116,28 @@ fi
 #=================================================
 # INSTALL NODEJS
 #=================================================
+ynh_script_progression --message="Reinstall NodeJS" --weight=7
 
 ynh_install_nodejs $nodejs_version
 
 #=================================================
 # INSTALL ETHERPAD DEPENDENCIES
 #=================================================
+ynh_script_progression --message="Reinstall Etherpad node dependencies" --weight=17
 
 ynh_use_nodejs
 npm cache clean
 npm install forever -g >> $install_log 2>&1
 
 #=================================================
-# SECURING FILES AND DIRECTORIES
+# RESTORE USER RIGHTS
 #=================================================
 
-# Set files ownership to etherpad
+# Restore permissions on app files
 chown -R $app: $final_path
 
 #=================================================
-# ENABLE SERVICE IN ADMIN PANEL
+# ADVERTISE SERVICE IN ADMIN PANEL
 #=================================================
 
 yunohost service add $app --log "/var/log/$app/etherpad.log"
@@ -141,35 +145,39 @@ yunohost service add $app --log "/var/log/$app/etherpad.log"
 #=================================================
 # RESTORE SYSTEMD
 #=================================================
+ynh_script_progression --message="Restore the systemd configuration"
 
 ynh_restore_file "/etc/systemd/system/$app.service"
-## Démarrage auto du service
 systemctl enable $app.service
 
 #=================================================
 # RESTORE FAIL2BAN CONFIGURATION
 #=================================================
+ynh_script_progression --message="Restore the fail2ban configuration" --weight=6
 
 ynh_restore_file "/etc/fail2ban/jail.d/$app.conf"
 ynh_restore_file "/etc/fail2ban/filter.d/$app.conf"
-ynh_system_reload fail2ban restart
+ynh_systemd_action --action=restart --service_name=fail2ban
 
 #=================================================
 # RELOAD NGINX
 #=================================================
+ynh_script_progression --message="Reload nginx"
 
-ynh_system_reload nginx
+ynh_systemd_action --action=reload --service_name=nginx
 
 #=================================================
 # CHECK ETHERPAD STARTING
 #=================================================
+ynh_script_progression --message="Restart Etherpad" --weight=8
 
 # Wait for etherpad to be fully started
-ynh_check_starting "You can access your Etherpad instance at" "/var/log/$app/etherpad.log" "120"
+ynh_systemd_action --action=restart --line_match="You can access your Etherpad instance at" --log_path="/var/log/$app/etherpad.log" --timeout="120"
 
 #=================================================
 # DEACTIVE MAINTENANCE MODE
 #=================================================
+ynh_script_progression --message="Disable maintenance mode" --weight=7
 
 ynh_maintenance_mode_OFF
 
@@ -196,3 +204,9 @@ If you are facing an issue or want to improve this app, please open a new issue 
 
 ynh_send_readme_to_admin "$message" "$admin"
 ynh_print_ON
+
+#=================================================
+# END OF SCRIPT
+#=================================================
+
+ynh_script_progression --message="Restoration completed" --last
