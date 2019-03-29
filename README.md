@@ -1,6 +1,6 @@
 # Etherpad with mypads plugin for YunoHost
 
-[![Integration level](https://dash.yunohost.org/integration/etherpad_mypads.svg)](https://ci-apps.yunohost.org/jenkins/job/etherpad_mypads%20%28Official%29/lastBuild/consoleFull)  
+[![Integration level](https://dash.yunohost.org/integration/etherpad_mypads.svg)](https://dash.yunohost.org/appci/app/etherpad_mypads)  
 [![Install Etherpad with YunoHost](https://install-app.yunohost.org/install-with-yunohost.png)](https://install-app.yunohost.org/?app=etherpad_mypads)
 
 *[Lire ce readme en français.](./README_fr.md)*
@@ -40,8 +40,9 @@ Supported, with LDAP.
 
 #### Supported architectures
 
-* x86-64b - [![Build Status](https://ci-apps.yunohost.org/jenkins/job/etherpad_mypads%20(Official)/badge/icon)](https://ci-apps.yunohost.org/jenkins/job/etherpad_mypads%20(Official)/)
-* ARMv8-A - [![Build Status](https://ci-apps-arm.yunohost.org/jenkins/job/etherpad_mypads%20(Official)%20(%7EARM%7E)/badge/icon)](https://ci-apps-arm.yunohost.org/jenkins/job/etherpad_mypads%20(Official)%20(%7EARM%7E)/)
+* x86-64b - [![](https://ci-apps.yunohost.org/ci/logs/etherpad_mypads%20%28Official%29.svg)](https://ci-apps.yunohost.org/ci/apps/etherpad_mypads/)
+* ARMv8-A - [![](https://ci-apps-arm.yunohost.org/ci/logs/etherpad_mypads%20%28Official%29.svg)](https://ci-apps-arm.yunohost.org/ci/apps/etherpad_mypads/)
+* Jessie x86-64b - [![](https://ci-stretch.nohost.me/ci/logs/etherpad_mypads%20%28Official%29.svg)](https://ci-stretch.nohost.me/ci/apps/etherpad_mypads/)
 
 ## Limitations
 
@@ -81,7 +82,7 @@ Please do your pull request to the [testing branch](https://github.com/YunoHost-
 
 To try the testing branch, please proceed like that.
 ```
-sudo yunohost app install https://github.com/YunoHost-Apps/etherpad_mypads_ynh/tree/testing --verbose
+sudo yunohost app install https://github.com/YunoHost-Apps/etherpad_mypads_ynh/tree/testing --debug
 or
-sudo yunohost app upgrade etherpad_mypads -u https://github.com/YunoHost-Apps/etherpad_mypads_ynh/tree/testing --verbose
+sudo yunohost app upgrade etherpad_mypads -u https://github.com/YunoHost-Apps/etherpad_mypads_ynh/tree/testing --debug
 ```

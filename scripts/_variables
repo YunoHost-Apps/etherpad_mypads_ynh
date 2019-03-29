@@ -6,9 +6,9 @@ abiword_app_depencencies="abiword"
 # Dependencies for libre office
 libreoffice_app_dependencies="unoconv libreoffice-writer"
 
-# Version of nodejs
+# NodeJS version
 nodejs_version=6
 
-# Version of mypads
+# Mypads version
 # This variable is mostly used to force an upgrade of the package in case of new versions of mypads.
-mypads_version=1.6.8
+mypads_version=1.7.6
