@@ -1,6 +1,6 @@
-SOURCE_URL=https://github.com/ether/etherpad-lite/archive/1.7.0.tar.gz
-SOURCE_SUM=71fe286cf3e8dc45b0b5963de54f2ff6
-SOURCE_SUM_PRG=md5sum
+SOURCE_URL=https://github.com/ether/etherpad-lite/archive/1.7.5.tar.gz
+SOURCE_SUM=01971447ff7b4d0d2af52faf02edb032
+SOURCE_SUM_PRG=md6sum
 ARCH_FORMAT=tar.gz
 SOURCE_IN_SUBDIR=true
 SOURCE_FILENAME=
