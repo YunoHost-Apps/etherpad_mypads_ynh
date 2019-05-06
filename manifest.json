@@ -80,7 +80,7 @@
 				"help": {
 					"en": "If your etherpad instance is public, everyone will be able to create a pad or see an existing one.",
 					"fr": "Si votre instance etherpad est publique, tout le monde pourra créer un pad ou voir un existant."
-                }
+				},
 				"default": true
 			},
 			{
