@@ -14,21 +14,21 @@ source _variables
 #=================================================
 # LOAD SETTINGS
 #=================================================
-ynh_script_progression --message="Load settings" --weight=20
+ynh_script_progression --message="Loading installation settings..." --weight=20
 
 app=$YNH_APP_INSTANCE_NAME
 
-domain=$(ynh_app_setting_get $app domain)
-path_url=$(ynh_app_setting_get $app path)
-admin=$(ynh_app_setting_get $app admin)
-language=$(ynh_app_setting_get $app language)
-is_public=$(ynh_app_setting_get $app is_public)
-final_path=$(ynh_app_setting_get $app final_path)
-port=$(ynh_app_setting_get $app port)
-export=$(ynh_app_setting_get $app export)
-db_name=$(ynh_app_setting_get $app db_name)
-mypads=$(ynh_app_setting_get $app mypads)
-useldap=$(ynh_app_setting_get $app useldap)
+domain=$(ynh_app_setting_get --app=$app --key=domain)
+path_url=$(ynh_app_setting_get --app=$app --key=path)
+admin=$(ynh_app_setting_get --app=$app --key=admin)
+language=$(ynh_app_setting_get --app=$app --key=language)
+is_public=$(ynh_app_setting_get --app=$app --key=is_public)
+final_path=$(ynh_app_setting_get --app=$app --key=final_path)
+port=$(ynh_app_setting_get --app=$app --key=port)
+export=$(ynh_app_setting_get --app=$app --key=export)
+db_name=$(ynh_app_setting_get --app=$app --key=db_name)
+mypads=$(ynh_app_setting_get --app=$app --key=mypads)
+useldap=$(ynh_app_setting_get --app=$app --key=useldap)
 
 #=================================================
 # CHECK VERSION
@@ -42,66 +42,66 @@ upgrade_type=$(ynh_check_app_version_changed)
 #=================================================
 # ENSURE DOWNWARD COMPATIBILITY
 #=================================================
-ynh_script_progression --message="Ensure downward compatibility" --weight=2
+ynh_script_progression --message="Ensuring downward compatibility..." --weight=2
 
-# Convert is_public as a boolean
+# Fix is_public as a boolean value
 if [ "$is_public" = "Yes" ]; then
-	ynh_app_setting_set $app is_public 1
+	ynh_app_setting_set --app=$app --key=is_public --value=1
 	is_public=1
 elif [ "$is_public" = "No" ]; then
-	ynh_app_setting_set $app is_public 0
+	ynh_app_setting_set --app=$app --key=is_public --value=0
 	is_public=0
 fi
 
-# If db_name setting doesn't exist
-if [ -z $db_name ]; then
-	db_name=$(ynh_sanitize_dbid $app)
-	ynh_app_setting_set $app db_name $db_name
+# If db_name doesn't exist, create it
+if [ -z "$db_name" ]; then
+	db_name=$(ynh_sanitize_dbid --db_name=$app)
+	ynh_app_setting_set --app=$app --key=db_name --value=$db_name
 fi
 
 # If abiword setting doesn't exist
-if [ -z $abiword ]; then
+if [ -z "$abiword" ]; then
 	abiword=0
-	ynh_app_setting_set $app abiword $abiword
+	ynh_app_setting_set --app=$app --key=abiword --value=$abiword
 fi
 
 # If abiword setting exists
-if [ -n $abiword ]; then
+if [ -n "$abiword" ]; then
 	if [ $abiword -eq 1 ]; then
 		export=abiword
 	fi
-	ynh_app_setting_set $app export $export
-	ynh_app_setting_delete $app abiword
+	ynh_app_setting_set --app=$app --key=export --value=$export
+	ynh_app_setting_delete --app=$app --key=abiword
 fi
 
 # If export setting doesn't exist
-if [ -z $export ]; then
+if [ -z "$export" ]; then
 	export=none
-	ynh_app_setting_set $app export $export
+	ynh_app_setting_set --app=$app --key=export --value=$export
 fi
 
 # If mypads setting doesn't exist
-if [ -z $mypads ]; then
+if [ -z "$mypads" ]; then
 	mypads=1
-	ynh_app_setting_set $app mypads $mypads
+	ynh_app_setting_set --app=$app --key=mypads --value=$mypads
 fi
 
 # If useldap setting doesn't exist
-if [ -z $useldap ]; then
+if [ -z "$useldap" ]; then
 	useldap=0
-	ynh_app_setting_set $app useldap $useldap
+	ynh_app_setting_set --app=$app --key=useldap --value=$useldap
 fi
 
 # If path_url setting doesn't exist
-if [ -z $path_url ]; then
+if [ -z "$path_url" ]; then
 	path_url="/"
-	ynh_app_setting_set $app path $path_url
+	ynh_app_setting_set --app=$app --key=path --value=$path_url
 fi
 
 #=================================================
 # BACKUP BEFORE UPGRADE THEN ACTIVE TRAP
 #=================================================
-ynh_script_progression --message="Backup the app before upgrading" --weight=35
+ynh_script_progression --message="Backing up the app before upgrading (may take a while)..." --weight=35
 
 # Backup the current version of the app
 ynh_backup_before_upgrade
@@ -118,14 +118,14 @@ ynh_abort_if_errors
 #=================================================
 # ACTIVATE MAINTENANCE MODE
 #=================================================
-ynh_script_progression --message="Activate maintenance mode" --weight=2
+ynh_script_progression --message="Activating maintenance mode..." --weight=2
 
 ynh_maintenance_mode_ON
 
 #=================================================
 # STOP ETHERPAD
 #=================================================
-ynh_script_progression --message="Stop Etherpad service" --weight=3
+ynh_script_progression --message="Stopping Etherpad service..." --weight=3
 
 ynh_systemd_action --action=stop
 
@@ -137,14 +137,16 @@ ynh_systemd_action --action=stop
 
 if [ "$upgrade_type" == "UPGRADE_APP" ]
 then
+	ynh_script_progression --message="Upgrading source files..." --time --weight=1
+
 	# Download, check integrity, uncompress and patch the source from app.src
-	ynh_setup_source "$final_path"
+	ynh_setup_source --dest_dir="$final_path"
 fi
 
 #=================================================
 # UPGRADE DEPENDENCIES
 #=================================================
-ynh_script_progression --message="Download, check and unpack source" --weight=5
+ynh_script_progression --message="Upgrading dependencies..." --weight=5
 
 if [ "$export" = "abiword" ]; then
 	ynh_install_app_dependencies $abiword_app_depencencies
@@ -155,7 +157,7 @@ fi
 #=================================================
 # NGINX CONFIGURATION
 #=================================================
-ynh_script_progression --message="Reconfigure nginx"
+ynh_script_progression --message="Upgrading nginx web server configuration..."
 
 # Create a dedicated nginx config
 ynh_add_nginx_config
@@ -163,21 +165,21 @@ ynh_add_nginx_config
 #=================================================
 # UPGRADE NODEJS
 #=================================================
-ynh_script_progression --message="Upgrade NodeJS" --weight=4
+ynh_script_progression --message="Upgrading NodeJS..." --weight=4
 
 # Remove the old nvm helper.
 if [ -d /opt/nvm ]
 then
-	ynh_secure_remove "/opt/nvm"
+	ynh_secure_remove --file="/opt/nvm"
 	sed --in-place "/NVM_DIR/d" /root/.bashrc
 fi
 
-ynh_install_nodejs $nodejs_version
+ynh_install_nodejs --nodejs_version=$nodejs_version
 
 #=================================================
 # UPGRADE NPM MODULES
 #=================================================
-ynh_script_progression --message="Upgrade Etherpad npm modules" --weight=60
+ynh_script_progression --message="Upgrading Etherpad npm modules..." --weight=60
 
 # Update the main modules of etherpad
 (cd "$final_path/src"
@@ -201,59 +203,60 @@ done <<< "$(ls -1 "$final_path/node_modules" | grep "^ep_")")
 
 if [ "$upgrade_type" == "UPGRADE_APP" ]
 then
-	ynh_script_progression --message="Reconfigure Etherpad" --weight=3
+	ynh_script_progression --message="Reconfiguring Etherpad..." --weight=3
+
 	# Verify the checksum of a file, stored by `ynh_store_file_checksum` in the install script.
-	ynh_backup_if_checksum_is_different "$final_path/settings.json"
+	ynh_backup_if_checksum_is_different --file="$final_path/settings.json"
 	# Verify the checksum of a file, stored by `ynh_store_file_checksum` in the install script.
-	ynh_backup_if_checksum_is_different "$final_path/credentials.json"
+	ynh_backup_if_checksum_is_different --file="$final_path/credentials.json"
 	cp ../conf/settings.json "$final_path/settings.json"
 	cp ../conf/credentials.json "$final_path/credentials.json"
-	ynh_replace_string "__PORT__" "$port" "$final_path/settings.json"
-	ynh_replace_string "__DB_USER__" "$app" "$final_path/credentials.json"
-	db_pwd=$(ynh_app_setting_get $app mysqlpwd)
-	ynh_print_OFF; password=$(ynh_app_setting_get $app password); ynh_print_ON
-	ynh_replace_string "__DB_PWD__" "$db_pwd" "$final_path/credentials.json"
-	ynh_replace_string "__ADMIN__" "$admin" "$final_path/credentials.json"
-	ynh_print_OFF; ynh_replace_special_string "__PASSWD__" "$password" "$final_path/credentials.json"; ynh_print_ON
+	ynh_replace_string --match_string="__PORT__" --replace_string="$port" --target_file="$final_path/settings.json"
+	ynh_replace_string --match_string="__DB_USER__" --replace_string="$app" --target_file="$final_path/credentials.json"
+	db_pwd=$(ynh_app_setting_get --app=$app --key=mysqlpwd)
+	ynh_print_OFF; password=$(ynh_app_setting_get --app=$app --key=password); ynh_print_ON
+	ynh_replace_string --match_string="__DB_PWD__" --replace_string="$db_pwd" --target_file="$final_path/credentials.json"
+	ynh_replace_string --match_string="__ADMIN__" --replace_string="$admin" --target_file="$final_path/credentials.json"
+	ynh_print_OFF; ynh_replace_special_string --match_string="__PASSWD__" --replace_string="$password" --target_file="$final_path/credentials.json"; ynh_print_ON
 	if [ "$export" = "abiword" ]
 	then
 		# Get abiword binary path
 		abiword_path=`which abiword`
 		# Set the path of abiword into etherpad config
-		ynh_replace_string "\"abiword\" : null" "\"abiword\" : \"$abiword_path\"" "$final_path/settings.json"
+		ynh_replace_string --match_string="\"abiword\" : null" --replace_string="\"abiword\" : \"$abiword_path\"" --target_file="$final_path/settings.json"
 	elif [ "$export" = "libreoffice" ]
 	then
 		# Get soffice binary path
 		soffice_path=`which soffice`
 		# Set the path of soffice into etherpad config
-		ynh_replace_string "\"soffice\" : null" "\"soffice\" : \"$soffice_path\"" "$final_path/settings.json"
+		ynh_replace_string --match_string="\"soffice\" : null" --replace_string="\"soffice\" : \"$soffice_path\"" --target_file="$final_path/settings.json"
 	fi
-	if test -z $language; then
+	if test -z "$language"; then
 		# If upgrading from a version which doesn't support translations, set language to English by default
 		language=en
-		ynh_app_setting_set $app language $language
+		ynh_app_setting_set --app=$app --key=language --value=$language
 	fi
-	ynh_replace_string "__LANGUAGE__" "$language" "$final_path/settings.json"
+	ynh_replace_string --match_string="__LANGUAGE__" --replace_string="$language" --target_file="$final_path/settings.json"
 
 	# Use ldap for mypads
 	if [ $mypads -eq 1 ] && [ $useldap -eq 1 ]
 	then
-		ynh_replace_string "//noldap" "" "$final_path/settings.json"
+		ynh_replace_string --match_string="//noldap" --replace_string="" --target_file="$final_path/settings.json"
 	fi
 
 	# Recalculate and store the checksum of the file for the next upgrade.
-	ynh_store_file_checksum "$final_path/settings.json"
+	ynh_store_file_checksum --file="$final_path/settings.json"
 	# Recalculate and store the checksum of the file for the next upgrade.
-	ynh_store_file_checksum "$final_path/credentials.json"
+	ynh_store_file_checksum --file="$final_path/credentials.json"
 fi
 
 #=================================================
 # CREATE DEDICATED USER
 #=================================================
-ynh_script_progression --message="Create a dedicated user"
+ynh_script_progression --message="Making sure dedicated system user exists..."
 
 # Create a dedicated user (if not existing)
-ynh_system_user_create $app $final_path
+ynh_system_user_create --username=$app --home_dir=$final_path
 
 #=================================================
 # SECURING FILES AND DIRECTORIES
@@ -268,7 +271,7 @@ chown $app -R /var/log/$app/etherpad.log
 #=================================================
 # UPGRADE FAIL2BAN
 #=================================================
-ynh_script_progression --message="Reconfigure fail2ban" --weight=8
+ynh_script_progression --message="Reconfiguring fail2ban..." --weight=8
 
 # Create a dedicated fail2ban config
 ynh_add_fail2ban_config --logpath="/var/log/nginx/$domain-access.log" --failregex="<HOST> .* .POST /mypads/api/auth/login HTTP/1.1. 400" --max_retry=5
@@ -276,7 +279,7 @@ ynh_add_fail2ban_config --logpath="/var/log/nginx/$domain-access.log" --failrege
 #=================================================
 # SETUP LOGROTATE
 #=================================================
-ynh_script_progression --message="Reconfigure logrotate"
+ynh_script_progression --message="Upgrading logrotate configuration..."
 
 # Use logrotate to manage app-specific logfile(s)
 ynh_use_logrotate --non-append
@@ -284,9 +287,9 @@ ynh_use_logrotate --non-append
 #=================================================
 # SETUP SYSTEMD
 #=================================================
-ynh_script_progression --message="Reconfigure systemd" --weight=2
+ynh_script_progression --message="Upgrading systemd configuration..." --weight=2
 
-ynh_replace_string "__ENV_PATH__" "$PATH" "../conf/systemd.service"
+ynh_replace_string --match_string="__ENV_PATH__" --replace_string="$PATH" --target_file="../conf/systemd.service"
 # Create a dedicated systemd config
 ynh_add_systemd_config
 
@@ -305,27 +308,27 @@ fi
 #=================================================
 # SETUP SSOWAT
 #=================================================
-ynh_script_progression --message="Reconfigure SSOwat"
+ynh_script_progression --message="Upgrading SSOwat configuration..."
 
 # Make app public if necessary
 if [ $is_public -eq 1 ]; then
-	ynh_app_setting_set $app skipped_uris "/"
+	ynh_app_setting_set --app=$app --key=skipped_uris --value="/"
 else
 	# etherpad admin page doesn't support SSO...
-	ynh_app_setting_set $app skipped_uris "/admin"
+	ynh_app_setting_set --app=$app --key=skipped_uris --value="/admin"
 fi
 
 #=================================================
 # RELOAD NGINX
 #=================================================
-ynh_script_progression --message="Reload nginx"
+ynh_script_progression --message="Reloading nginx web server..."
 
 ynh_systemd_action --action=reload --service_name=nginx
 
 #=================================================
 # CHECK ETHERPAD STARTING
 #=================================================
-ynh_script_progression --message="Restart Etherpad" --weight=9
+ynh_script_progression --message="Restarting Etherpad..." --weight=9
 
 # Wait for etherpad to be fully started
 ynh_systemd_action --action=restart --line_match="You can access your Etherpad instance at" --log_path="/var/log/$app/etherpad.log" --timeout="120"
@@ -333,7 +336,7 @@ ynh_systemd_action --action=restart --line_match="You can access your Etherpad i
 #=================================================
 # DEACTIVE MAINTENANCE MODE
 #=================================================
-ynh_script_progression --message="Disable maintenance mode" --weight=5
+ynh_script_progression --message="Disabling maintenance mode..." --weight=5
 
 ynh_maintenance_mode_OFF
 
@@ -341,4 +344,4 @@ ynh_maintenance_mode_OFF
 # END OF SCRIPT
 #=================================================
 
-ynh_script_progression --message="Upgrade completed" --last
+ynh_script_progression --message="Upgrade of $app completed" --last

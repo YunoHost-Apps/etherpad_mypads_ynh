@@ -12,7 +12,7 @@ If you don't have YunoHost, please see [here](https://yunohost.org/#/install) to
 Etherpad is a highly customizable Open Source online editor providing collaborative editing in really real-time.  
 This package will install the same plugins than [Framapad](https://framapad.org/).
 
-**Shipped version:** 1.7.0
+**Shipped version:** 1.7.5
 
 ## Screenshots
 
@@ -40,9 +40,9 @@ Supported, with LDAP.
 
 #### Supported architectures
 
-* x86-64b - [![](https://ci-apps.yunohost.org/ci/logs/etherpad_mypads%20%28Official%29.svg)](https://ci-apps.yunohost.org/ci/apps/etherpad_mypads/)
-* ARMv8-A - [![](https://ci-apps-arm.yunohost.org/ci/logs/etherpad_mypads%20%28Official%29.svg)](https://ci-apps-arm.yunohost.org/ci/apps/etherpad_mypads/)
-* Jessie x86-64b - [![](https://ci-stretch.nohost.me/ci/logs/etherpad_mypads%20%28Official%29.svg)](https://ci-stretch.nohost.me/ci/apps/etherpad_mypads/)
+* x86-64b - [![](https://ci-apps.yunohost.org/ci/logs/etherpad_mypads%20%28Apps%29.svg)](https://ci-apps.yunohost.org/ci/apps/etherpad_mypads/)
+* ARMv8-A - [![](https://ci-apps-arm.yunohost.org/ci/logs/etherpad_mypads%20%28Apps%29.svg)](https://ci-apps-arm.yunohost.org/ci/apps/etherpad_mypads/)
+* Jessie x86-64b - [![](https://ci-stretch.nohost.me/ci/logs/etherpad_mypads%20%28Apps%29.svg)](https://ci-stretch.nohost.me/ci/apps/etherpad_mypads/)
 
 ## Limitations
 
@@ -71,6 +71,7 @@ Supported, with LDAP.
  * Report a bug: https://github.com/YunoHost-Apps/etherpad_mypads_ynh/issues
  * Etherpad website: http://etherpad.org/
  * Mypads plugin website: https://git.framasoft.org/framasoft/ep_mypads
+ * Upstream app repository: https://github.com/ether/etherpad-lite
  * YunoHost website: https://yunohost.org/
 
 ---
