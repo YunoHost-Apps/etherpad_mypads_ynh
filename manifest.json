@@ -6,7 +6,7 @@
 		"en": "Framapad clone, a online editor providing collaborative editing in real-time.",
 		"fr": "Clone de Framapad, un éditeur en ligne fournissant l'édition collaborative en temps réel."
 	},
-	"version": "1.7.0~ynh2",
+	"version": "1.7.5~ynh2",
 	"url": "https://framapad.org",
 	"license": "Apache-2.0",
 	"maintainer": {
@@ -14,7 +14,7 @@
 		"email": "maniackc_dev@crudelis.fr"
 	},
 	"requirements": {
-		"yunohost": ">= 3.4"
+		"yunohost": ">= 3.5"
 	},
 	"multi_instance": true,
 	"services": [
@@ -62,6 +62,7 @@
 			},
 			{
 				"name": "language",
+				"type": "string",
 				"ask": {
 					"en": "Choose your language",
 					"fr": "Choisissez la langue"
@@ -76,10 +77,15 @@
 					"en": "Is it a public website?",
 					"fr": "Est-ce un site public ?"
 				},
+				"help": {
+					"en": "If your etherpad instance is public, everyone will be able to create a pad or see an existing one.",
+					"fr": "Si votre instance etherpad est publique, tout le monde pourra créer un pad ou voir un existant."
+				},
 				"default": true
 			},
 			{
 				"name": "export",
+				"type": "string",
 				"ask": {
 					"en": "Use abiword (~260Mo) or libreoffice (~400Mo) (more stable) to expand export possibilities (pdf, doc) ?",
 					"fr": "Utiliser abiword (~260Mo) ou libre office (~400Mo) (plus stable) pour étendre les possibilités d'export (pdf, doc) ?"
