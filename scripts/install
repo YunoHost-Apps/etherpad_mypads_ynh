@@ -25,7 +25,6 @@ ynh_abort_if_errors
 #=================================================
 # RETRIEVE ARGUMENTS FROM THE MANIFEST
 #=================================================
-ynh_script_progression --message="Retrieve arguments from the manifest"
 
 domain=$YNH_APP_ARG_DOMAIN
 path_url=$YNH_APP_ARG_PATH
@@ -42,54 +41,51 @@ app=$YNH_APP_INSTANCE_NAME
 #=================================================
 # CHECK IF THE APP CAN BE INSTALLED WITH THIS ARGS
 #=================================================
-ynh_script_progression --message="Check if the app can be installed"
+ynh_script_progression --message="Validating installation parameters..."
 
 ynh_print_OFF
 if [ "${#password}" -lt 8 ] || [ "${#password}" -gt 30 ]
 then
-	ynh_die "The password must be between 8 and 30 characters."
+	ynh_die --message="The password must be between 8 and 30 characters."
 fi
 ynh_print_ON
 
 final_path=/var/www/$app
 test ! -e "$final_path" || ynh_die "This path already contains a folder"
 
-# Normalize the url path syntax
-path_url=$(ynh_normalize_url_path $path_url)
-
 # Register (book) web path
-ynh_webpath_register $app $domain $path_url
+ynh_webpath_register --app=$app --domain=$domain --path_url=$path_url
 
 #=================================================
 # STORE SETTINGS FROM MANIFEST
 #=================================================
-ynh_script_progression --message="Store settings from manifest" --weight=3
+ynh_script_progression --message="Storing installation settings..." --weight=3
 
-ynh_app_setting_set $app domain $domain
-ynh_app_setting_set $app path $path_url
-ynh_app_setting_set $app admin $admin
-ynh_app_setting_set $app is_public $is_public
-ynh_print_OFF; ynh_app_setting_set $app password $password; ynh_print_ON
-ynh_app_setting_set $app language $language
-ynh_app_setting_set $app export $export
-ynh_app_setting_set $app mypads $mypads
-ynh_app_setting_set $app useldap $useldap
+ynh_app_setting_set --app=$app --key=domain --value=$domain
+ynh_app_setting_set --app=$app --key=path --value=$path_url
+ynh_app_setting_set --app=$app --key=admin --value=$admin
+ynh_app_setting_set --app=$app --key=is_public --value=$is_public
+ynh_print_OFF; ynh_app_setting_set --app=$app --key=password --value=$password; ynh_print_ON
+ynh_app_setting_set --app=$app --key=language --value=$language
+ynh_app_setting_set --app=$app --key=export --value=$export
+ynh_app_setting_set --app=$app --key=mypads --value=$mypads
+ynh_app_setting_set --app=$app --key=useldap --value=$useldap
 
 #=================================================
 # STANDARD MODIFICATIONS
 #=================================================
 # FIND AND OPEN A PORT
 #=================================================
-ynh_script_progression --message="Find a free port" --weight=2
+ynh_script_progression --message="Configuring firewall..." --weight=2
 
 # Find a free port
-port=$(ynh_find_port 9001)
-ynh_app_setting_set $app port $port
+port=$(ynh_find_port --port=9001)
+ynh_app_setting_set --app=$app --key=port --value=$port
 
 #=================================================
 # INSTALL DEPENDENCIES
 #=================================================
-ynh_script_progression --message="Install dependencies" --weight=120
+ynh_script_progression --message="Installing dependencies..." --weight=120
 
 if [ "$export" = "abiword" ]; then
 	ynh_install_app_dependencies $abiword_app_depencencies
@@ -100,32 +96,32 @@ fi
 #=================================================
 # INSTALL NODEJS
 #=================================================
-ynh_script_progression --message="Install NodeJS" --weight=12
+ynh_script_progression --message="Installing NodeJS..." --weight=12
 
-ynh_install_nodejs $nodejs_version
+ynh_install_nodejs --nodejs_version=$nodejs_version
 
 #=================================================
 # CREATE A MYSQL DATABASE
 #=================================================
-ynh_script_progression --message="Create a mysql database"
+ynh_script_progression --message="Creating a MySQL database..."
 
-db_name=$(ynh_sanitize_dbid $app)
-ynh_app_setting_set $app db_name $db_name
-ynh_mysql_setup_db $db_name $db_name
+db_name=$(ynh_sanitize_dbid --db_name=$app)
+ynh_app_setting_set --app=$app --key=db_name --value=$db_name
+ynh_mysql_setup_db --db_user=$db_name --db_name=$db_name
 
 #=================================================
 # DOWNLOAD, CHECK AND UNPACK SOURCE
 #=================================================
-ynh_script_progression --message="Download, check and unpack source" --weight=4
+ynh_script_progression --message="Setting up source files..." --weight=4
 
-ynh_app_setting_set $app final_path $final_path
-# Download, check integrity and uncompress the source from app.src
-ynh_setup_source "$final_path"
+ynh_app_setting_set --app=$app --key=final_path --value=$final_path
+# Download, check integrity, uncompress and patch the source from app.src
+ynh_setup_source --dest_dir="$final_path"
 
 #=================================================
 # NGINX CONFIGURATION
 #=================================================
-ynh_script_progression --message="Configure nginx" --weight=2
+ynh_script_progression --message="Configuring nginx web server..." --weight=2
 
 # Create a dedicated nginx config
 ynh_add_nginx_config
@@ -133,17 +129,17 @@ ynh_add_nginx_config
 #=================================================
 # CREATE DEDICATED USER
 #=================================================
-ynh_script_progression --message="Create a dedicated user" --weight=3
+ynh_script_progression --message="Configuring system user..." --weight=3
 
 # Create a dedicated system user
-ynh_system_user_create $app $final_path
+ynh_system_user_create --username=$app --home_dir=$final_path
 
 #=================================================
 # SPECIFIC SETUP
 #=================================================
 # HANDLE LOG FILES AND LOGROTATE
 #=================================================
-ynh_script_progression --message="Configure logrotate"
+ynh_script_progression --message="Configuring log rotation..."
 
 # Create log directory
 mkdir -p /var/log/$app
@@ -158,50 +154,50 @@ ynh_use_logrotate
 #=================================================
 # INSTALL ETHERPAD
 #=================================================
-ynh_script_progression --message="Install Etherpad" --weight=90
+ynh_script_progression --message="Installing Etherpad..." --weight=90
 
 # Install dependencies and proceed to the installation
 ynh_use_nodejs
-"$final_path/bin/installDeps.sh" > $install_log 2>&1
-npm install forever -g >> $install_log 2>&1
+"$final_path/bin/installDeps.sh" > $install_log 2>&1 || ( ynh_exec_err cat "$install_log"; false )
+npm install forever -g >> $install_log 2>&1 || ( ynh_exec_err cat "$install_log"; false )
 
 #=================================================
 # CONFIGURE ETHERPAD
 #=================================================
-ynh_script_progression --message="Configure Etherpad" --weight=6
+ynh_script_progression --message="Configuring Etherpad..." --weight=6
 
 cp ../conf/settings.json "$final_path/settings.json"
 cp ../conf/credentials.json "$final_path/credentials.json"
-ynh_replace_string "__PORT__" "$port" "$final_path/settings.json"
-ynh_replace_string "__DB_USER__" "$db_name" "$final_path/credentials.json"
-ynh_replace_string "__DB_PWD__" "$db_pwd" "$final_path/credentials.json"
-ynh_replace_string "__ADMIN__" "$admin" "$final_path/credentials.json"
-ynh_print_OFF; ynh_replace_special_string "__PASSWD__" "$password" "$final_path/credentials.json"; ynh_print_ON
+ynh_replace_string --match_string="__PORT__" --replace_string="$port" --target_file="$final_path/settings.json"
+ynh_replace_string --match_string="__DB_USER__" --replace_string="$db_name" --target_file="$final_path/credentials.json"
+ynh_replace_string --match_string="__DB_PWD__" --replace_string="$db_pwd" --target_file="$final_path/credentials.json"
+ynh_replace_string --match_string="__ADMIN__" --replace_string="$admin" --target_file="$final_path/credentials.json"
+ynh_print_OFF; ynh_replace_special_string --match_string="__PASSWD__" --replace_string="$password" --target_file="$final_path/credentials.json"; ynh_print_ON
 if [ "$export" = "abiword" ]
 then
 	# Get abiword binary path
 	abiword_path=`which abiword`
 	# Set the path of abiword into etherpad config
-	ynh_replace_string "\"abiword\" : null" "\"abiword\" : \"$abiword_path\"" "$final_path/settings.json"
+	ynh_replace_string --match_string="\"abiword\" : null" --replace_string="\"abiword\" : \"$abiword_path\"" --target_file="$final_path/settings.json"
 elif [ "$export" = "libreoffice" ]
 then
 	# Get soffice binary path
 	soffice_path=`which soffice`
 	# Set the path of soffice into etherpad config
-	ynh_replace_string "\"soffice\" : null" "\"soffice\" : \"$soffice_path\"" "$final_path/settings.json"
+	ynh_replace_string --match_string="\"soffice\" : null" --replace_string="\"soffice\" : \"$soffice_path\"" --target_file="$final_path/settings.json"
 fi
-ynh_replace_string "__LANGUAGE__" "$language" "$final_path/settings.json"
+ynh_replace_string --match_string="__LANGUAGE__" --replace_string="$language" --target_file="$final_path/settings.json"
 
 # Use ldap for mypads
 if [ $mypads -eq 1 ] && [ $useldap -eq 1 ]
 then
-	ynh_replace_string "//noldap" "" "$final_path/settings.json"
+	ynh_replace_string --match_string="//noldap" --replace_string="" --target_file="$final_path/settings.json"
 fi
 
 # Calculate and store the config file checksum into the app settings
-ynh_store_file_checksum "$final_path/settings.json"
+ynh_store_file_checksum --file="$final_path/settings.json"
 # Calculate and store the config file checksum into the app settings
-ynh_store_file_checksum "$final_path/credentials.json"
+ynh_store_file_checksum --file="$final_path/credentials.json"
 
 #=================================================
 # SECURING FILES AND DIRECTORIES
@@ -215,9 +211,9 @@ chmod 600 $final_path/credentials.json
 #=================================================
 # SETUP SYSTEMD
 #=================================================
-ynh_script_progression --message="Configure systemd" --weight=4
+ynh_script_progression --message="Configuring a systemd service..." --weight=4
 
-ynh_replace_string "__ENV_PATH__" "$PATH" "../conf/systemd.service"
+ynh_replace_string --match_string="__ENV_PATH__" --replace_string="$PATH" --target_file="../conf/systemd.service"
 # Create a dedicated systemd config
 ynh_add_systemd_config
 
@@ -230,7 +226,7 @@ yunohost service add $app --log "/var/log/$app/etherpad.log"
 #=================================================
 # INSTALL FRAMAPAD'S PLUGINS
 #=================================================
-ynh_script_progression --message="Install Etherpad plugins" --weight=90
+ynh_script_progression --message="Installing Etherpad plugins..." --weight=90
 
 pushd "$final_path"
 # Add Left/Center/Right/Justify to lines of text in a pad
@@ -275,11 +271,11 @@ chown -R $app: $final_path/node_modules
 if [ $mypads -eq 1 ]
 then
 	# Add a link to etherpad to allow anonymous pads creation from Mypads.
-	ynh_replace_string "^ *\"DESCRIPTION\": .*</ul>" "&<a href=../>Pads anonymes</a>" $final_path/node_modules/ep_mypads/static/l10n/fr.json
-	ynh_replace_string "^ *\"DESCRIPTION\": .*</ul>" "&<a href=../>Anonymous pads</a>" $final_path/node_modules/ep_mypads/static/l10n/en.json
+	ynh_replace_string --match_string="^ *\"DESCRIPTION\": .*</ul>" --replace_string="&<a href=../>Pads anonymes</a>" --target_file=$final_path/node_modules/ep_mypads/static/l10n/fr.json
+	ynh_replace_string --match_string="^ *\"DESCRIPTION\": .*</ul>" --replace_string="&<a href=../>Anonymous pads</a>" --target_file=$final_path/node_modules/ep_mypads/static/l10n/en.json
 	# And a link to etherpad admin from Mypads.
-	ynh_replace_string "^ *\"FOOTER\": .*2.0" "& | <a href='../admin'>Etherpad admin</a>" $final_path/node_modules/ep_mypads/static/l10n/en.json
-	ynh_replace_string "^ *\"FOOTER\": .*2.0" "& | <a href='../admin'>Etherpad admin</a>" $final_path/node_modules/ep_mypads/static/l10n/fr.json
+	ynh_replace_string --match_string="^ *\"FOOTER\": .*2.0" --replace_string="& | <a href='../admin'>Etherpad admin</a>" --target_file=$final_path/node_modules/ep_mypads/static/l10n/en.json
+	ynh_replace_string --match_string="^ *\"FOOTER\": .*2.0" --replace_string="& | <a href='../admin'>Etherpad admin</a>" --target_file=$final_path/node_modules/ep_mypads/static/l10n/fr.json
 
 	# Find the /div just after the field to open a pad
 	mod_line=$(grep -nA5 "index.createOpenPad" $final_path/src/templates/index.html | grep "</div>" | cut -d '-' -f 1)
@@ -290,7 +286,7 @@ fi
 #=================================================
 # SETUP FAIL2BAN
 #=================================================
-ynh_script_progression --message="Configure fail2ban" --weight=13
+ynh_script_progression --message="Configuring fail2ban..." --weight=13
 
 # Create a dedicated fail2ban config
 ynh_add_fail2ban_config --logpath="/var/log/nginx/$domain-access.log" --failregex="<HOST> .* .POST /mypads/api/auth/login HTTP/1.1. 400" --max_retry=5
@@ -298,33 +294,33 @@ ynh_add_fail2ban_config --logpath="/var/log/nginx/$domain-access.log" --failrege
 #=================================================
 # SETUP SSOWAT
 #=================================================
-ynh_script_progression --message="Setup SSOwat"
+ynh_script_progression --message="Configuring SSOwat..."
 
 if [ $is_public -eq 1 ]; then
-	ynh_app_setting_set $app skipped_uris "/"
+	ynh_app_setting_set --app=$app --key=skipped_uris --value="/"
 else
 	# etherpad admin page doesn't support SSO...
-	ynh_app_setting_set $app skipped_uris "/admin"
+	ynh_app_setting_set --app=$app --key=skipped_uris --value="/admin"
 fi
 
 #=================================================
 # RELOAD NGINX
 #=================================================
-ynh_script_progression --message="Reload nginx"
+ynh_script_progression --message="Reloading nginx web server..."
 
 ynh_systemd_action --action=reload --service_name=nginx
 
 #=================================================
 # CHECK ETHERPAD STARTING
 #=================================================
-ynh_script_progression --message="Restart Etherpad" --weight=20
+ynh_script_progression --message="Restarting Etherpad..." --weight=20
 
 # Wait for etherpad to be fully started
 ynh_systemd_action --action=restart --line_match="You can access your Etherpad instance at" --log_path="/var/log/$app/etherpad.log" --timeout="120"
 
 if [ $mypads -eq 1 ]
 then
-	ynh_replace_string "__LANGUAGE__" "$language" "../conf/lang_mypads.sql"
+	ynh_replace_string --match_string="__LANGUAGE__" --replace_string="$language" --target_file="../conf/lang_mypads.sql"
 	mysql -u $db_name -p$db_pwd $db_name < "../conf/lang_mypads.sql"
 
 	# Wait for etherpad to be fully started
@@ -343,20 +339,20 @@ else
 fi
 
 ynh_print_OFF
-message="$Informations
+echo "$Informations
 Or, you can find a config file for etherpad at this path /var/www/etherpad_mypads/settings.json.
 
 Your credentials for the admin panel are:
 - login		: $admin
 - password	: $password
 
-If you are facing an issue or want to improve this app, please open a new issue in this project: https://github.com/YunoHost-Apps/etherpad_mypads_ynh"
+If you are facing an issue or want to improve this app, please open a new issue in this project: https://github.com/YunoHost-Apps/etherpad_mypads_ynh" > mail_to_send
 
-ynh_send_readme_to_admin "$message" "$admin"
+ynh_send_readme_to_admin --app_message="mail_to_send" --recipients="$admin" --type=install
 ynh_print_ON
 
 #=================================================
 # END OF SCRIPT
 #=================================================
 
-ynh_script_progression --message="Installation completed" --last
+ynh_script_progression --message="Installation of $app completed" --last
