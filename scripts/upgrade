@@ -171,7 +171,7 @@ ynh_script_progression --message="Upgrading NodeJS..." --weight=4
 if [ -d /opt/nvm ]
 then
 	ynh_secure_remove --file="/opt/nvm"
-	sed --in-place "/NVM_DIR/d" /root/.bashrc
+	ynh_replace_string --match_string="/NVM_DIR/d" --target_file=/root/.bashrc
 fi
 
 ynh_install_nodejs --nodejs_version=$nodejs_version
@@ -302,7 +302,7 @@ then
 	# Find the /div just after the field to open a pad
 	mod_line=$(grep -nA5 "index.createOpenPad" $final_path/src/templates/index.html | grep "</div>" | cut -d '-' -f 1)
 	# In order to add a link to mypads plugin.
-	sed -i "$mod_line s@div>@&\n\t<center><br><font size="5"><a href="./mypads/">Mypads</a></font></center>@" $final_path/src/templates/index.html
+	ynh_replace_string --match_string="$mod_line s@div>@&\n\t<center><br><font size="5"><a href="./mypads/">Mypads</a></font></center>@" --target_file=$final_path/src/templates/index.html
 fi
 
 #=================================================
