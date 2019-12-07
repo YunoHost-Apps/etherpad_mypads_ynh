@@ -1,0 +1,100 @@
+version = "0.1"
+name = "Etherpad configuration panel"
+
+[main]
+name = "Etherpad configuration"
+
+
+    [main.export]
+    name = "Export"
+
+        [main.export.export]
+        ask = "Use abiword (~260Mo) or libreoffice (~400Mo) (more stable) to expand export possibilities (pdf, doc) ?"
+        choices = ["none", "abiword", "libreoffice"]
+        default = "none"
+
+
+    [main.pad_configuration]
+    name = "Default pad configuration"
+
+        [main.pad_configuration.pad_config_nocolors]
+        ask = "Hide authorship colors ?"
+        type = "boolean"
+        default = false
+
+        [main.pad_configuration.pad_config_showlinenumbers]
+        ask = "Show line numbers ?"
+        type = "boolean"
+        default = true
+
+        [main.pad_configuration.pad_config_chatandusers]
+        ask = "Show chat and users ?"
+        type = "boolean"
+        default = false
+
+        [main.pad_configuration.pad_config_alwaysshowchat]
+        ask = "Always show chat ?"
+        type = "boolean"
+        default = false
+
+        [main.pad_configuration.pad_config_show_markdown]
+        ask = "Show markdown syntax ?"
+        type = "boolean"
+        default = false
+
+        [main.pad_configuration.pad_config_pageview]
+        ask = "Page view ?"
+        type = "boolean"
+        default = false
+
+
+    [main.mypads_configuration]
+    name = "Mypads configuration"
+
+        [main.mypads_configuration.mypads]
+        ask = "Enable Mypads plugin ?"
+        type = "boolean"
+        default = true
+
+        [main.mypads_configuration.useldap]
+        ask = "Use ldap with Mypads ?"
+        type = "boolean"
+        default = true
+
+
+    [main.is_public]
+    name = "Public access"
+
+        [main.is_public.is_public]
+        ask = "Is it a public website?"
+        type = "boolean"
+        default = true
+        help = "If your etherpad instance is public, everyone will be able to create a pad or see an existing one."
+
+
+    [main.overwrite_files]
+    name = "Overwriting config files"
+
+        [main.overwrite_files.overwrite_settings]
+        ask = "Overwrite the config file settings.json ?"
+        type = "boolean"
+        default = true
+        help = "If the file is overwritten, a backup will be created."
+
+        [main.overwrite_files.overwrite_credentials]
+        ask = "Overwrite the config file credentials.json ?"
+        type = "boolean"
+        default = true
+        help = "If the file is overwritten, a backup will be created."
+
+        [main.overwrite_files.overwrite_nginx]
+        ask = "Overwrite the nginx config file ?"
+        type = "boolean"
+        default = true
+        help = "If the file is overwritten, a backup will be created."
+
+        [main.overwrite_files.overwrite_systemd]
+        ask = "Overwrite the systemd config file ?"
+        type = "boolean"
+        default = true
+        help = "If the file is overwritten, a backup will be created."
