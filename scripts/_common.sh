@@ -23,11 +23,143 @@ CHECK_SIZE () {	# Vérifie avant chaque backup que l'espace est suffisant
 }
 
 #=================================================
+# BOOLEAN CONVERTER
+#=================================================
+
+bool_to_01 () {
+	local var="$1"
+	[ "$var" = "true" ] && var=1
+	[ "$var" = "false" ] && var=0
+	echo "$var"
+}
+
+bool_to_true_false () {
+	local var="$1"
+	[ "$var" = "1" ] && var=true
+	[ "$var" = "0" ] && var=false
+	echo "$var"
+}
+
+#=================================================
 # FUTUR OFFICIAL HELPERS
 #=================================================
 
 #=================================================
 # EXPERIMENTAL HELPERS
+#=================================================
+
+# Start or restart a service and follow its booting
+#
+# usage: ynh_check_starting "Line to match" [Log file] [Timeout] [Service name]
+#
+# | arg: Line to match - The line to find in the log to attest the service have finished to boot.
+# | arg: Log file - The log file to watch; specify "systemd" to read systemd journal for specified service
+#    /var/log/$app/$app.log will be used if no other log is defined.
+# | arg: Timeout - The maximum time to wait before ending the watching. Defaut 300 seconds.
+# | arg: Service name
+
+ynh_check_starting () {
+	local line_to_match="$1"
+	local app_log="${2:-/var/log/$service_name/$service_name.log}"
+	local timeout=${3:-300}
+	local service_name="${4:-$app}"
+
+	echo "Starting of $service_name" >&2
+	systemctl stop $service_name
+	local templog="$(mktemp)"
+	# Following the starting of the app in its log
+	if [ "$app_log" == "systemd" ] ; then
+		# Read the systemd journal
+		journalctl -u $service_name -f --since=-45 > "$templog" &
+	else
+		# Read the specified log file
+		tail -F -n0 "$app_log" > "$templog" &
+	fi
+	# Get the PID of the last command
+	local pid_tail=$!
+	systemctl start $service_name
+
+	local i=0
+	for i in `seq 1 $timeout`
+	do
+		# Read the log until the sentence is found, which means the app finished starting. Or run until the timeout.
+		if grep --quiet "$line_to_match" "$templog"
+		then
+			echo "The service $service_name has correctly started." >&2
+			break
+		fi
+		echo -n "." >&2
+		sleep 1
+	done
+	if [ $i -eq $timeout ]
+	then
+		echo "The service $service_name didn't fully start before the timeout." >&2
+	fi
+
+	echo ""
+	ynh_clean_check_starting
+}
+# Clean temporary process and file used by ynh_check_starting
+# (usually used in ynh_clean_setup scripts)
+#
+# usage: ynh_clean_check_starting
+
+ynh_clean_check_starting () {
+	# Stop the execution of tail.
+	kill -s 15 $pid_tail 2>&1
+	ynh_secure_remove "$templog" 2>&1
+}
+
+#=================================================
+
+ynh_print_log () {
+  echo "${1}"
+}
+
+# Print an info on stdout
+#
+# usage: ynh_print_info "Text to print"
+# | arg: text - The text to print
+ynh_print_info () {
+  ynh_print_log "[INFO] ${1}"
+}
+
+# Print a error on stderr
+#
+# usage: ynh_print_err "Text to print"
+# | arg: text - The text to print
+ynh_print_err () {
+  ynh_print_log "[ERR] ${1}" >&2
+}
+
+# Execute a command and force the result to be printed on stdout
+#
+# usage: ynh_exec_warn_less command to execute
+# usage: ynh_exec_warn_less "command to execute | following command"
+# In case of use of pipes, you have to use double quotes. Otherwise, this helper will be executed with the first command, then be send to the next pipe.
+#
+# | arg: command - command to execute
+ynh_exec_warn_less () {
+	eval $@ 2>&1
+}
+
+# Remove any logs for all the following commands.
+#
+# usage: ynh_print_OFF
+# WARNING: You should be careful with this helper, and never forgot to use ynh_print_ON as soon as possible to restore the logging.
+ynh_print_OFF () {
+	set +x
+}
+
+# Restore the logging after ynh_print_OFF
+#
+# usage: ynh_print_ON
+ynh_print_ON () {
+	set -x
+	# Print an echo only for the log, to be able to know that ynh_print_ON has been called.
+	echo ynh_print_ON > /dev/null
+}
+
 #=================================================
 
 # Send an email to inform the administrator

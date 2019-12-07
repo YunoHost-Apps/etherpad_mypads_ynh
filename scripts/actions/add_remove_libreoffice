@@ -1,0 +1,94 @@
+#!/bin/bash
+
+#=================================================
+# GENERIC STARTING
+#=================================================
+# IMPORT GENERIC HELPERS
+#=================================================
+
+source scripts/_common.sh
+source /usr/share/yunohost/helpers
+
+#=================================================
+# RETRIEVE ARGUMENTS
+#=================================================
+
+app=${YNH_APP_INSTANCE_NAME:-$YNH_APP_ID}
+
+#=================================================
+# CHECK IF ARGUMENTS ARE CORRECT
+#=================================================
+
+#=================================================
+# CHECK IF AN ACTION HAS TO BE DONE
+#=================================================
+
+# Check the dependencies of the meta packages of etherpad_mypads with apt-cache
+if apt-cache depends ${app//_/-}-ynh-deps | grep --quiet libreoffice-writer
+then
+	# libreoffice is already a dependence of etherpad_mypads.
+	# libreoffice should be removed.
+	libreoffice=0
+	ynh_print_info "Libreoffice writer will be removed." >&2
+else
+	# libreoffice isn't a dependence of etherpad_mypads.
+	# libreoffice should be installed.
+	ynh_print_info "Libreoffice writer will be installed." >&2
+	libreoffice=1
+fi
+
+if apt-cache depends ${app//_/-}-ynh-deps | grep --quiet abiword
+then
+	# abiword is already a dependence of etherpad_mypads.
+	# Keep it
+	abiword=1
+else
+	# abiword isn't a dependence of etherpad_mypads.
+	# Do not add it
+	abiword=0
+fi
+
+#=================================================
+# SPECIFIC ACTION
+#=================================================
+# INSTALL OR REMOVE LIBREOFFICE
+#=================================================
+
+# Load common variables, and especially libreoffice dependencies.
+source scripts/_variables
+
+dependencies=""
+if [ $libreoffice -eq 1 ]
+then
+	# Add libreoffice dependencies if libreoffice has to be installed
+	dependencies="$dependencies $libreoffice_app_dependencies"
+fi
+if [ $abiword -eq 1 ]
+then
+	# Add abiword dependencies if abiword is already installed to keep it as a dependence.
+	dependencies="$dependencies $abiword_app_depencencies"
+fi
+
+# Rebuild the meta package and install the new dependencies
+( cd scripts	# Move to scripts directory to allow the helper to find the manifest where it expects to find it.
+ynh_install_app_dependencies $dependencies)
+
+# Remove all unused dependencies
+ynh_package_autopurge
+
+#=================================================
+# SET THE DEFAULT EXPORT APP
+#=================================================
+
+if [ $libreoffice -eq 1 ]
+then
+	# Set libreoffice as default export app
+	yunohost app config apply $app -a "YNH_CONFIG_MAIN_EXPORT_EXPORT=libreoffice"
+elif [ $abiword -eq 1 ]
+then
+	# Set abiword as default export app
+	yunohost app config apply $app -a "YNH_CONFIG_MAIN_EXPORT_EXPORT=abiword"
+else
+	# Remove any export app
+	yunohost app config apply $app -a "YNH_CONFIG_MAIN_EXPORT_EXPORT=none"
+fi

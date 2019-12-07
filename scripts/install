@@ -70,6 +70,16 @@ ynh_app_setting_set --app=$app --key=language --value=$language
 ynh_app_setting_set --app=$app --key=export --value=$export
 ynh_app_setting_set --app=$app --key=mypads --value=$mypads
 ynh_app_setting_set --app=$app --key=useldap --value=$useldap
+ynh_app_setting_set --app=$app --key=overwrite_settings --value="1"
+ynh_app_setting_set --app=$app --key=overwrite_credentials --value="1"
+ynh_app_setting_set --app=$app --key=overwrite_nginx --value="1"
+ynh_app_setting_set --app=$app --key=overwrite_systemd --value="1"
+
+#=================================================
+# ACTIVATE MAINTENANCE MODE
+#=================================================
+
+ynh_maintenance_mode_ON
 
 #=================================================
 # STANDARD MODIFICATIONS
@@ -191,7 +201,7 @@ ynh_replace_string --match_string="__LANGUAGE__" --replace_string="$language" --
 # Use ldap for mypads
 if [ $mypads -eq 1 ] && [ $useldap -eq 1 ]
 then
-	ynh_replace_string --match_string="//noldap" --replace_string="" --target_file="$final_path/settings.json"
+	ynh_replace_string --match_string="//noldap\(.*\)" --replace_string="\1 //useldap" --target_file="$final_path/settings.json"
 fi
 
 # Calculate and store the config file checksum into the app settings
