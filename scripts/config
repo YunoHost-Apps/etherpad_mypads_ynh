@@ -50,18 +50,23 @@ export="${YNH_CONFIG_MAIN_EXPORT_EXPORT:-$old_export}"
 # padOptions noColors
 old_pad_config_nocolors="$(get_config_value noColors)"
 pad_config_nocolors="${YNH_CONFIG_MAIN_PAD_CONFIGURATION_PAD_CONFIG_NOCOLORS:-$old_pad_config_nocolors}"
+
 # padOptions showLineNumbers
 old_pad_config_showlinenumbers="$(get_config_value showLineNumbers)"
 pad_config_showlinenumbers="${YNH_CONFIG_MAIN_PAD_CONFIGURATION_PAD_CONFIG_SHOWLINENUMBERS:-$old_pad_config_showlinenumbers}"
+
 # padOptions chatAndUsers
 old_pad_config_chatandusers="$(get_config_value chatAndUsers)"
 pad_config_chatandusers="${YNH_CONFIG_MAIN_PAD_CONFIGURATION_PAD_CONFIG_CHATANDUSERS:-$old_pad_config_chatandusers}"
+
 # padOptions alwaysShowChat
 old_pad_config_alwaysshowchat="$(get_config_value alwaysShowChat)"
 pad_config_alwaysshowchat="${YNH_CONFIG_MAIN_PAD_CONFIGURATION_PAD_CONFIG_ALWAYSSHOWCHAT:-$old_pad_config_alwaysshowchat}"
+
 # Plugin option ep_markdown_default
 old_pad_config_show_markdown="$(get_config_value ep_markdown_default)"
 pad_config_show_markdown="${YNH_CONFIG_MAIN_PAD_CONFIGURATION_PAD_CONFIG_SHOW_MARKDOWN:-$old_pad_config_show_markdown}"
+
 # Plugin option ep_page_view_default
 old_pad_config_pageview="$(get_config_value ep_page_view_default)"
 pad_config_pageview="${YNH_CONFIG_MAIN_PAD_CONFIGURATION_PAD_CONFIG_PAGEVIEW:-$old_pad_config_pageview}"
@@ -74,6 +79,7 @@ else
 	old_mypads=false
 fi
 mypads="${YNH_CONFIG_MAIN_MYPADS_CONFIGURATION_MYPADS:-$old_mypads}"
+
 # Ldap for Mypads
 if grep -q "//noldap" $config_file
 then
@@ -84,28 +90,23 @@ fi
 useldap="${YNH_CONFIG_MAIN_MYPADS_CONFIGURATION_USELDAP:-$old_useldap}"
 
 # is_public
-old_is_public="$(ynh_app_setting_get $app is_public)"
-old_is_public=$(bool_to_true_false $old_is_public)
+old_is_public="$(ynh_app_setting_get --app=$app --key=is_public)"
 is_public="${YNH_CONFIG_MAIN_IS_PUBLIC_IS_PUBLIC:-$old_is_public}"
 
 # Overwrite settings.json file
-old_overwrite_settings="$(ynh_app_setting_get $app overwrite_settings)"
-old_overwrite_settings=$(bool_to_true_false $old_overwrite_settings)
+old_overwrite_settings="$(ynh_app_setting_get --app=$app --key=overwrite_settings)"
 overwrite_settings="${YNH_CONFIG_MAIN_OVERWRITE_FILES_OVERWRITE_SETTINGS:-$old_overwrite_settings}"
 
 # Overwrite credentials.json file
-old_overwrite_credentials="$(ynh_app_setting_get $app overwrite_credentials)"
-old_overwrite_credentials=$(bool_to_true_false $old_overwrite_credentials)
+old_overwrite_credentials="$(ynh_app_setting_get --app=$app --key=overwrite_credentials)"
 overwrite_credentials="${YNH_CONFIG_MAIN_OVERWRITE_FILES_OVERWRITE_CREDENTIALS:-$old_overwrite_credentials}"
 
 # Overwrite nginx configuration
-old_overwrite_nginx="$(ynh_app_setting_get $app overwrite_nginx)"
-old_overwrite_nginx=$(bool_to_true_false $old_overwrite_nginx)
+old_overwrite_nginx="$(ynh_app_setting_get --app=$app --key=overwrite_nginx)"
 overwrite_nginx="${YNH_CONFIG_MAIN_OVERWRITE_FILES_OVERWRITE_NGINX:-$old_overwrite_nginx}"
 
 # Overwrite systemd configuration
-old_overwrite_systemd="$(ynh_app_setting_get $app overwrite_systemd)"
-old_overwrite_systemd=$(bool_to_true_false $old_overwrite_systemd)
+old_overwrite_systemd="$(ynh_app_setting_get --app=$app --key=overwrite_systemd)"
 overwrite_systemd="${YNH_CONFIG_MAIN_OVERWRITE_FILES_OVERWRITE_SYSTEMD:-$old_overwrite_systemd}"
 
 #=================================================
@@ -147,48 +148,48 @@ apply_config() {
 	# padOptions noColors
 	if [ "$pad_config_nocolors" != "$old_pad_config_nocolors" ]
 	then
-		ynh_replace_string "\(\"noColors\" *: \).*," "\1$pad_config_nocolors," "$config_file"
-		ynh_app_setting_set $app pad_config_nocolors "$pad_config_nocolors"
+		ynh_replace_string --match_string="\(\"noColors\" *: \).*," --replace_string="\1$pad_config_nocolors," --target_file="$config_file"
+		ynh_app_setting_set --app=$app --key=pad_config_nocolors --value="$pad_config_nocolors"
 		restart_etherpad=1
 	fi
 
 	# padOptions showLineNumbers
 	if [ "$pad_config_showlinenumbers" != "$old_pad_config_showlinenumbers" ]
 	then
-		ynh_replace_string "\(\"showLineNumbers\" *: \).*," "\1$pad_config_showlinenumbers," "$config_file"
-		ynh_app_setting_set $app pad_config_showlinenumbers "$pad_config_showlinenumbers"
+		ynh_replace_string --match_string="\(\"showLineNumbers\" *: \).*," --replace_string="\1$pad_config_showlinenumbers," --target_file="$config_file"
+		ynh_app_setting_set --app=$app --key=pad_config_showlinenumbers --value="$pad_config_showlinenumbers"
 		restart_etherpad=1
 	fi
 
 	# padOptions chatAndUsers
 	if [ "$pad_config_chatandusers" != "$old_pad_config_chatandusers" ]
 	then
-		ynh_replace_string "\(\"chatAndUsers\" *: \).*," "\1$pad_config_chatandusers," "$config_file"
-		ynh_app_setting_set $app pad_config_chatandusers "$pad_config_chatandusers"
+		ynh_replace_string --match_string="\(\"chatAndUsers\" *: \).*," --replace_string="\1$pad_config_chatandusers," --target_file="$config_file"
+		ynh_app_setting_set --app=$app --key=pad_config_chatandusers --value="$pad_config_chatandusers"
 		restart_etherpad=1
 	fi
 
 	# padOptions alwaysShowChat
 	if [ "$pad_config_alwaysshowchat" != "$old_pad_config_alwaysshowchat" ]
 	then
-		ynh_replace_string "\(\"alwaysShowChat\" *: \).*," "\1$pad_config_alwaysshowchat," "$config_file"
-		ynh_app_setting_set $app pad_config_alwaysshowchat "$pad_config_alwaysshowchat"
+		ynh_replace_string --match_string="\(\"alwaysShowChat\" *: \).*," --replace_string="\1$pad_config_alwaysshowchat," --target_file="$config_file"
+		ynh_app_setting_set --app=$app --key=pad_config_alwaysshowchat --value="$pad_config_alwaysshowchat"
 		restart_etherpad=1
 	fi
 
 	# Plugin option ep_markdown_default
 	if [ "$pad_config_show_markdown" != "$old_pad_config_show_markdown" ]
 	then
-		ynh_replace_string "\(\"ep_markdown_default\" *: \).*," "\1$pad_config_show_markdown," "$config_file"
-		ynh_app_setting_set $app pad_config_show_markdown "$pad_config_show_markdown"
+		ynh_replace_string --match_string="\(\"ep_markdown_default\" *: \).*," --replace_string="\1$pad_config_show_markdown," --target_file="$config_file"
+		ynh_app_setting_set --app=$app --key=pad_config_show_markdown --value="$pad_config_show_markdown"
 		restart_etherpad=1
 	fi
 
 	# Plugin option ep_page_view_default
 	if [ "$pad_config_pageview" != "$old_pad_config_pageview" ]
 	then
-		ynh_replace_string "\(\"ep_page_view_default\" *: \).*," "\1$pad_config_pageview," "$config_file"
-		ynh_app_setting_set $app pad_config_pageview "$pad_config_pageview"
+		ynh_replace_string --match_string="\(\"ep_page_view_default\" *: \).*," --replace_string="\1$pad_config_pageview," "$config_file"
+		ynh_app_setting_set --app=$app --key=pad_config_pageview --value="$pad_config_pageview"
 		restart_etherpad=1
 	fi
 
@@ -202,8 +203,8 @@ apply_config() {
 			then
 				yunohost app action run $app add_remove_abiword
 			fi
-			ynh_replace_string "\(\"abiword\" *: \).*," "\1\"$(which abiword)\"," "$config_file"
-			ynh_replace_string "\(\"soffice\" *: \).*," "\1null," "$config_file"
+			ynh_replace_string --match_string="\(\"abiword\" *: \).*," --replace_string="\1\"$(which abiword)\"," --target_file="$config_file"
+			ynh_replace_string --match_string="\(\"soffice\" *: \).*," --replace_string="\1null," --target_file="$config_file"
 		elif [ "$export" = "libreoffice" ]
 		then
 			# if libreoffice isn't installed, call the action add_remove_libreoffice.
@@ -211,11 +212,11 @@ apply_config() {
 			then
 				yunohost app action run $app add_remove_libreoffice
 			fi
-			ynh_replace_string "\(\"abiword\" *: \).*," "\1null," "$config_file"
-			ynh_replace_string "\(\"soffice\" *: \).*," "\1\"$(which soffice)\"," "$config_file"
+			ynh_replace_string --match_string="\(\"abiword\" *: \).*," --replace_string="\1null," --target_file="$config_file"
+			ynh_replace_string --match_string="\(\"soffice\" *: \).*," --replace_string="\1\"$(which soffice)\"," --target_file="$config_file"
 		else
-			ynh_replace_string "\(\"abiword\" *: \).*," "\1null," "$config_file"
-			ynh_replace_string "\(\"soffice\" *: \).*," "\1null," "$config_file"
+			ynh_replace_string --match_string="\(\"abiword\" *: \).*," --replace_string="\1null," --target_file="$config_file"
+			ynh_replace_string --match_string="\(\"soffice\" *: \).*," --replace_string="\1null," --target_file="$config_file"
 		fi
 		restart_etherpad=1
 	fi
@@ -241,9 +242,9 @@ apply_config() {
 	then
 		if [ "$useldap" = "true" ]
 		then
-			ynh_replace_string "//noldap\(.*\)" "\1 //useldap" "$final_path/settings.json"
+			ynh_replace_string --match_string="//noldap\(.*\)" --replace_string="\1 //useldap" --target_file="$final_path/settings.json"
 		else
-			ynh_replace_string "\(.*\) //useldap" "//noldap\1" "$final_path/settings.json"
+			ynh_replace_string --match_string="\(.*\) //useldap" --replace_string="//noldap\1" --target_file="$final_path/settings.json"
 		fi
 		restart_etherpad=1
 	fi
@@ -264,17 +265,13 @@ apply_config() {
 	fi
 
 	# Set overwrite_settings
-	overwrite_settings=$(bool_to_01 $overwrite_settings)
-	ynh_app_setting_set $app overwrite_settings "$overwrite_settings"
+	ynh_app_setting_set --app=$app --key=overwrite_settings --value="$overwrite_settings"
 	# Set overwrite_credentials
-	overwrite_credentials=$(bool_to_01 $overwrite_credentials)
-	ynh_app_setting_set $app overwrite_credentials "$overwrite_credentials"
+	ynh_app_setting_set --app=$app --key=overwrite_credentials --value="$overwrite_credentials"
 	# Set overwrite_nginx
-	overwrite_nginx=$(bool_to_01 $overwrite_nginx)
-	ynh_app_setting_set $app overwrite_nginx "$overwrite_nginx"
+	ynh_app_setting_set --app=$app --key=overwrite_nginx --value="$overwrite_nginx"
 	# Set overwrite_systemd
-	overwrite_systemd=$(bool_to_01 $overwrite_systemd)
-	ynh_app_setting_set $app overwrite_systemd "$overwrite_systemd"
+	ynh_app_setting_set --app=$app --key=overwrite_systemd --value="$overwrite_systemd"
 }
 
 #=================================================

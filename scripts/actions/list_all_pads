@@ -15,8 +15,8 @@ source /usr/share/yunohost/helpers
 
 app=${YNH_APP_INSTANCE_NAME:-$YNH_APP_ID}
 
-db_name=$(ynh_app_setting_get $app db_name)
-db_pwd=$(ynh_app_setting_get $app mysqlpwd)
+db_name=$(ynh_app_setting_get --app=$app --key=db_name)
+db_pwd=$(ynh_app_setting_get --app=$app --key=mysqlpwd)
 
 #=================================================
 # CHECK IF ARGUMENTS ARE CORRECT
@@ -32,4 +32,12 @@ db_pwd=$(ynh_app_setting_get $app mysqlpwd)
 # LIST ALL PADS FROM THE DATABASE
 #=================================================
 
+ynh_script_progression --message="Listing all pads..." --weight=3
+
 mysql -u $db_name -p$db_pwd $db_name --silent -e 'select distinct substring(store.key,5,locate(":",store.key,5)-5) as "pads" from store where store.key like "pad:%"' | sed 's/^/>> /g' >&2
+
+#=================================================
+# END OF SCRIPT
+#=================================================
+
+ynh_script_progression --message="Execution completed" --last

@@ -14,12 +14,13 @@ source /usr/share/yunohost/helpers
 #=================================================
 
 app=${YNH_APP_INSTANCE_NAME:-$YNH_APP_ID}
-final_path=$(ynh_app_setting_get $app final_path)
-port=$(ynh_app_setting_get $app port)
-export=$(ynh_app_setting_get $app export)
-language=$(ynh_app_setting_get $app language)
-mypads=$(ynh_app_setting_get $app mypads)
-useldap=$(ynh_app_setting_get $app useldap)
+
+final_path=$(ynh_app_setting_get --app=$app --key=final_path)
+port=$(ynh_app_setting_get --app=$app --key=port)
+export=$(ynh_app_setting_get --app=$app --key=export)
+language=$(ynh_app_setting_get --app=$app --key=language)
+mypads=$(ynh_app_setting_get --app=$app --key=mypads)
+useldap=$(ynh_app_setting_get --app=$app --key=useldap)
 
 #=================================================
 # SORT OUT THE CONFIG FILE TO HANDLE
@@ -36,9 +37,10 @@ fi
 #=================================================
 # RESET THE CONFIG FILE
 #=================================================
+ynh_script_progression --message="Resetting the config file $config_file..." --weight=3
 
 # Verify the checksum and backup the file if it's different
-ynh_backup_if_checksum_is_different "$config_file"
+ynh_backup_if_checksum_is_different --file="$config_file"
 
 if [ "$file" = "settings.json" ]
 then
@@ -46,27 +48,38 @@ then
 	cp /etc/yunohost/apps/$app/conf/settings.json "$config_file"
 
 	# Recreate the default config
-	ynh_replace_string "__PORT__" "$port" "$final_path/settings.json"
+	ynh_replace_string --match_string="__PORT__" --replace_string="$port" --target_file="$final_path/settings.json"
 	if [ "$export" = "abiword" ]
 	then
 		abiword_path=`which abiword`	# Get abiword binary path
-		ynh_replace_string "\"abiword\" : null" "\"abiword\" : \"$abiword_path\"" "$final_path/settings.json"	# Renseigne l'emplacement de abiword dans la config de etherpad
+		ynh_replace_string --match_string="\"abiword\" : null" --replace_string="\"abiword\" : \"$abiword_path\"" --target_file="$final_path/settings.json"	# Renseigne l'emplacement de abiword dans la config de etherpad
 	elif [ "$export" = "libreoffice" ]
 	then
 		soffice_path=`which soffice`	# Get soffice binary path
-		ynh_replace_string "\"soffice\" : null" "\"soffice\" : \"$soffice_path\"" "$final_path/settings.json"	# Renseigne l'emplacement de abiword dans la config de etherpad
+		ynh_replace_string --match_string="\"soffice\" : null" --replace_string="\"soffice\" : \"$soffice_path\"" --target_file="$final_path/settings.json"	# Renseigne l'emplacement de abiword dans la config de etherpad
 	fi
-	ynh_replace_string "__LANGUAGE__" "$language" "$final_path/settings.json"
+	ynh_replace_string --match_string="__LANGUAGE__" --replace_string="$language" --target_file="$final_path/settings.json"
 
 	# Use ldap for mypads
 	if [ $mypads -eq 1 ] && [ $useldap -eq 1 ]
 	then
-		ynh_replace_string "//noldap\(.*\)" "\1 //useldap" "$final_path/settings.json"
+		ynh_replace_string --match_string="//noldap\(.*\)" --replace_string="\1 //useldap" --target_file="$final_path/settings.json"
 	fi
 fi
 
 # Calculate and store the config file checksum into the app settings
-ynh_store_file_checksum "$config_file"
+ynh_store_file_checksum --file="$config_file"
+
+#=================================================
+# CHECK ETHERPAD STARTING
+#=================================================
+ynh_script_progression --message="Restarting Etherpad..." --weight=9
 
 # Wait for etherpad to be fully started
-ynh_check_starting "You can access your Etherpad instance at" "/var/log/$app/etherpad.log" "120"
+ynh_systemd_action --action=restart --line_match="You can access your Etherpad instance at" --log_path="/var/log/$app/etherpad.log" --timeout="120"
+
+#=================================================
+# END OF SCRIPT
+#=================================================
+
+ynh_script_progression --message="Upgrade of $app completed" --last

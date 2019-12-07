@@ -29,13 +29,17 @@ then
 	# libreoffice is already a dependence of etherpad_mypads.
 	# libreoffice should be removed.
 	libreoffice=0
-	ynh_print_info "Libreoffice writer will be removed." >&2
+	action1=installed
+	action2=Installing
 else
 	# libreoffice isn't a dependence of etherpad_mypads.
 	# libreoffice should be installed.
-	ynh_print_info "Libreoffice writer will be installed." >&2
 	libreoffice=1
+	action1=removed
+	action2=Removing
 fi
+
+ynh_print_info --message="Libreoffice will be $action1."
 
 if apt-cache depends ${app//_/-}-ynh-deps | grep --quiet abiword
 then
@@ -53,6 +57,8 @@ fi
 #=================================================
 # INSTALL OR REMOVE LIBREOFFICE
 #=================================================
+
+ynh_script_progression --message="$action2 Libreoffice..." --weight=3
 
 # Load common variables, and especially libreoffice dependencies.
 source scripts/_variables
@@ -92,3 +98,9 @@ else
 	# Remove any export app
 	yunohost app config apply $app -a "YNH_CONFIG_MAIN_EXPORT_EXPORT=none"
 fi
+
+#=================================================
+# END OF SCRIPT
+#=================================================
+
+ynh_script_progression --message="Execution completed" --last
