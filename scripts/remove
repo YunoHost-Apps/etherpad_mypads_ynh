@@ -28,7 +28,7 @@ export=$(ynh_app_setting_get --app=$app --key=export)
 #=================================================
 
 # Remove a service from the admin panel, added by `yunohost service add`
-if yunohost service status $app >/dev/null 2>&1
+if ynh_exec_fully_quiet yunohost service status $app
 then
 	ynh_script_progression --message="Removing $app service..."
 	yunohost service remove $app
