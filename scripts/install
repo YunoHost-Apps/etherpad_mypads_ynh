@@ -162,8 +162,15 @@ ynh_script_progression --message="Installing Etherpad..." --weight=90
 
 # Install dependencies and proceed to the installation
 ynh_use_nodejs
-"$final_path/bin/installDeps.sh" > $install_log 2>&1 || ( ynh_exec_err cat "$install_log"; false )
-npm install forever -g >> $install_log 2>&1 || ( ynh_exec_err cat "$install_log"; false )
+(
+    cd "$final_path"
+    mkdir -p node_modules
+    cd node_modules
+    [ -e ep_etherpad-lite ] || ln -s ../src ep_etherpad-lite
+    cd ep_etherpad-lite
+    chown -R $app: $final_path
+    ynh_exec_as $app PATH="$nodejs_path:$PATH" "$nodejs_path/npm" install --save --loglevel warn
+)
 
 #=================================================
 # CONFIGURE ETHERPAD
