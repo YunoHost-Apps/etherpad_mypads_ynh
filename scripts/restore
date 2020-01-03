@@ -127,8 +127,7 @@ ynh_install_nodejs --nodejs_version=$nodejs_version
 ynh_script_progression --message="Reinstalling Etherpad node dependencies..." --weight=17
 
 ynh_use_nodejs
-npm cache clean
-npm install forever -g >> $install_log 2>&1
+ynh_exec_warn_less npm cache clean --force
 
 #=================================================
 # RESTORE USER RIGHTS

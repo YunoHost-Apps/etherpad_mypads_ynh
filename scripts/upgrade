@@ -220,17 +220,18 @@ ynh_install_nodejs --nodejs_version=$nodejs_version
 ynh_script_progression --message="Upgrading Etherpad npm modules..." --weight=60
 
 # Update the main modules of etherpad
+chown -R $app: $final_path
 (cd "$final_path/src"
-npm cache clean
-ynh_exec_warn_less npm update)
+ynh_exec_warn_less npm cache clean --force
+ynh_exec_warn_less ynh_exec_as $app PATH="$nodejs_path:$PATH" "$nodejs_path/npm" update)
 
 # Then update the additionnal modules
 (cd "$final_path"
-npm cache clean
+ynh_exec_warn_less npm cache clean --force
 while read node_module
 do
-	echo "Update $node_module"
-        ynh_exec_warn_less npm install --upgrade $node_module || true
+    echo "Update $node_module"
+    ynh_exec_warn_less ynh_exec_as $app PATH="$nodejs_path:$PATH" "$nodejs_path/npm" install --upgrade $node_module || true
 done <<< "$(ls -1 "$final_path/node_modules" | grep "^ep_")")
 
 #=================================================
