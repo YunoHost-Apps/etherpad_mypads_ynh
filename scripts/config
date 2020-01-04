@@ -115,26 +115,26 @@ overwrite_systemd="${YNH_CONFIG_MAIN_OVERWRITE_FILES_OVERWRITE_SYSTEMD:-$old_ove
 
 show_config() {
 	# here you are supposed to read some config file/database/other then print the values
-	# echo "YNH_CONFIG_${PANEL_ID}_${SECTION_ID}_${OPTION_ID}=value"
+	# ynh_return "YNH_CONFIG_${PANEL_ID}_${SECTION_ID}_${OPTION_ID}=value"
 
-	echo "YNH_CONFIG_MAIN_EXPORT_EXPORT=$export"
+	ynh_return "YNH_CONFIG_MAIN_EXPORT_EXPORT=$export"
 
-	echo "YNH_CONFIG_MAIN_PAD_CONFIGURATION_PAD_CONFIG_NOCOLORS=$pad_config_nocolors"
-	echo "YNH_CONFIG_MAIN_PAD_CONFIGURATION_PAD_CONFIG_SHOWLINENUMBERS=$pad_config_showlinenumbers"
-	echo "YNH_CONFIG_MAIN_PAD_CONFIGURATION_PAD_CONFIG_CHATANDUSERS=$pad_config_chatandusers"
-	echo "YNH_CONFIG_MAIN_PAD_CONFIGURATION_PAD_CONFIG_ALWAYSSHOWCHAT=$pad_config_alwaysshowchat"
-	echo "YNH_CONFIG_MAIN_PAD_CONFIGURATION_PAD_CONFIG_SHOW_MARKDOWN=$pad_config_show_markdown"
-	echo "YNH_CONFIG_MAIN_PAD_CONFIGURATION_PAD_CONFIG_PAGEVIEW=$pad_config_pageview"
+	ynh_return "YNH_CONFIG_MAIN_PAD_CONFIGURATION_PAD_CONFIG_NOCOLORS=$pad_config_nocolors"
+	ynh_return "YNH_CONFIG_MAIN_PAD_CONFIGURATION_PAD_CONFIG_SHOWLINENUMBERS=$pad_config_showlinenumbers"
+	ynh_return "YNH_CONFIG_MAIN_PAD_CONFIGURATION_PAD_CONFIG_CHATANDUSERS=$pad_config_chatandusers"
+	ynh_return "YNH_CONFIG_MAIN_PAD_CONFIGURATION_PAD_CONFIG_ALWAYSSHOWCHAT=$pad_config_alwaysshowchat"
+	ynh_return "YNH_CONFIG_MAIN_PAD_CONFIGURATION_PAD_CONFIG_SHOW_MARKDOWN=$pad_config_show_markdown"
+	ynh_return "YNH_CONFIG_MAIN_PAD_CONFIGURATION_PAD_CONFIG_PAGEVIEW=$pad_config_pageview"
 
-	echo "YNH_CONFIG_MAIN_MYPADS_CONFIGURATION_MYPADS=$mypads"
-	echo "YNH_CONFIG_MAIN_MYPADS_CONFIGURATION_USELDAP=$useldap"
+	ynh_return "YNH_CONFIG_MAIN_MYPADS_CONFIGURATION_MYPADS=$mypads"
+	ynh_return "YNH_CONFIG_MAIN_MYPADS_CONFIGURATION_USELDAP=$useldap"
 
-	echo "YNH_CONFIG_MAIN_IS_PUBLIC_IS_PUBLIC=$is_public"
+	ynh_return "YNH_CONFIG_MAIN_IS_PUBLIC_IS_PUBLIC=$is_public"
 
-	echo "YNH_CONFIG_MAIN_OVERWRITE_FILES_OVERWRITE_SETTINGS=$overwrite_settings"
-	echo "YNH_CONFIG_MAIN_OVERWRITE_FILES_OVERWRITE_CREDENTIALS=$overwrite_credentials"
-	echo "YNH_CONFIG_MAIN_OVERWRITE_FILES_OVERWRITE_NGINX=$overwrite_nginx"
-	echo "YNH_CONFIG_MAIN_OVERWRITE_FILES_OVERWRITE_SYSTEMD=$overwrite_systemd"
+	ynh_return "YNH_CONFIG_MAIN_OVERWRITE_FILES_OVERWRITE_SETTINGS=$overwrite_settings"
+	ynh_return "YNH_CONFIG_MAIN_OVERWRITE_FILES_OVERWRITE_CREDENTIALS=$overwrite_credentials"
+	ynh_return "YNH_CONFIG_MAIN_OVERWRITE_FILES_OVERWRITE_NGINX=$overwrite_nginx"
+	ynh_return "YNH_CONFIG_MAIN_OVERWRITE_FILES_OVERWRITE_SYSTEMD=$overwrite_systemd"
 }
 
 #=================================================
