@@ -257,7 +257,7 @@ apply_config() {
 	fi
 
 	# Change public accessibility
-	if [ "$is_public" = "true" ]
+	if [ "$is_public" = "1" ]
 	then
 		yunohost app action run $app public_private --args is_public=1
 	else
