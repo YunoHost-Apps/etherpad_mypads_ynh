@@ -1,6 +1,10 @@
 #!/bin/bash
 
 #=================================================
+# PERSONAL HELPERS
+#=================================================
+
+#=================================================
 # BACKUP
 #=================================================
 
@@ -28,120 +32,6 @@ CHECK_SIZE () {	# Vérifie avant chaque backup que l'espace est suffisant
 
 #=================================================
 # EXPERIMENTAL HELPERS
-#=================================================
-
-# Start or restart a service and follow its booting
-#
-# usage: ynh_check_starting "Line to match" [Log file] [Timeout] [Service name]
-#
-# | arg: Line to match - The line to find in the log to attest the service have finished to boot.
-# | arg: Log file - The log file to watch; specify "systemd" to read systemd journal for specified service
-#    /var/log/$app/$app.log will be used if no other log is defined.
-# | arg: Timeout - The maximum time to wait before ending the watching. Defaut 300 seconds.
-# | arg: Service name
-
-ynh_check_starting () {
-	local line_to_match="$1"
-	local app_log="${2:-/var/log/$service_name/$service_name.log}"
-	local timeout=${3:-300}
-	local service_name="${4:-$app}"
-
-	echo "Starting of $service_name" >&2
-	systemctl stop $service_name
-	local templog="$(mktemp)"
-	# Following the starting of the app in its log
-	if [ "$app_log" == "systemd" ] ; then
-		# Read the systemd journal
-		journalctl -u $service_name -f --since=-45 > "$templog" &
-	else
-		# Read the specified log file
-		tail -F -n0 "$app_log" > "$templog" &
-	fi
-	# Get the PID of the last command
-	local pid_tail=$!
-	systemctl start $service_name
-
-	local i=0
-	for i in `seq 1 $timeout`
-	do
-		# Read the log until the sentence is found, which means the app finished starting. Or run until the timeout.
-		if grep --quiet "$line_to_match" "$templog"
-		then
-			echo "The service $service_name has correctly started." >&2
-			break
-		fi
-		echo -n "." >&2
-		sleep 1
-	done
-	if [ $i -eq $timeout ]
-	then
-		echo "The service $service_name didn't fully start before the timeout." >&2
-	fi
-
-	echo ""
-	ynh_clean_check_starting
-}
-# Clean temporary process and file used by ynh_check_starting
-# (usually used in ynh_clean_setup scripts)
-#
-# usage: ynh_clean_check_starting
-
-ynh_clean_check_starting () {
-	# Stop the execution of tail.
-	kill -s 15 $pid_tail 2>&1
-	ynh_secure_remove "$templog" 2>&1
-}
-
-#=================================================
-
-ynh_print_log () {
-  echo "${1}"
-}
-
-# Print an info on stdout
-#
-# usage: ynh_print_info "Text to print"
-# | arg: text - The text to print
-ynh_print_info () {
-  ynh_print_log "[INFO] ${1}"
-}
-
-# Print a error on stderr
-#
-# usage: ynh_print_err "Text to print"
-# | arg: text - The text to print
-ynh_print_err () {
-  ynh_print_log "[ERR] ${1}" >&2
-}
-
-# Execute a command and force the result to be printed on stdout
-#
-# usage: ynh_exec_warn_less command to execute
-# usage: ynh_exec_warn_less "command to execute | following command"
-# In case of use of pipes, you have to use double quotes. Otherwise, this helper will be executed with the first command, then be send to the next pipe.
-#
-# | arg: command - command to execute
-ynh_exec_warn_less () {
-	eval $@ 2>&1
-}
-
-# Remove any logs for all the following commands.
-#
-# usage: ynh_print_OFF
-# WARNING: You should be careful with this helper, and never forgot to use ynh_print_ON as soon as possible to restore the logging.
-ynh_print_OFF () {
-	set +x
-}
-
-# Restore the logging after ynh_print_OFF
-#
-# usage: ynh_print_ON
-ynh_print_ON () {
-	set -x
-	# Print an echo only for the log, to be able to know that ynh_print_ON has been called.
-	echo ynh_print_ON > /dev/null
-}
-
 #=================================================
 
 # Send an email to inform the administrator
@@ -294,6 +184,8 @@ ynh_maintenance_mode_ON () {
 		domain=$(ynh_app_setting_get $app domain)
 	fi
 
+	mkdir -p /var/www/html/
+	
 	# Create an html to serve as maintenance notice
 	echo "<!DOCTYPE html>
 <html>
@@ -360,6 +252,144 @@ ynh_maintenance_mode_OFF () {
 	rm "/etc/nginx/conf.d/$domain.d/maintenance.$app.conf"
 
 	systemctl reload nginx
+}
+
+#=================================================
+
+# Create a changelog for an app after an upgrade from the file CHANGELOG.md.
+#
+# usage: ynh_app_changelog [--format=markdown/html/plain] [--output=changelog_file] --changelog=changelog_source]
+# | arg: -f --format= - Format in which the changelog will be printed
+#       markdown: Default format.
+#       html:     Turn urls into html format.
+#       plain:    Plain text changelog
+# | arg: -o --output= - Output file for the changelog file (Default ./changelog)
+# | arg: -c --changelog= - CHANGELOG.md source (Default ../CHANGELOG.md)
+#
+# The changelog is printed into the file ./changelog and ./changelog_lite
+ynh_app_changelog () {
+    # Declare an array to define the options of this helper.
+    local legacy_args=foc
+    declare -Ar args_array=( [f]=format= [o]=output= [c]=changelog= )
+    local format
+    local output
+    local changelog
+    # Manage arguments with getopts
+    ynh_handle_getopts_args "$@"
+    format=${format:-markdown}
+    output=${output:-changelog}
+    changelog=${changelog:-../CHANGELOG.md}
+
+    local original_changelog="$changelog"
+    local temp_changelog="changelog_temp"
+    local final_changelog="$output"
+
+    if [ ! -n "$original_changelog" ]
+    then
+        echo "No changelog available..." > "$final_changelog"
+        echo "No changelog available..." > "${final_changelog}_lite"
+        return 0
+    fi
+
+    local current_version=$(ynh_read_manifest --manifest="/etc/yunohost/apps/$YNH_APP_INSTANCE_NAME/manifest.json" --manifest_key="version")
+    local update_version=$(ynh_read_manifest --manifest="../manifest.json" --manifest_key="version")
+
+    # Get the line of the version to update to into the changelog
+    local update_version_line=$(grep --max-count=1 --line-number "^## \[$update_version" "$original_changelog" | cut -d':' -f1)
+    # If there's no entry for this version yet into the changelog
+    # Get the first available version
+    if [ -z "$update_version_line" ]
+    then
+        update_version_line=$(grep --max-count=1 --line-number "^##" "$original_changelog" | cut -d':' -f1)
+    fi
+
+    # Get the length of the complete changelog.
+    local changelog_length=$(wc --lines "$original_changelog" | awk '{print $1}')
+    # Cut the file before the version to update to.
+    tail --lines=$(( $changelog_length - $update_version_line + 1 )) "$original_changelog" > "$temp_changelog"
+
+    # Get the length of the troncated changelog.
+    changelog_length=$(wc --lines "$temp_changelog" | awk '{print $1}')
+    # Get the line of the current version into the changelog
+    # Keep only the last line found
+    local current_version_line=$(grep --line-number "^## \[$current_version" "$temp_changelog" | cut -d':' -f1 | tail --lines=1)
+    # If there's no entry for this version into the changelog
+    # Get the last available version
+    if [ -z "$current_version_line" ]
+    then
+        current_version_line=$(grep --line-number "^##" "$original_changelog" | cut -d':' -f1 | tail --lines=1)
+    fi
+    # Cut the file before the current version.
+    # Then grep the previous version into the changelog to get the line number of the previous version
+    local previous_version_line=$(tail --lines=$(( $changelog_length - $current_version_line )) \
+        "$temp_changelog" | grep --max-count=1 --line-number "^## " | cut -d':' -f1)
+    # If there's no previous version into the changelog
+    # Go until the end of the changelog
+    if [ -z "$previous_version_line" ]
+    then
+        previous_version_line=$changelog_length
+    fi
+
+    # Cut the file after the previous version to keep only the changelog between the current version and the version to update to.
+    head --lines=$(( $current_version_line + $previous_version_line - 1 )) "$temp_changelog" | tee "$final_changelog"
+
+    if [ "$format" = "html" ]
+    then
+        # Replace markdown links by html links
+        ynh_replace_string --match_string="\[\(.*\)\](\(.*\)))" --replace_string="<a href=\"\2\">\1</a>)" --target_file="$final_changelog"
+        ynh_replace_string --match_string="\[\(.*\)\](\(.*\))" --replace_string="<a href=\"\2\">\1</a>" --target_file="$final_changelog"
+    elif [ "$format" = "plain" ]
+    then
+        # Change title format.
+        ynh_replace_string --match_string="^##.*\[\(.*\)\](\(.*\)) - \(.*\)$" --replace_string="## \1 (\3) - \2" --target_file="$final_changelog"
+        # Change modifications lines format.
+        ynh_replace_string --match_string="^\([-*]\).*\[\(.*\)\]\(.*\)" --replace_string="\1 \2 \3" --target_file="$final_changelog"
+    fi
+    # else markdown. As the file is already in markdown, nothing to do.
+
+    # Keep only important changes into the changelog
+    # Remove all minor changes
+    sed '/^-/d' "$final_changelog" > "${final_changelog}_lite"
+    # Remove all blank lines (to keep a clear workspace)
+    sed --in-place '/^$/d' "${final_changelog}_lite"
+    # Add a blank line at the end
+    echo "" >> "${final_changelog}_lite"
+
+    # Clean titles if there's no significative changes
+    local line
+    local previous_line=""
+    while read line <&3
+    do
+        if [ -n "$previous_line" ]
+        then
+            # Remove the line if it's a title or a blank line, and the previous one was a title as well.
+            if ( [ "${line:0:1}" = "#" ] || [ ${#line} -eq 0 ] ) && [ "${previous_line:0:1}" = "#" ]
+            then
+                ynh_replace_special_string --match_string="${previous_line//[/.}" --replace_string="" --target_file="${final_changelog}_lite"
+            fi
+        fi
+        previous_line="$line"
+    done 3< "${final_changelog}_lite"
+
+    # Remove all blank lines again
+    sed --in-place '/^$/d' "${final_changelog}_lite"
+
+    # Restore changelog format with blank lines
+    ynh_replace_string --match_string="^##.*" --replace_string="\n\n&\n" --target_file="${final_changelog}_lite"
+    # Remove the 2 first blank lines
+    sed --in-place '1,2d' "${final_changelog}_lite"
+    # Add a blank line at the end
+    echo "" >> "${final_changelog}_lite"
+
+    # If changelog are empty, add an info
+    if [ $(wc --words "$final_changelog" | awk '{print $1}') -eq 0 ]
+    then
+        echo "No changes from the changelog..." > "$final_changelog"
+    fi
+    if [ $(wc --words "${final_changelog}_lite" | awk '{print $1}') -eq 0 ]
+    then
+        echo "No significative changes from the changelog..." > "${final_changelog}_lite"
+    fi
 }
 
 #=================================================
