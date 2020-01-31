@@ -21,11 +21,11 @@ Changelog
 
 ## [1.7.0~ynh2](https://github.com/YunoHost-Apps/etherpad_mypads_ynh/pull/63) - 2019-03-29
 
-#### Fixed
-- [Fix regression on ynh_system_user_create](https://github.com/YunoHost-Apps/etherpad_mypads_ynh/pull/63/commits/c0de9b2ee3ebc5ecb11e02655984e1fe793dd9d5)
-
 #### Added
 - [Progress bar](https://github.com/YunoHost-Apps/etherpad_mypads_ynh/pull/63/commits/4489e07a059477802cfeb402e1980b79e1ddce97)
+
+#### Fixed
+- [Fix regression on ynh_system_user_create](https://github.com/YunoHost-Apps/etherpad_mypads_ynh/pull/63/commits/c0de9b2ee3ebc5ecb11e02655984e1fe793dd9d5)
 
 #### Changed
 - [Update to last standart](https://github.com/YunoHost-Apps/etherpad_mypads_ynh/pull/63/commits/c663ec74c1d97cccbc1291a9d3e74cdf3b7586e9)
