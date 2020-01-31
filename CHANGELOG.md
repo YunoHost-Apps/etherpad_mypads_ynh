@@ -2,13 +2,22 @@ Changelog
 =========
 
 ## Unreleased
+
+## [1.8.0~ynh1](https://github.com/YunoHost-Apps/etherpad_mypads_ynh/pull/74) - 2019-10-08
+
+#### Added
+* [Add actions and config-panel](https://github.com/YunoHost-Apps/etherpad_mypads_ynh/pull/49)
+* [Add changelog](https://github.com/YunoHost-Apps/etherpad_mypads_ynh/pull/76)
+
 #### Changed
-* [Upgrade actions and config-panel scripts](https://github.com/YunoHost-Apps/etherpad_mypads_ynh/commit/7b19a35da535a5bf24f08dbacb8944a44de124da)
+* [Upgrade to 1.8.0](https://github.com/YunoHost-Apps/etherpad_mypads_ynh/pull/78)
+
 
 ## [1.7.5~ynh2](https://github.com/YunoHost-Apps/etherpad_mypads_ynh/pull/69) - 2019-05-26
 
 #### Changed
 * [Upgrade to Etherpad 1.7.5](https://github.com/YunoHost-Apps/etherpad_mypads_ynh/pull/69/commits/d299b77dd865e9fff306c121235450e27ab9372a)
+
 
 ## [1.7.0~ynh2](https://github.com/YunoHost-Apps/etherpad_mypads_ynh/pull/63) - 2019-03-29
 
@@ -23,6 +32,7 @@ Changelog
 * [Update to mypads 1.7.6](https://github.com/YunoHost-Apps/etherpad_mypads_ynh/pull/63/commits/c87caaad6507a52a71572ef21529cc4f1022b53b)
 - [Update helpers](https://github.com/YunoHost-Apps/etherpad_mypads_ynh/pull/63/commits/bab779a39f3f6f45c0fcc6bdf640baa47a5e6821)
 - [Allow to include a pad in an other page](https://github.com/YunoHost-Apps/etherpad_mypads_ynh/pull/63/commits/f27cca79957f88fd9972452db146fe6867ba3f79)
+
 
 ## [1.7.0~ynh1](https://github.com/YunoHost-Apps/etherpad_mypads_ynh/pull/55) - 2018-12-08
 
