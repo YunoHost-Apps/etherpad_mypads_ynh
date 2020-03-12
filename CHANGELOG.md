@@ -2,6 +2,9 @@ Changelog
 =========
 
 ## Unreleased
+#### Changed
+* [Update to mypads 1.7.10]()
+
 
 ## [1.8.0~ynh1](https://github.com/YunoHost-Apps/etherpad_mypads_ynh/pull/74) - 2019-10-08
 
