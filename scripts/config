@@ -31,7 +31,6 @@ get_config_value() {
 	option_name="$1"
 	# Get the value of this option in the config file
 	grep "\"$option_name\" *:" "$config_file" | cut -d':' -f2 | sed s'/ //g' | cut -d',' -f1
-
 }
 
 #=================================================
@@ -71,21 +70,36 @@ pad_config_show_markdown="${YNH_CONFIG_MAIN_PAD_CONFIGURATION_PAD_CONFIG_SHOW_MA
 old_pad_config_pageview="$(get_config_value ep_page_view_default)"
 pad_config_pageview="${YNH_CONFIG_MAIN_PAD_CONFIGURATION_PAD_CONFIG_PAGEVIEW:-$old_pad_config_pageview}"
 
+# Enable/disable ep_automatic_logut
+if grep -q "//.*\"automatic_logut_" $config_file
+then
+    # Disable
+	old_pad_config_automatic_logout=0
+else
+    # Enable
+	old_pad_config_automatic_logout=1
+fi
+pad_config_automatic_logout="${YNH_CONFIG_MAIN_PAD_CONFIGURATION_PAD_CONFIG_AUTOMATIC_LOGOUT:-$old_pad_config_automatic_logout}"
+
 # Mypads
 if [ -d $final_path/node_modules/ep_mypads ]
 then
-	old_mypads=true
+    # Enable
+	old_mypads=1
 else
-	old_mypads=false
+    # Disable
+	old_mypads=0
 fi
 mypads="${YNH_CONFIG_MAIN_MYPADS_CONFIGURATION_MYPADS:-$old_mypads}"
 
 # Ldap for Mypads
 if grep -q "//noldap" $config_file
 then
-	old_useldap=false
+    # Disable
+	old_useldap=0
 else
-	old_useldap=true
+    # Enable
+	old_useldap=1
 fi
 useldap="${YNH_CONFIG_MAIN_MYPADS_CONFIGURATION_USELDAP:-$old_useldap}"
 
@@ -125,6 +139,7 @@ show_config() {
 	ynh_return "YNH_CONFIG_MAIN_PAD_CONFIGURATION_PAD_CONFIG_ALWAYSSHOWCHAT=$pad_config_alwaysshowchat"
 	ynh_return "YNH_CONFIG_MAIN_PAD_CONFIGURATION_PAD_CONFIG_SHOW_MARKDOWN=$pad_config_show_markdown"
 	ynh_return "YNH_CONFIG_MAIN_PAD_CONFIGURATION_PAD_CONFIG_PAGEVIEW=$pad_config_pageview"
+	ynh_return "YNH_CONFIG_MAIN_PAD_CONFIGURATION_PAD_CONFIG_AUTOMATIC_LOGOUT=$pad_config_automatic_logout"
 
 	ynh_return "YNH_CONFIG_MAIN_MYPADS_CONFIGURATION_MYPADS=$mypads"
 	ynh_return "YNH_CONFIG_MAIN_MYPADS_CONFIGURATION_USELDAP=$useldap"
@@ -188,10 +203,22 @@ apply_config() {
 	# Plugin option ep_page_view_default
 	if [ "$pad_config_pageview" != "$old_pad_config_pageview" ]
 	then
-		ynh_replace_string --match_string="\(\"ep_page_view_default\" *: \).*," --replace_string="\1$pad_config_pageview," "$config_file"
+		ynh_replace_string --match_string="\(\"ep_page_view_default\" *: \).*," --replace_string="\1$pad_config_pageview," --target_file="$config_file"
 		ynh_app_setting_set --app=$app --key=pad_config_pageview --value="$pad_config_pageview"
 		restart_etherpad=1
 	fi
+
+    # Plugin option ep_automatic_logut
+    if [ "$pad_config_automatic_logout" != "$old_pad_config_automatic_logout" ]
+    then
+        if [ "$pad_config_automatic_logout" = "0" ]
+        then
+            ynh_replace_string --match_string="^\(.*\"automatic_logut.*$\)" --replace_string="\/\/\1" --target_file="$config_file"
+        else
+            ynh_replace_string --match_string="^\/\/\(.*\"automatic_logut.*$\)" --replace_string="\1" --target_file="$config_file"
+        fi
+        restart_etherpad=1
+    fi
 
 	# Export
 	if [ "$export" != "$old_export" ]
@@ -226,7 +253,7 @@ apply_config() {
 	then
 		ynh_use_nodejs
 		pushd "$final_path"
-		if [ "$mypads" = "true" ]
+		if [ "$mypads" = "1" ]
 		then
 			npm install ep_mypads@${mypads_version}
 		else
@@ -240,7 +267,7 @@ apply_config() {
 	# Ldap for Mypads
 	if [ "$useldap" != "$old_useldap" ]
 	then
-		if [ "$useldap" = "true" ]
+		if [ "$useldap" = "1" ]
 		then
 			ynh_replace_string --match_string="//noldap\(.*\)" --replace_string="\1 //useldap" --target_file="$final_path/settings.json"
 		else
@@ -253,7 +280,7 @@ apply_config() {
 	if [ $restart_etherpad -eq 1 ]
 	then
 		# Wait for etherpad to be fully started
-		ynh_check_starting "You can access your Etherpad instance at" "/var/log/$app/etherpad.log" "120"
+		ynh_systemd_action --action=restart --line_match="You can access your Etherpad instance at" --log_path="/var/log/$app/etherpad.log" --timeout="120"
 	fi
 
 	# Change public accessibility
