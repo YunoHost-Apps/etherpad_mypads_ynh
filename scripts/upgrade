@@ -369,7 +369,7 @@ fi
 # SOME HACKS
 #=================================================
 
-if [ $mypads -eq 1 ]
+if [ "$upgrade_type" == "UPGRADE_APP" ]
 then
 	# Find the /div just after the field to open a pad
 	mod_line=$(grep -nA5 "index.createOpenPad" $final_path/src/templates/index.html | grep "</div>" | cut -d '-' -f 1)
