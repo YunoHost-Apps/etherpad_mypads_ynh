@@ -78,7 +78,7 @@ name = "Etherpad configuration"
 
 
     [main.overwrite_files]
-    name = "Overwriting config files"
+    name = "Overwriting config files during an upgrade"
 
         [main.overwrite_files.overwrite_settings]
         ask = "Overwrite the config file settings.json ?"
