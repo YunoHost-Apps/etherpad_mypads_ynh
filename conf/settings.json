@@ -357,6 +357,7 @@
      * Set to 0 to let the scroll to be handled as default by Etherpad
      */
     "percentageToScrollWhenUserPressesArrowUp": 0
+},
 
   /*
    * Restrict socket.io transport methods
