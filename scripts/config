@@ -6,10 +6,11 @@
 # IMPORT GENERIC HELPERS
 #=================================================
 
-source _common.sh
-source /usr/share/yunohost/helpers
 # Load common variables for all scripts.
 source _variables
+
+source _common.sh
+source /usr/share/yunohost/helpers
 
 #=================================================
 # RETRIEVE ARGUMENTS
@@ -157,6 +158,11 @@ show_config() {
 #=================================================
 
 apply_config() {
+
+    #=================================================
+    # MODIFY ETHERPAD CONFIG
+    #=================================================
+
 	restart_etherpad=0
 
 	# Change configuration if needed
@@ -245,6 +251,9 @@ apply_config() {
 			ynh_replace_string --match_string="\(\"abiword\" *: \).*," --replace_string="\1null," --target_file="$config_file"
 			ynh_replace_string --match_string="\(\"soffice\" *: \).*," --replace_string="\1null," --target_file="$config_file"
 		fi
+
+        ynh_app_setting_set --app=$app --key=export --value="$export"
+
 		restart_etherpad=1
 	fi
 
@@ -261,6 +270,9 @@ apply_config() {
 		fi
 		popd
 		chown -R $app: $final_path/node_modules
+
+        ynh_app_setting_set --app=$app --key=mypads --value="$mypads"
+
 		restart_etherpad=1
 	fi
 
@@ -273,6 +285,9 @@ apply_config() {
 		else
 			ynh_replace_string --match_string="\(.*\) //useldap" --replace_string="//noldap\1" --target_file="$final_path/settings.json"
 		fi
+
+        ynh_app_setting_set --app=$app --key=useldap --value="$useldap"
+
 		restart_etherpad=1
 	fi
 
@@ -283,13 +298,24 @@ apply_config() {
 		ynh_systemd_action --action=restart --line_match="You can access your Etherpad instance at" --log_path="/var/log/$app/etherpad.log" --timeout="120"
 	fi
 
+    #=================================================
+    # MODIFY PUBLIC ACCESSIBILITY
+    #=================================================
+
 	# Change public accessibility
-	if [ "$is_public" = "1" ]
+	if [ "$is_public" != "$old_is_public" ]
 	then
-		yunohost app action run $app public_private --args is_public=1
-	else
-		yunohost app action run $app public_private --args is_public=0
+        if [ "$is_public" = "1" ]
+        then
+            yunohost app action run $app public_private --args is_public=1
+        else
+            yunohost app action run $app public_private --args is_public=0
+        fi
 	fi
+
+    #=================================================
+    # MODIFY OVERWRITTING SETTINGS
+    #=================================================
 
 	# Set overwrite_settings
 	ynh_app_setting_set --app=$app --key=overwrite_settings --value="$overwrite_settings"
