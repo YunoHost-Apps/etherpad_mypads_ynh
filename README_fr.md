@@ -1,6 +1,6 @@
 # Etherpad avec plugin mypads pour YunoHost
 
-[![Niveau d'intégration](https://dash.yunohost.org/integration/etherpad_mypads.svg)](https://dash.yunohost.org/appci/app/etherpad_mypads)  
+[![Niveau d'intégration](https://dash.yunohost.org/integration/etherpad_mypads.svg)](https://dash.yunohost.org/appci/app/etherpad_mypads) ![](https://ci-apps.yunohost.org/ci/badges/etherpad_mypads.status.svg) [![](https://ci-apps.yunohost.org/ci/badges/etherpad_mypads.maintain.svg)](https://github.com/YunoHost/Apps/#what-to-do-if-i-cant-maintain-my-app-anymore-)  
 [![Installer Etherpad avec YunoHost](https://install-app.yunohost.org/install-with-yunohost.png)](https://install-app.yunohost.org/?app=etherpad_mypads)
 
 *[Read this readme in english.](./README.md)*
@@ -42,7 +42,7 @@ Supportée, avec LDAP.
 
 * x86-64b - [![](https://ci-apps.yunohost.org/ci/logs/etherpad_mypads%20%28Apps%29.svg)](https://ci-apps.yunohost.org/ci/apps/etherpad_mypads/)
 * ARMv8-A - [![](https://ci-apps-arm.yunohost.org/ci/logs/etherpad_mypads%20%28Apps%29.svg)](https://ci-apps-arm.yunohost.org/ci/apps/etherpad_mypads/)
-* Jessie x86-64b - [![](https://ci-stretch.nohost.me/ci/logs/etherpad_mypads%20%28Apps%29.svg)](https://ci-stretch.nohost.me/ci/apps/etherpad_mypads/)
+* Buster x86-64b - [![](https://ci-buster.nohost.me/ci/logs/etherpad_mypads%20%28Apps%29.svg)](https://ci-buster.nohost.me/ci/apps/etherpad_mypads/)
 
 ## Limitations
 

@@ -10,6 +10,13 @@ source scripts/_common.sh
 source /usr/share/yunohost/helpers
 
 #=================================================
+# MANAGE SCRIPT FAILURE
+#=================================================
+
+# Exit if an error occurs during the execution of the script
+ynh_abort_if_errors
+
+#=================================================
 # RETRIEVE ARGUMENTS
 #=================================================
 
@@ -29,14 +36,14 @@ then
 	# libreoffice is already a dependence of etherpad_mypads.
 	# libreoffice should be removed.
 	libreoffice=0
-	action1=installed
-	action2=Installing
+	action1=removed
+	action2=Removing
 else
 	# libreoffice isn't a dependence of etherpad_mypads.
 	# libreoffice should be installed.
 	libreoffice=1
-	action1=removed
-	action2=Removing
+	action1=installed
+	action2=Installing
 fi
 
 ynh_print_info --message="Libreoffice will be $action1."
