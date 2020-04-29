@@ -58,12 +58,16 @@ then
 	ynh_replace_string --match_string="__PORT__" --replace_string="$port" --target_file="$final_path/settings.json"
 	if [ "$export" = "abiword" ]
 	then
-		abiword_path=`which abiword`	# Get abiword binary path
-		ynh_replace_string --match_string="\"abiword\" : null" --replace_string="\"abiword\" : \"$abiword_path\"" --target_file="$final_path/settings.json"	# Renseigne l'emplacement de abiword dans la config de etherpad
+		# Get abiword binary path
+		abiword_path=`which abiword`
+		# Set the path of abiword into etherpad config
+		ynh_replace_string --match_string="\"abiword\" : null" --replace_string="\"abiword\" : \"$abiword_path\"" --target_file="$final_path/settings.json"
 	elif [ "$export" = "libreoffice" ]
 	then
-		soffice_path=`which soffice`	# Get soffice binary path
-		ynh_replace_string --match_string="\"soffice\" : null" --replace_string="\"soffice\" : \"$soffice_path\"" --target_file="$final_path/settings.json"	# Renseigne l'emplacement de abiword dans la config de etherpad
+		# Get soffice binary path
+		soffice_path=`which soffice`
+		# Set the path of soffice into etherpad config
+		ynh_replace_string --match_string="\"soffice\" : null" --replace_string="\"soffice\" : \"$soffice_path\"" --target_file="$final_path/settings.json"
 	fi
 	ynh_replace_string --match_string="__LANGUAGE__" --replace_string="$language" --target_file="$final_path/settings.json"
 

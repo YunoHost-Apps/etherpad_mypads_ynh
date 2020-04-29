@@ -41,7 +41,14 @@ db_pwd=$(ynh_app_setting_get --app=$app --key=mysqlpwd)
 
 ynh_script_progression --message="Listing all pads..." --weight=3
 
-mysql -u $db_name -p$db_pwd $db_name --silent -e 'select distinct substring(store.key,5,locate(":",store.key,5)-5) as "pads" from store where store.key like "pad:%"' | sed 's/^/>> /g' >&2
+# Get the list of pads from the database
+pad_list="$(ynh_mysql_connect_as --user=$db_name --password=$db_pwd --database=$db_name <<< \
+        "select distinct substring(store.key,5,locate(\":\",store.key,5)-5) as \"pads\" from store where store.key like \"pad:%\"")"
+
+# Remove empty lines
+# Name the first line "> List of pads"
+# Then for the second lines and following, add >> before the name of the pad.
+ynh_print_info --message="$(echo "$pad_list" | sed '/^$/d' | sed '1 s/^/> List of /' | sed '2,$s/^/>> /g')"
 
 #=================================================
 # END OF SCRIPT
