@@ -41,6 +41,7 @@ pad_config_showlinenumbers=$(ynh_app_setting_get --app=$app --key=pad_config_sho
 pad_config_chatandusers=$(ynh_app_setting_get --app=$app --key=pad_config_chatandusers)
 pad_config_alwaysshowchat=$(ynh_app_setting_get --app=$app --key=pad_config_alwaysshowchat)
 pad_config_show_markdown=$(ynh_app_setting_get --app=$app --key=pad_config_show_markdown)
+pad_config_skinname=$(ynh_app_setting_get --app=$app --key=pad_config_skinname)
 
 #=================================================
 # CHECK VERSION
@@ -297,6 +298,9 @@ then
     fi
     if [ -n "$pad_config_show_markdown" ]; then
       ynh_replace_string --match_string="\(\"ep_markdown_default\" *: \).*," --replace_string="\1$pad_config_show_markdown," --target_file="$final_path/settings.json"
+    fi
+    if [ -n "$pad_config_skinname" ]; then
+      ynh_replace_string --match_string="\(\"skinName\" *: \).*," --replace_string="\1\"$pad_config_skinname\"," --target_file="$final_path/settings.json"
     fi
 
     # Recalculate and store the checksum of the file for the next upgrade.

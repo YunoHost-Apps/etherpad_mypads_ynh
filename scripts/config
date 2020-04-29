@@ -31,7 +31,7 @@ config_file="$final_path/settings.json"
 get_config_value() {
 	option_name="$1"
 	# Get the value of this option in the config file
-	grep "\"$option_name\" *:" "$config_file" | cut -d':' -f2 | sed s'/ //g' | cut -d',' -f1
+	grep "^ *\"$option_name\" *:" "$config_file" | cut -d':' -f2 | sed s'/[ \"]//g' | cut -d',' -f1
 }
 
 #=================================================
@@ -81,6 +81,16 @@ else
 	old_pad_config_automatic_logout=1
 fi
 pad_config_automatic_logout="${YNH_CONFIG_MAIN_PAD_CONFIGURATION_PAD_CONFIG_AUTOMATIC_LOGOUT:-$old_pad_config_automatic_logout}"
+
+# Etherpad skin
+old_pad_config_skinname="$(get_config_value skinName)"
+if [ "$old_pad_config_skinname" = "no-skin" ]; then
+    old_pad_config_skinname=noskin
+fi
+pad_config_skinname="${YNH_CONFIG_MAIN_PAD_CONFIGURATION_PAD_CONFIG_SKINNAME:-$old_pad_config_skinname}"
+if [ "$pad_config_skinname" = "no-skin" ]; then
+    pad_config_skinname=noskin
+fi
 
 # Mypads
 if [ -d $final_path/node_modules/ep_mypads ]
@@ -141,6 +151,7 @@ show_config() {
 	ynh_return "YNH_CONFIG_MAIN_PAD_CONFIGURATION_PAD_CONFIG_SHOW_MARKDOWN=$pad_config_show_markdown"
 	ynh_return "YNH_CONFIG_MAIN_PAD_CONFIGURATION_PAD_CONFIG_PAGEVIEW=$pad_config_pageview"
 	ynh_return "YNH_CONFIG_MAIN_PAD_CONFIGURATION_PAD_CONFIG_AUTOMATIC_LOGOUT=$pad_config_automatic_logout"
+	ynh_return "YNH_CONFIG_MAIN_PAD_CONFIGURATION_PAD_CONFIG_SKINNAME=$pad_config_skinname"
 
 	ynh_return "YNH_CONFIG_MAIN_MYPADS_CONFIGURATION_MYPADS=$mypads"
 	ynh_return "YNH_CONFIG_MAIN_MYPADS_CONFIGURATION_USELDAP=$useldap"
@@ -225,6 +236,17 @@ apply_config() {
         fi
         restart_etherpad=1
     fi
+
+	# Plugin option ep_page_view_default
+	if [ "$pad_config_skinname" != "$old_pad_config_skinname" ]
+	then
+        if [ "$pad_config_skinname" = "noskin" ]; then
+            pad_config_skinname="no-skin"
+        fi
+		ynh_replace_string --match_string="\( *\"skinName\" *: \).*," --replace_string="\1\"$pad_config_skinname\"," --target_file="$config_file"
+		ynh_app_setting_set --app=$app --key=pad_config_skinname --value="$pad_config_skinname"
+		restart_etherpad=1
+	fi
 
 	# Export
 	if [ "$export" != "$old_export" ]

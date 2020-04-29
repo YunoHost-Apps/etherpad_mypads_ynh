@@ -20,6 +20,7 @@
         main.pad_configuration.pad_config_show_markdown=1|0
         main.pad_configuration.pad_config_pageview=1|0
         main.pad_configuration.pad_config_automatic_logout=0|1
+        main.pad_configuration.pad_config_skinname=noskin|colibris|noskin
         main.mypads_configuration.mypads=0|1
         main.mypads_configuration.useldap=0|1
         main.is_public.is_public=1|0

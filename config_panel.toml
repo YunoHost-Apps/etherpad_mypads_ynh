@@ -52,6 +52,12 @@ name = "Etherpad configuration"
         type = "boolean"
         default = true
 
+        [main.pad_configuration.pad_config_skinname]
+        ask = "Theme Name"
+        choices = ["noskin", "colibris"]
+        default = "noskin"
+        help = "noskin is the traditional Etherpad theme. colibris is the new theme."
+
 
     [main.mypads_configuration]
     name = "Mypads configuration"
