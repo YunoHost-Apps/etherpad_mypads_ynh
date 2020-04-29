@@ -271,7 +271,7 @@ apply_config() {
 		popd
 		chown -R $app: $final_path/node_modules
 
-        ynh_app_setting_set --app=$app --key=mypads --value="$mypads"
+		ynh_app_setting_set --app=$app --key=mypads --value="$mypads"
 
 		restart_etherpad=1
 	fi
@@ -286,7 +286,7 @@ apply_config() {
 			ynh_replace_string --match_string="\(.*\) //useldap" --replace_string="//noldap\1" --target_file="$final_path/settings.json"
 		fi
 
-        ynh_app_setting_set --app=$app --key=useldap --value="$useldap"
+		ynh_app_setting_set --app=$app --key=useldap --value="$useldap"
 
 		restart_etherpad=1
 	fi
