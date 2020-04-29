@@ -252,7 +252,7 @@ apply_config() {
 			ynh_replace_string --match_string="\(\"soffice\" *: \).*," --replace_string="\1null," --target_file="$config_file"
 		fi
 
-        ynh_app_setting_set --app=$app --key=export --value="$export"
+		ynh_app_setting_set --app=$app --key=export --value="$export"
 
 		restart_etherpad=1
 	fi
