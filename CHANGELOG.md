@@ -12,9 +12,13 @@ Changelog
 * [Add actions and config-panel](https://github.com/YunoHost-Apps/etherpad_mypads_ynh/pull/49)
 * [Add changelog](https://github.com/YunoHost-Apps/etherpad_mypads_ynh/pull/76)
 
+#### Fixed
+- [Show a link to mypads only if installed](https://github.com/YunoHost-Apps/etherpad_mypads_ynh/pull/74/commits/46b50b32e58edfb74c143fe5a50362629294f50b)
+
 #### Changed
 * [Upgrade to 1.8.0](https://github.com/YunoHost-Apps/etherpad_mypads_ynh/pull/78)
-
+* [Update to mypads 1.7.10](https://github.com/YunoHost-Apps/etherpad_mypads_ynh/pull/74/commits/00060c99db7f0fcac57c910256a37b6deeb8c2fe)
+* [Allow to enable or disable automatic logout](https://github.com/YunoHost-Apps/etherpad_mypads_ynh/pull/74/commits/fdc8d6cbdd8eb0931336311d53857dad7f966d93)
 
 ## [1.7.5~ynh2](https://github.com/YunoHost-Apps/etherpad_mypads_ynh/pull/69) - 2019-05-26
 
