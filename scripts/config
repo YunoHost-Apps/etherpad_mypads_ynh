@@ -228,12 +228,18 @@ apply_config() {
     # Plugin option ep_automatic_logut
     if [ "$pad_config_automatic_logout" != "$old_pad_config_automatic_logout" ]
     then
+        ynh_use_nodejs
+        pushd "$final_path"
         if [ "$pad_config_automatic_logout" = "0" ]
         then
             ynh_replace_string --match_string="^\(.*\"automatic_logut.*$\)" --replace_string="\/\/\1" --target_file="$config_file"
+            npm uninstall ep_automatic_logut
         else
             ynh_replace_string --match_string="^\/\/\(.*\"automatic_logut.*$\)" --replace_string="\1" --target_file="$config_file"
+            npm install ep_automatic_logut
         fi
+        popd
+        chown -R $app: $final_path/node_modules
         restart_etherpad=1
     fi
 
