@@ -6,10 +6,11 @@
 # IMPORT GENERIC HELPERS
 #=================================================
 
-source _common.sh
-source /usr/share/yunohost/helpers
 # Load common variables for all scripts.
 source _variables
+
+source _common.sh
+source /usr/share/yunohost/helpers
 
 #=================================================
 # MANAGE FAILURE OF THE SCRIPT
@@ -70,6 +71,10 @@ ynh_app_setting_set --app=$app --key=language --value=$language
 ynh_app_setting_set --app=$app --key=export --value=$export
 ynh_app_setting_set --app=$app --key=mypads --value=$mypads
 ynh_app_setting_set --app=$app --key=useldap --value=$useldap
+ynh_app_setting_set --app=$app --key=overwrite_settings --value="1"
+ynh_app_setting_set --app=$app --key=overwrite_credentials --value="1"
+ynh_app_setting_set --app=$app --key=overwrite_nginx --value="1"
+ynh_app_setting_set --app=$app --key=overwrite_systemd --value="1"
 
 #=================================================
 # STANDARD MODIFICATIONS
@@ -158,8 +163,15 @@ ynh_script_progression --message="Installing Etherpad..." --weight=90
 
 # Install dependencies and proceed to the installation
 ynh_use_nodejs
-"$final_path/bin/installDeps.sh" > $install_log 2>&1 || ( ynh_exec_err cat "$install_log"; false )
-npm install forever -g >> $install_log 2>&1 || ( ynh_exec_err cat "$install_log"; false )
+(
+    cd "$final_path"
+    mkdir -p node_modules
+    cd node_modules
+    [ -e ep_etherpad-lite ] || ln -s ../src ep_etherpad-lite
+    cd ep_etherpad-lite
+    chown -R $app: $final_path
+    ynh_exec_as $app PATH="$nodejs_path:$PATH" "$nodejs_path/npm" install --save --loglevel warn
+)
 
 #=================================================
 # CONFIGURE ETHERPAD
@@ -191,7 +203,7 @@ ynh_replace_string --match_string="__LANGUAGE__" --replace_string="$language" --
 # Use ldap for mypads
 if [ $mypads -eq 1 ] && [ $useldap -eq 1 ]
 then
-	ynh_replace_string --match_string="//noldap" --replace_string="" --target_file="$final_path/settings.json"
+	ynh_replace_string --match_string="//noldap\(.*\)" --replace_string="\1 //useldap" --target_file="$final_path/settings.json"
 fi
 
 # Calculate and store the config file checksum into the app settings
@@ -331,6 +343,9 @@ fi
 # SEND A README FOR THE ADMIN
 #=================================================
 
+# Get main domain and buid the url of the admin panel of the app.
+admin_panel="https://$(grep portal_domain /etc/ssowat/conf.json | cut -d'"' -f4)/yunohost/admin/#/apps/$app"
+
 if [ $mypads -eq 1 ]
 then
 	Informations="You can access 2 different admin panels, for etherpad by accessing https://$domain${path_url%/}/admin and for mypads by accessing https://$domain${path_url%/}/mypads/?/admin."
@@ -345,6 +360,9 @@ Or, you can find a config file for etherpad at this path /var/www/etherpad_mypad
 Your credentials for the admin panel are:
 - login		: $admin
 - password	: $password
+
+You can configure this app easily by using the experimental config-panel feature $admin_panel/config-panel.
+You can also find some specific actions for this app by using the experimental action feature $admin_panel/actions.
 
 If you are facing an issue or want to improve this app, please open a new issue in this project: https://github.com/YunoHost-Apps/etherpad_mypads_ynh" > mail_to_send
 

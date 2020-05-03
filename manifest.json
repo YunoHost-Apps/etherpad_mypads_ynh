@@ -6,7 +6,7 @@
 		"en": "Framapad clone, a online editor providing collaborative editing in real-time.",
 		"fr": "Clone de Framapad, un éditeur en ligne fournissant l'édition collaborative en temps réel."
 	},
-	"version": "1.7.5~ynh2",
+	"version": "1.8.0~ynh1",
 	"url": "https://framapad.org",
 	"license": "Apache-2.0",
 	"maintainer": {
@@ -14,7 +14,7 @@
 		"email": "maniackc_dev@crudelis.fr"
 	},
 	"requirements": {
-		"yunohost": ">= 3.5"
+		"yunohost": ">= 3.6"
 	},
 	"multi_instance": true,
 	"services": [

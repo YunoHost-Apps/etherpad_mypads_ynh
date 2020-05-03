@@ -1,6 +1,6 @@
 # Etherpad with mypads plugin for YunoHost
 
-[![Integration level](https://dash.yunohost.org/integration/etherpad_mypads.svg)](https://dash.yunohost.org/appci/app/etherpad_mypads)  
+[![Integration level](https://dash.yunohost.org/integration/etherpad_mypads.svg)](https://dash.yunohost.org/appci/app/etherpad_mypads) ![](https://ci-apps.yunohost.org/ci/badges/etherpad_mypads.status.svg) [![](https://ci-apps.yunohost.org/ci/badges/etherpad_mypads.maintain.svg)](https://github.com/YunoHost/Apps/#what-to-do-if-i-cant-maintain-my-app-anymore-)  
 [![Install Etherpad with YunoHost](https://install-app.yunohost.org/install-with-yunohost.png)](https://install-app.yunohost.org/?app=etherpad_mypads)
 
 *[Lire ce readme en français.](./README_fr.md)*
@@ -12,7 +12,7 @@ If you don't have YunoHost, please see [here](https://yunohost.org/#/install) to
 Etherpad is a highly customizable Open Source online editor providing collaborative editing in really real-time.  
 This package will install the same plugins than [Framapad](https://framapad.org/).
 
-**Shipped version:** 1.7.5
+**Shipped version:** 1.8.0
 
 ## Screenshots
 
@@ -42,7 +42,7 @@ Supported, with LDAP.
 
 * x86-64b - [![](https://ci-apps.yunohost.org/ci/logs/etherpad_mypads%20%28Apps%29.svg)](https://ci-apps.yunohost.org/ci/apps/etherpad_mypads/)
 * ARMv8-A - [![](https://ci-apps-arm.yunohost.org/ci/logs/etherpad_mypads%20%28Apps%29.svg)](https://ci-apps-arm.yunohost.org/ci/apps/etherpad_mypads/)
-* Jessie x86-64b - [![](https://ci-stretch.nohost.me/ci/logs/etherpad_mypads%20%28Apps%29.svg)](https://ci-stretch.nohost.me/ci/apps/etherpad_mypads/)
+* Buster x86-64b - [![](https://ci-buster.nohost.me/ci/logs/etherpad_mypads%20%28Apps%29.svg)](https://ci-buster.nohost.me/ci/apps/etherpad_mypads/)
 
 ## Limitations
 
