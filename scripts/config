@@ -236,7 +236,7 @@ apply_config() {
             npm uninstall ep_automatic_logut
         else
             ynh_replace_string --match_string="^\/\/\(.*\"automatic_logut.*$\)" --replace_string="\1" --target_file="$config_file"
-            npm install ep_automatic_logut
+            npm install ep_automatic_logut@${ep_automatic_logut_version}
         fi
         popd
         chown -R $app: $final_path/node_modules
