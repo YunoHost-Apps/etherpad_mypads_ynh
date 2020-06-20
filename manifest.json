@@ -10,9 +10,13 @@
 	"url": "https://framapad.org",
 	"license": "Apache-2.0",
 	"maintainer": {
+		"name": "None...",
+		"email": ""
+	},
+	"previous_maintainers": [{
 		"name": "Maniack Crudelis",
 		"email": "maniackc_dev@crudelis.fr"
-	},
+	}],
 	"requirements": {
 		"yunohost": ">= 3.6"
 	},
