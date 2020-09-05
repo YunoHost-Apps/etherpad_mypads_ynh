@@ -46,7 +46,7 @@ else
 	action2=Installing
 fi
 
-ynh_print_info --message="Libreoffice will be $action1."
+ynh_print_info --message="LibreOffice will be $action1."
 
 if apt-cache depends ${app//_/-}-ynh-deps | grep --quiet abiword
 then
@@ -65,7 +65,7 @@ fi
 # INSTALL OR REMOVE LIBREOFFICE
 #=================================================
 
-ynh_script_progression --message="$action2 Libreoffice..." --weight=3
+ynh_script_progression --message="$action2 LibreOffice..." --weight=3
 
 # Load common variables, and especially libreoffice dependencies.
 source scripts/_variables

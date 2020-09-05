@@ -65,7 +65,7 @@ fi
 # INSTALL OR REMOVE ABIWORD
 #=================================================
 
-ynh_script_progression --message="$action2 Abiword..." --weight=3
+ynh_script_progression --message="$action2 AbiWord..." --weight=3
 
 # Load common variables, and especially abiword dependencies.
 source scripts/_variables
