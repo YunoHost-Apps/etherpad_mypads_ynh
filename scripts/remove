@@ -71,7 +71,7 @@ ynh_mysql_remove_db --db_user=$db_name --db_name=$db_name
 #=================================================
 # REMOVE APP MAIN DIR
 #=================================================
-ynh_script_progression --message="Removing app main directory..."
+ynh_script_progression --message="Removing Etherpad main directory..."
 
 # Remove the app directory securely
 ynh_secure_remove --file="/var/www/$app"
@@ -79,7 +79,7 @@ ynh_secure_remove --file="/var/www/$app"
 #=================================================
 # REMOVE NGINX CONFIGURATION
 #=================================================
-ynh_script_progression --message="Removing nginx web server configuration..." --weight=2
+ynh_script_progression --message="Removing NGINX web server configuration..." --weight=2
 
 # Remove the dedicated nginx config
 ynh_remove_nginx_config
@@ -95,7 +95,7 @@ ynh_remove_logrotate
 #=================================================
 # REMOVE FAIL2BAN CONFIGURATION
 #=================================================
-ynh_script_progression --message="Removing fail2ban configuration..." --weight=7
+ynh_script_progression --message="Removing Fail2ban configuration..." --weight=7
 
 # Remove the dedicated fail2ban config
 ynh_remove_fail2ban_config
