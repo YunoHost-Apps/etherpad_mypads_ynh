@@ -1,11 +1,11 @@
-# Etherpad with mypads plugin for YunoHost
+# Etherpad with MyPads plugin for YunoHost
 
 [![Integration level](https://dash.yunohost.org/integration/etherpad_mypads.svg)](https://dash.yunohost.org/appci/app/etherpad_mypads) ![](https://ci-apps.yunohost.org/ci/badges/etherpad_mypads.status.svg) [![](https://ci-apps.yunohost.org/ci/badges/etherpad_mypads.maintain.svg)](https://github.com/YunoHost/Apps/#what-to-do-if-i-cant-maintain-my-app-anymore-)  
 [![Install Etherpad with YunoHost](https://install-app.yunohost.org/install-with-yunohost.png)](https://install-app.yunohost.org/?app=etherpad_mypads)
 
 *[Lire ce readme en français.](./README_fr.md)*
 
-> *This package allow you to install etherpad quickly and simply on a YunoHost server.  
+> *This package allow you to install Etherpad quickly and simply on a YunoHost server.  
 If you don't have YunoHost, please see [here](https://yunohost.org/#/install) to know how to install and enjoy it.*
 
 ## Overview
@@ -16,7 +16,7 @@ This package will install the same plugins than [Framapad](https://framapad.org/
 
 ## Screenshots
 
-![](http://etherpad.org/img/screenshot.png)
+![](https://github.com/ether/etherpad-lite/blob/develop/doc/images/etherpad_demo.gif)
 
 ## Demo
 
@@ -24,25 +24,25 @@ This package will install the same plugins than [Framapad](https://framapad.org/
 
 ## Configuration
 
-You can access to 2 different admin panels, for etherpad by accessing `domain.tld/admin` and for mypads by `domain.tld/mypads/?/admin`.  
-Or, you can find a config file for etherpad at this path `/var/www/etherpad_mypads/settings.json`.
+You can access two different admin panels, for Etherpad by accessing `domain.tld/admin` and for MyPads by `domain.tld/mypads/?/admin`.  
+You can also find a config file for Etherpad at this path `/var/www/etherpad_mypads/settings.json`.
 
 ## Documentation
 
- * Official documentation: http://etherpad.org/doc/v1.7.0
- * YunoHost documentation: There no other documentations, feel free to contribute.
+ * Official documentation: http://etherpad.org/doc/v1.8.4
+ * YunoHost documentation: https://yunohost.org/#/app_etherpad_mypads
 
 ## YunoHost specific features
 
 #### Multi-users support
 
-Supported, with LDAP.
+ * Are LDAP and HTTP auth supported? **Yes**
+ * Can the app be used by multiple users? **Yes**
 
 #### Supported architectures
 
-* x86-64b - [![](https://ci-apps.yunohost.org/ci/logs/etherpad_mypads%20%28Apps%29.svg)](https://ci-apps.yunohost.org/ci/apps/etherpad_mypads/)
+* x86-64 - [![](https://ci-apps.yunohost.org/ci/logs/etherpad_mypads%20%28Apps%29.svg)](https://ci-apps.yunohost.org/ci/apps/etherpad_mypads/)
 * ARMv8-A - [![](https://ci-apps-arm.yunohost.org/ci/logs/etherpad_mypads%20%28Apps%29.svg)](https://ci-apps-arm.yunohost.org/ci/apps/etherpad_mypads/)
-* Buster x86-64b - [![](https://ci-buster.nohost.me/ci/logs/etherpad_mypads%20%28Apps%29.svg)](https://ci-buster.nohost.me/ci/apps/etherpad_mypads/)
 
 ## Limitations
 
@@ -70,14 +70,13 @@ Supported, with LDAP.
 
  * Report a bug: https://github.com/YunoHost-Apps/etherpad_mypads_ynh/issues
  * Etherpad website: http://etherpad.org/
- * Mypads plugin website: https://git.framasoft.org/framasoft/ep_mypads
+ * MyPads plugin website: https://git.framasoft.org/framasoft/ep_mypads
  * Upstream app repository: https://github.com/ether/etherpad-lite
  * YunoHost website: https://yunohost.org/
 
 ---
 
-Developers infos
-----------------
+## Developers infos
 
 Please do your pull request to the [testing branch](https://github.com/YunoHost-Apps/etherpad_mypads_ynh/tree/testing).
 
