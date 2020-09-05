@@ -272,7 +272,7 @@ npm install ep_subscript_and_superscript@${ep_subscript_and_superscript_version}
 # Framapad - View a table of contents for your pad
 npm install ep_table_of_contents@${ep_table_of_contents_version} >> $install_log 2>&1
 # Framapad - User Pad Contents font size can be set in settings, this does not effect other peoples views
-npm install ep_user_font_size@${ep_user_font_size_version} >> $install_log 2>&1
+npm install ep_font_size@${ep_font_size_version} >> $install_log 2>&1
 popd
 chown -R $app: $final_path/node_modules
 
