@@ -24,8 +24,9 @@ Ce paquet installera les mêmes plugins que [Framapad](https://framapad.org/).
 
 ## Configuration
 
-Vous pouvez accéder à deux panneaux d'administration différents, pour Etherpad en accédant à `domain.tld/admin` et pour MyPads par `domain.tld/mypads/?/admin`.  
-Vous pouvez également trouver le fichier de configuration pour Etherpad à `/var/www/etherpad_mypads/settings.json`.
+Vous pouvez accéder à deux panneaux d'administration différents, pour Etherpad en accédant à `domain.tld/admin` et pour MyPads par `domain.tld/mypads/?/admin`. Vous pouvez également trouver le fichier de configuration pour Etherpad à `/var/www/etherpad_mypads/settings.json`.
+
+*Skin Builder* (accessible à cette adresse `domain.tld/pad/p/test#skinvariantsbuilder`) vous permet de personnaliser l'apparence de votre pad. Il vous donnera un paramètre à copier dans votre fichier de configuration `/var/www/etherpad_mypads/settings.json`.
 
 ## Documentation
 
@@ -36,7 +37,7 @@ Vous pouvez également trouver le fichier de configuration pour Etherpad à `/va
 
 #### Support multi-utilisateurs
 
- * L'authentification LDAP et HTTP est-elle prise en charge ? **Oui**
+ * L'authentification LDAP est-elle prise en charge ? **Oui**
  * L'application peut-elle être utilisée par plusieurs utilisateurs ? **Oui**
 
 #### Architectures supportées
