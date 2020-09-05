@@ -61,7 +61,7 @@
   /*
    * Name your instance!
    */
-  "title": "Etherpad Mypads",
+  "title": "Etherpad MyPads",
 
   /*
    * favicon default name
@@ -86,7 +86,7 @@
    * IP and port which etherpad should bind at
    */
   "ip": "127.0.0.1",
-  "port" : "__PORT__",
+  "port" : __PORT__,
 
   /*
    * Option to hide/show the settings.json in admin page.
