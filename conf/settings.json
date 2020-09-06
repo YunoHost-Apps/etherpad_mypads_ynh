@@ -55,7 +55,14 @@
  *
  *    "password": "${PASSW}"  // if PASSW is not defined would result in password === null
  *    "password": "${PASSW:}" // if PASSW is not defined would result in password === ''
+
+ *    If you want to use an empty value (null) as default value for a variable,
+ *    simply do not set it, without putting any colons: "${ABIWORD}".
  *
+ * 3) if you want to use newlines in the default value of a string parameter,
+ *    use "\n" as usual.
+ *
+ *    "defaultPadText" : "${DEFAULT_PAD_TEXT}Line 1\nLine 2"
  */
 {
   /*
@@ -109,10 +116,17 @@
   "skinVariants": "super-light-toolbar super-light-editor light-background",
   
   /*
-   * IP and port which etherpad should bind at
+   * IP and port which Etherpad should bind at.
+   *
+   * Binding to a Unix socket is also supported: just use an empty string for
+   * the ip, and put the full path to the socket in the port parameter.
+   *
+   * EXAMPLE USING UNIX SOCKET:
+   *    "ip": "",                             // <-- has to be an empty string
+   *    "port" : "/somepath/etherpad.socket", // <-- path to a Unix socket
    */
   "ip": "127.0.0.1",
-  "port" : __PORT__,
+  "port": __PORT__,
 
   /*
    * Option to hide/show the settings.json in admin page.
@@ -140,7 +154,7 @@
   /*
    * The default text of a pad
    */
-  "defaultPadText" : "Welcome to Etherpad!\n\nThis pad text is synchronized as you type, so that everyone viewing this page sees the same text. This allows you to collaborate seamlessly on documents!\n\nGet involved with Etherpad at http:\/\/etherpad.org\n",
+  "defaultPadText" : "Welcome to Etherpad!\n\nThis pad text is synchronized as you type, so that everyone viewing this page sees the same text. This allows you to collaborate seamlessly on documents!\n\nGet involved with Etherpad at https:\/\/etherpad.org\n",
 
   /*
    * Default Pad behavior.
@@ -148,17 +162,18 @@
    * Change them if you want to override.
    */
   "padOptions": {
-    "noColors": false,
-    "showControls": true,
-    "showChat": true,
-    "showLineNumbers": true,
+    "noColors":         false,
+    "showControls":     true,
+    "showChat":         true,
+    "showLineNumbers":  true,
     "useMonospaceFont": false,
-    "userName": false,
-    "userColor": false,
-    "rtl": false,
-    "alwaysShowChat": false,
-    "chatAndUsers": false,
+    "userName":         false,
+    "userColor":        false,
+    "rtl":              false,
+    "alwaysShowChat":   false,
+    "chatAndUsers":     false,
     "lang":             "__LANGUAGE__",
+  },
 
   /*
    * Pad Shortcut Keys
@@ -188,7 +203,7 @@
     "pageDown":  true
   },
 
-    // Plugins config
+  // Plugins config
 		// ep_automatic_logut
 		"automatic_logut_mins_show" : true,	// Show logout time selector
 		"automatic_logut_url" : "../../",	// Redirection URL address
@@ -199,7 +214,6 @@
 		// ep_page_view
 		"ep_page_view_default" : false,	// Set page view as default
 		"ep_page_view_disable_change" : false,	// Disable change of page view setting in UI
-  },
 
   // Other plugins config
 	// ep_comments_page
@@ -284,7 +298,7 @@
    * it to null disables Abiword and will only allow plain text and HTML
    * import/exports.
    */
-  "abiword" : null,
+  "abiword": null,
 
   /*
    * This is the absolute path to the soffice executable.
@@ -292,7 +306,7 @@
    * LibreOffice can be used in lieu of Abiword to export pads.
    * Setting it to null disables LibreOffice exporting.
    */
-  "soffice" : null,
+  "soffice": null,
 
   /*
    * Path to the Tidy executable.
@@ -383,7 +397,7 @@
      * Set to 0 to let the scroll to be handled as default by Etherpad
      */
     "percentageToScrollWhenUserPressesArrowUp": 0
-},
+  },
 
   /*
    * Restrict socket.io transport methods
@@ -405,6 +419,60 @@
   /*
   "indentationOnNewLine": false,
   */
+
+  /*
+  * From Etherpad 1.8.3 onwards, import and export of pads is always rate
+   * limited.
+   *
+   * The default is to allow at most 10 requests per IP in a 90 seconds window.
+   * After that the import/export request is rejected.
+   *
+   * See https://github.com/nfriedly/express-rate-limit for more options
+   */
+  "importExportRateLimiting": {
+    // duration of the rate limit window (milliseconds)
+    "windowMs": 90000,
+
+    // maximum number of requests per IP to allow during the rate limit window
+    "max": 10
+  },
+
+  /*
+   * From Etherpad 1.8.3 onwards, the maximum allowed size for a single imported
+   * file is always bounded.
+   *
+   * File size is specified in bytes. Default is 50 MB.
+   */
+  "importMaxFileSize": 52428800, // 50 * 1024 * 1024
+
+
+  /*
+   * From Etherpad 1.8.3 onwards import was restricted to authors who had
+   * content within the pad.
+   *
+   * This setting will override that restriction and allow any user to import
+   * without the requirement to add content to a pad.
+   *
+   * This setting is useful for when you use a plugin for authentication so you
+   * can already trust each user.
+   */
+  "allowAnyoneToImport": false, 
+
+  /*
+   * From Etherpad 1.9.0 onwards, when Etherpad is in production mode commits from individual users are rate limited
+   *
+   * The default is to allow at most 10 changes per IP in a 1 second window.
+   * After that the change is rejected.
+   *
+   * See https://github.com/animir/node-rate-limiter-flexible/wiki/Overall-example#websocket-single-connection-prevent-flooding for more options
+   */
+  "commitRateLimiting": {
+    // duration of the rate limit window (seconds)
+    "duration": 1,
+
+    // maximum number of chanes per IP to allow during the rate limit window
+    "points": 10
+  },
 
   /*
    * Toolbar buttons configuration.
@@ -454,7 +522,7 @@
   "logconfig" :
     { "appenders": [
         { "type": "console"
-        //, "category": "access"// only logs pad access
+      , // "category": "access" // only logs pad access
         }
 
       /*
@@ -495,5 +563,8 @@
       */
 
       ]
-    } // logconfig
+    }, // logconfig
+
+  /* Override any strings found in locale directories */
+  "customLocaleStrings": {}
 }
