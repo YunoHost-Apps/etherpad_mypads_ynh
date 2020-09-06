@@ -1,10 +1,10 @@
 {
-	"name": "Etherpad Mypads",
+	"name": "Etherpad MyPads",
 	"id": "etherpad_mypads",
 	"packaging_format": 1,
 	"description": {
-		"en": "Online editor providing collaborative editing in real-time. Framapad clone.",
-		"fr": "Éditeur en ligne fournissant l'édition collaborative en temps réel. Clone de Framapad."
+		"en": "Online editor providing collaborative editing in real-time.",
+		"fr": "Éditeur en ligne fournissant l'édition collaborative en temps réel."
 	},
 	"version": "1.8.4~ynh1",
 	"url": "https://framapad.org",
@@ -31,8 +31,8 @@
 				"name": "domain",
 				"type": "domain",
 				"ask": {
-					"en": "Choose a domain for Etherpad MyPads.",
-					"fr": "Choisissez un domaine pour Etherpad MyPads."
+					"en": "Choose a domain for Etherpad MyPads",
+					"fr": "Choisissez un domaine pour Etherpad MyPads"
 				},
 				"example": "sub.domain.org"
 			},
@@ -40,8 +40,8 @@
 				"name": "path",
 				"type": "path",
 				"ask": {
-					"en": "Choose a path for Etherpad",
-					"fr": "Choisissez un chemin pour Etherpad"
+					"en": "Choose a path for Etherpad MyPads",
+					"fr": "Choisissez un chemin pour Etherpad MyPads"
 				},
 				"example": "/pad",
 				"default": "/pad"

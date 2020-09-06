@@ -20,7 +20,7 @@ Ce paquet installera les mêmes plugins que [Framapad](https://framapad.org/).
 
 ## Démo
 
-* [Démo officielle](https://oasis.sandstorm.io/appdemo/h37dm17aa89yrd8zuqpdn36p6zntumtv08fjpu8a8zrte7q1cn60)
+* [Démo](https://etherpad.wikimedia.org/)
 
 ## Configuration
 
