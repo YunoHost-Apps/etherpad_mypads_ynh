@@ -38,7 +38,7 @@ You can also find a configuration file for Etherpad at this path `/var/www/ether
 
 #### Multi-users support
 
- * Are LDAP auth supported? **Yes**
+ * Is LDAP auth supported (for MyPads access only)? **Yes**
  * Can the app be used by multiple users? **Yes**
 
 #### Supported architectures
@@ -59,6 +59,7 @@ You can also find a configuration file for Etherpad at this path `/var/www/ether
   * [ep_countable](https://www.npmjs.com/package/ep_countable) - *Displays paragraphs, sentences, words and characters counts.*
   * [ep_delete_empty_pads](https://www.npmjs.com/package/ep_delete_empty_pads) - *Delete pads which were never edited*
   * [ep_font_color](https://www.npmjs.com/package/ep_font_color) - *Apply colors to fonts*
+  * [ep_font_size](https://www.npmjs.com/package/ep_font_size) - *Add support for Font Sizes*
   * [ep_headings2](https://www.npmjs.com/package/ep_headings2) - *Adds heading support to Etherpad Lite.*
   * [ep_markdown](https://www.npmjs.com/package/ep_markdown) - *Edit and Export as Markdown in Etherpad*
   * [ep_mypads](https://www.npmjs.com/package/ep_mypads) - *Groups and private pads for etherpad*
@@ -66,7 +67,6 @@ You can also find a configuration file for Etherpad at this path `/var/www/ether
   * [ep_spellcheck](https://www.npmjs.com/package/ep_spellcheck) - *Add support to do 'Spell checking'*
   * [ep_subscript_and_superscript](https://www.npmjs.com/package/ep_subscript_and_superscript) - *Add support for Subscript and Superscript*
   * [ep_table_of_contents](https://www.npmjs.com/package/ep_table_of_contents) - *View a table of contents for your pad*
-  * [ep_user_font_size](https://www.npmjs.com/package/ep_user_font_size) - *User Pad Contents font size can be set in settings, this does not effect other peoples views*
 
 ## Links
 
