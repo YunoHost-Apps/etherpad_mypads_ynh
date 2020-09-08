@@ -20,7 +20,7 @@ This package will install the same plugins than [Framapad](https://framapad.org/
 
 ## Demo
 
-* [Demo](https://etherpad.wikimedia.org/)
+* [Official demo](https://video.etherpad.com/)
 
 ## Configuration
 
