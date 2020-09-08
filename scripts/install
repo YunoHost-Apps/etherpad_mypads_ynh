@@ -126,7 +126,7 @@ ynh_setup_source --dest_dir="$final_path"
 #=================================================
 # NGINX CONFIGURATION
 #=================================================
-ynh_script_progression --message="Configuring nginx web server..." --weight=2
+ynh_script_progression --message="Configuring NGINX web server..." --weight=2
 
 # Create a dedicated nginx config
 ynh_add_nginx_config
@@ -250,7 +250,7 @@ npm install ep_automatic_logut@${ep_automatic_logut_version} >> $install_log 2>&
 # Framapad - Adds comments on sidebar and link it to the text.
 npm install ep_comments_page@${ep_comments_page_version} >> $install_log 2>&1
 # Framapad - Displays paragraphs, sentences, words and characters counts.
-npm install ep_countable@${ep_countable_version} >> $install_log 2>&1
+#npm install ep_countable@${ep_countable_version} >> $install_log 2>&1
 # Framapad - Delete pads which were never edited
 npm install ep_delete_empty_pads@${ep_delete_empty_pads_version} >> $install_log 2>&1
 # Framapad - Apply colors to fonts
@@ -272,7 +272,7 @@ npm install ep_subscript_and_superscript@${ep_subscript_and_superscript_version}
 # Framapad - View a table of contents for your pad
 npm install ep_table_of_contents@${ep_table_of_contents_version} >> $install_log 2>&1
 # Framapad - User Pad Contents font size can be set in settings, this does not effect other peoples views
-npm install ep_user_font_size@${ep_user_font_size_version} >> $install_log 2>&1
+npm install ep_font_size@${ep_font_size_version} >> $install_log 2>&1
 popd
 chown -R $app: $final_path/node_modules
 
@@ -298,7 +298,7 @@ fi
 #=================================================
 # SETUP FAIL2BAN
 #=================================================
-ynh_script_progression --message="Configuring fail2ban..." --weight=13
+ynh_script_progression --message="Configuring Fail2ban..." --weight=13
 
 # Create a dedicated fail2ban config
 ynh_add_fail2ban_config --logpath="/var/log/nginx/$domain-access.log" --failregex="<HOST> .* .POST /mypads/api/auth/login HTTP/1.1. 400" --max_retry=5
@@ -318,7 +318,7 @@ fi
 #=================================================
 # RELOAD NGINX
 #=================================================
-ynh_script_progression --message="Reloading nginx web server..."
+ynh_script_progression --message="Reloading NGINX web server..."
 
 ynh_systemd_action --action=reload --service_name=nginx
 
@@ -348,14 +348,14 @@ admin_panel="https://$(grep portal_domain /etc/ssowat/conf.json | cut -d'"' -f4)
 
 if [ $mypads -eq 1 ]
 then
-	Informations="You can access 2 different admin panels, for etherpad by accessing https://$domain${path_url%/}/admin and for mypads by accessing https://$domain${path_url%/}/mypads/?/admin."
+	Informations="You can access 2 different admin panels, for Etherpad by accessing https://$domain${path_url%/}/admin and for MyPads by accessing https://$domain${path_url%/}/mypads/?/admin."
 else
 	Informations="You can access the admin panel by accessing https://$domain${path_url%/}/admin."
 fi
 
 ynh_print_OFF
 echo "$Informations
-Or, you can find a config file for etherpad at this path /var/www/etherpad_mypads/settings.json.
+You can also find a config file for Etherpad at this path /var/www/etherpad_mypads/settings.json.
 
 Your credentials for the admin panel are:
 - login		: $admin

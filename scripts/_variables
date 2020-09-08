@@ -1,30 +1,30 @@
 #!/bin/bash
 
-# Dependencies for abiword
+# Dependencies for AbiWord
 abiword_app_depencencies="abiword"
 
-# Dependencies for libre office
+# Dependencies for LibreOffice
 libreoffice_app_dependencies="unoconv libreoffice-writer"
 
 # NodeJS version
-nodejs_version=10
+nodejs_version=12
 
-# Mypads version
-# This variable is mostly used to force an upgrade of the package in case of new versions of mypads.
+# MyPads version
+# This variable is mostly used to force an upgrade of the package in case of new versions of MyPads.
 mypads_version=1.7.17
 
 # Plugin versions
-ep_align_version=0.2.0
-ep_author_hover_version=0.2.1
+ep_align_version=0.2.5
+ep_author_hover_version=0.3.0
 ep_automatic_logut_version=1.0.8
-ep_comments_page_version=0.1.4
-ep_countable_version=0.0.7
+ep_comments_page_version=0.1.5
+#ep_countable_version=0.0.7
 ep_delete_empty_pads_version=0.0.6
-ep_font_color_version=0.0.11
+ep_font_color_version=0.0.15
 ep_headings2_version=0.1.3
 ep_markdown_version=0.1.7
 ep_page_view_version=0.5.24
 ep_spellcheck_version=0.0.7
 ep_subscript_and_superscript_version=0.1.2
-ep_table_of_contents_version=0.2.0
-ep_user_font_size_version=0.0.1
+ep_table_of_contents_version=0.2.3
+ep_font_size_version=0.3.8

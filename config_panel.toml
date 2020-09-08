@@ -9,7 +9,7 @@ name = "Etherpad configuration"
     name = "Export"
 
         [main.export.export]
-        ask = "Use abiword (~260Mo) or libreoffice (~400Mo) (more stable) to expand export possibilities (pdf, doc) ?"
+        ask = "Use AbiWord (~260 Mo) or LibreOffice (~400 Mo) (more stable) to expand export possibilities (PDF, doc)?"
         choices = ["none", "abiword", "libreoffice"]
         default = "none"
 
@@ -18,32 +18,32 @@ name = "Etherpad configuration"
     name = "Default pad configuration"
 
         [main.pad_configuration.pad_config_nocolors]
-        ask = "Hide authorship colors ?"
+        ask = "Hide authorship colors?"
         type = "boolean"
         default = false
 
         [main.pad_configuration.pad_config_showlinenumbers]
-        ask = "Show line numbers ?"
+        ask = "Show line numbers?"
         type = "boolean"
         default = true
 
         [main.pad_configuration.pad_config_chatandusers]
-        ask = "Show chat and users ?"
+        ask = "Show chat and users?"
         type = "boolean"
         default = false
 
         [main.pad_configuration.pad_config_alwaysshowchat]
-        ask = "Always show chat ?"
+        ask = "Always show chat?"
         type = "boolean"
         default = false
 
         [main.pad_configuration.pad_config_show_markdown]
-        ask = "Show markdown syntax ?"
+        ask = "Show markdown syntax?"
         type = "boolean"
         default = false
 
         [main.pad_configuration.pad_config_pageview]
-        ask = "Page view ?"
+        ask = "Page view?"
         type = "boolean"
         default = false
 
@@ -63,12 +63,12 @@ name = "Etherpad configuration"
     name = "Mypads configuration"
 
         [main.mypads_configuration.mypads]
-        ask = "Enable Mypads plugin ?"
+        ask = "Enable MyPads plugin?"
         type = "boolean"
         default = true
 
         [main.mypads_configuration.useldap]
-        ask = "Use ldap with Mypads ?"
+        ask = "Use LDAP with MyPads?"
         type = "boolean"
         default = true
 
@@ -80,32 +80,32 @@ name = "Etherpad configuration"
         ask = "Is it a public website?"
         type = "boolean"
         default = true
-        help = "If your etherpad instance is public, everyone will be able to create a pad or see an existing one."
+        help = "If your Etherpad instance is public, everyone will be able to create a pad or see an existing one."
 
 
     [main.overwrite_files]
     name = "Overwriting config files during an upgrade"
 
         [main.overwrite_files.overwrite_settings]
-        ask = "Overwrite the config file settings.json ?"
+        ask = "Overwrite the config file settings.json?"
         type = "boolean"
         default = true
         help = "If the file is overwritten, a backup will be created."
 
         [main.overwrite_files.overwrite_credentials]
-        ask = "Overwrite the config file credentials.json ?"
+        ask = "Overwrite the config file credentials.json?"
         type = "boolean"
         default = true
         help = "If the file is overwritten, a backup will be created."
 
         [main.overwrite_files.overwrite_nginx]
-        ask = "Overwrite the nginx config file ?"
+        ask = "Overwrite the NGINX config file?"
         type = "boolean"
         default = true
         help = "If the file is overwritten, a backup will be created."
 
         [main.overwrite_files.overwrite_systemd]
-        ask = "Overwrite the systemd config file ?"
+        ask = "Overwrite the systemd config file?"
         type = "boolean"
         default = true
         help = "If the file is overwritten, a backup will be created."

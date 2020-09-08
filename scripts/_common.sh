@@ -21,8 +21,8 @@ CHECK_SIZE () {	# Vérifie avant chaque backup que l'espace est suffisant
 	if [ $free_space -le $backup_size ]
 	then
 		ynh_print_err "Espace insuffisant pour sauvegarder $file_to_analyse."
-		ynh_print_err "Espace disponible: $(HUMAN_SIZE $free_space)"
-		ynh_die "Espace nécessaire: $(HUMAN_SIZE $backup_size)"
+		ynh_print_err "Espace disponible : $(HUMAN_SIZE $free_space)"
+		ynh_die "Espace nécessaire : $(HUMAN_SIZE $backup_size)"
 	fi
 }
 
