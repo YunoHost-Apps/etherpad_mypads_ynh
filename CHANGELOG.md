@@ -1,10 +1,16 @@
 Changelog
 =========
 
-## Unreleased
-#### Changed
-* [Update to mypads 1.7.10]()
+## [1.8.4~ynh1](https://github.com/YunoHost-Apps/etherpad_mypads_ynh/pull/105) - 2020-08-09
 
+#### Changed
+* [Upgrade to 1.8.4](https://github.com/YunoHost-Apps/etherpad_mypads_ynh/pull/105/commits/db2ffa6fc5ebac447410e1018c9b3d1bd3be79a2)
+* [Update to MyPads 1.7.17](https://github.com/YunoHost-Apps/etherpad_mypads_ynh/pull/105/commits/db2ffa6fc5ebac447410e1018c9b3d1bd3be79a2)
+* [Upgrade packages to upstream](https://github.com/YunoHost-Apps/etherpad_mypads_ynh/pull/105/commits/28f2069099fe81d8c9b188e3461494323e437cfe)
+* [Set colibris as skin default](https://github.com/YunoHost-Apps/etherpad_mypads_ynh/pull/105/commits/5201c05185b8e65635267a73339fe9d3ce255a4f)
+
+#### Disabled
+* [ep_countable plugin (not working with this version)](https://github.com/YunoHost-Apps/etherpad_mypads_ynh/pull/105/commits/0a0d26cc5cadb5d51ae0e8dbbef41c9488af2433)
 
 ## [1.8.0~ynh1](https://github.com/YunoHost-Apps/etherpad_mypads_ynh/pull/74) - 2019-10-08
 

@@ -194,7 +194,7 @@ fi
 #=================================================
 # NGINX CONFIGURATION
 #=================================================
-ynh_script_progression --message="Upgrading nginx web server configuration..."
+ynh_script_progression --message="Upgrading NGINX web server configuration..."
 
 # Overwrite the nginx configuration only if it's allowed
 if [ $overwrite_nginx -eq 1 ]
@@ -234,8 +234,22 @@ ynh_exec_warn_less ynh_exec_as $app PATH="$nodejs_path:$PATH" "$nodejs_path/npm"
 ynh_exec_warn_less npm cache clean --force
 while read node_module
 do
+    # Ignore ep_etherpad-lite, this part is updated before in this script.
+    if [ "$node_module" = "ep_etherpad-lite" ]; then
+        continue
+    fi
     echo "Update $node_module"
-    ynh_exec_warn_less ynh_exec_as $app PATH="$nodejs_path:$PATH" "$nodejs_path/npm" install --upgrade $node_module || true
+    # Build the name of the variable with the version.
+    module_version=${node_module}_version
+    # Get the content of the variable (from the file _variables)
+    module_version=${!module_version:-}
+    # If the module has no version stored in a variable into the file, keep it empty.
+    # That way, the upgrade will not be specific to a version.
+    ## Otherwise, add @ before the version number to force the upgrade to this version.
+    if [ -n "${module_version}" ]; then
+        module_version=@${module_version}
+    fi
+    ynh_exec_warn_less ynh_exec_as $app PATH="$nodejs_path:$PATH" "$nodejs_path/npm" install --upgrade ${node_module}${module_version} || true
 done <<< "$(ls -1 "$final_path/node_modules" | grep "^ep_")")
 
 #=================================================
@@ -347,7 +361,7 @@ chown $app -R /var/log/$app/etherpad.log
 #=================================================
 # UPGRADE FAIL2BAN
 #=================================================
-ynh_script_progression --message="Reconfiguring fail2ban..." --weight=8
+ynh_script_progression --message="Reconfiguring Fail2ban..." --weight=8
 
 # Create a dedicated fail2ban config
 ynh_add_fail2ban_config --logpath="/var/log/nginx/$domain-access.log" --failregex="<HOST> .* .POST /mypads/api/auth/login HTTP/1.1. 400" --max_retry=5
@@ -358,7 +372,7 @@ ynh_add_fail2ban_config --logpath="/var/log/nginx/$domain-access.log" --failrege
 ynh_script_progression --message="Upgrading logrotate configuration..."
 
 # Use logrotate to manage app-specific logfile(s)
-ynh_use_logrotate --non-append
+ynh_use_logrotate --non-append --specific_user=$app/$app
 
 #=================================================
 # SETUP SYSTEMD
@@ -400,7 +414,7 @@ fi
 #=================================================
 # RELOAD NGINX
 #=================================================
-ynh_script_progression --message="Reloading nginx web server..."
+ynh_script_progression --message="Reloading NGINX web server..."
 
 ynh_systemd_action --action=reload --service_name=nginx
 
@@ -440,13 +454,13 @@ ynh_app_changelog --format=$format
 
 if [ $mypads -eq 1 ]
 then
-	Informations="You can access 2 different admin panels, for etherpad by accessing https://$domain${path_url%/}/admin and for mypads by accessing https://$domain${path_url%/}/mypads/?/admin."
+	Informations="You can access 2 different admin panels, for Etherpad by accessing https://$domain${path_url%/}/admin and for MyPads by accessing https://$domain${path_url%/}/mypads/?/admin."
 else
 	Informations="You can access the admin panel by accessing https://$domain${path_url%/}/admin."
 fi
 
 echo "$Informations
-Or, you can find a config file for etherpad at this path /var/www/etherpad_mypads/settings.json.
+You can also find a config file for Etherpad at this path /var/www/etherpad_mypads/settings.json.
 
 You can configure this app easily by using the experimental config-panel feature $admin_panel/config-panel.
 You can also find some specific actions for this app by using the experimental action feature $admin_panel/actions.

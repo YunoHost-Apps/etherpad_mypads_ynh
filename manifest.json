@@ -1,18 +1,22 @@
 {
-	"name": "Etherpad Mypads",
+	"name": "Etherpad MyPads",
 	"id": "etherpad_mypads",
 	"packaging_format": 1,
 	"description": {
-		"en": "Framapad clone, a online editor providing collaborative editing in real-time.",
-		"fr": "Clone de Framapad, un éditeur en ligne fournissant l'édition collaborative en temps réel."
+		"en": "Online editor providing collaborative editing in real-time.",
+		"fr": "Éditeur en ligne fournissant l'édition collaborative en temps réel."
 	},
-	"version": "1.8.0~ynh1",
+	"version": "1.8.4~ynh1",
 	"url": "https://framapad.org",
 	"license": "Apache-2.0",
 	"maintainer": {
+		"name": "None...",
+		"email": ""
+	},
+	"previous_maintainers": [{
 		"name": "Maniack Crudelis",
 		"email": "maniackc_dev@crudelis.fr"
-	},
+	}],
 	"requirements": {
 		"yunohost": ">= 3.6"
 	},
@@ -27,8 +31,8 @@
 				"name": "domain",
 				"type": "domain",
 				"ask": {
-					"en": "Choose a domain for Etherpad Mypads.",
-					"fr": "Choisissez un domaine pour Etherpad Mypads."
+					"en": "Choose a domain for Etherpad MyPads",
+					"fr": "Choisissez un domaine pour Etherpad MyPads"
 				},
 				"example": "sub.domain.org"
 			},
@@ -36,8 +40,8 @@
 				"name": "path",
 				"type": "path",
 				"ask": {
-					"en": "Choose a path for Etherpad",
-					"fr": "Choisissez un chemin pour Etherpad"
+					"en": "Choose a path for Etherpad MyPads",
+					"fr": "Choisissez un chemin pour Etherpad MyPads"
 				},
 				"example": "/pad",
 				"default": "/pad"
@@ -46,8 +50,8 @@
 				"name": "admin",
 				"type": "user",
 				"ask": {
-					"en": "Choose the Etherpad Mypads administrator (must be an existing YunoHost user)",
-					"fr": "Administrateur du site (doit être un utilisateur YunoHost existant)"
+					"en": "Choose the Etherpad MyPads administrator (must be an existing YunoHost user)",
+					"fr": "Choisissez l'administrateur Etherpad MyPads (doit être un utilisateur YunoHost existant)"
 				},
 				"example": "john"
 			},
@@ -78,8 +82,8 @@
 					"fr": "Est-ce un site public ?"
 				},
 				"help": {
-					"en": "If your etherpad instance is public, everyone will be able to create a pad or see an existing one.",
-					"fr": "Si votre instance etherpad est publique, tout le monde pourra créer un pad ou voir un existant."
+					"en": "If your Etherpad instance is public, everyone will be able to create a pad or see an existing one.",
+					"fr": "Si votre instance Etherpad est publique, tout le monde pourra créer un pad ou voir un pad existant."
 				},
 				"default": true
 			},
@@ -87,8 +91,8 @@
 				"name": "export",
 				"type": "string",
 				"ask": {
-					"en": "Use abiword (~260Mo) or libreoffice (~400Mo) (more stable) to expand export possibilities (pdf, doc) ?",
-					"fr": "Utiliser abiword (~260Mo) ou libre office (~400Mo) (plus stable) pour étendre les possibilités d'export (pdf, doc) ?"
+					"en": "Use AbiWord (~260 Mo) or LibreOffice (~400 Mo) (more stable) to expand export possibilities (PDF, doc)?",
+					"fr": "Utiliser AbiWord (~260 Mo) ou LibreOffice (~400 Mo) (plus stable) pour étendre les possibilités d'export (PDF, doc) ?"
 				},
 				"choices" : ["none", "abiword", "libreoffice"],
 				"default" : "none"
@@ -97,8 +101,8 @@
 				"name": "mypads",
 				"type": "boolean",
 				"ask": {
-					"en": "Do you want to install mypads plugin ?",
-					"fr": "Voulez-vous installer le plugin mypads ?"
+					"en": "Do you want to install MyPads plugin?",
+					"fr": "Voulez-vous installer le plugin MyPads ?"
 				},
 				"help": {
 					"en": "<a href=https://git.framasoft.org/framasoft/ep_mypads target=_blank>mypads plugin</a>"
@@ -109,12 +113,12 @@
 				"name": "useldap",
 				"type": "boolean",
 				"ask": {
-					"en": "Do you want to use ldap with mypads ?",
-					"fr": "Voulez-vous utiliser ldap avec mypads ?"
+					"en": "Do you want to use LDAP with MyPads?",
+					"fr": "Voulez-vous utiliser LDAP avec MyPads ?"
 				},
 				"help": {
-					"en": "Using ldap won't let you add new user aside from YunoHost users.",
-					"fr": "Utiliser ldap ne vous permettra pas d'ajouter un nouvel utilisateur en dehors des utilisateurs de YunoHost."
+					"en": "Using LDAP won't let you add new user aside from YunoHost users.",
+					"fr": "Utiliser LDAP ne vous permettra pas d'ajouter un nouvel utilisateur en dehors des utilisateurs de YunoHost."
 				},
 				"default": true
 			}

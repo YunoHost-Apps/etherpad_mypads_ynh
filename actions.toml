@@ -1,20 +1,20 @@
 [add_remove_abiword]
-name = "Install/remove abiword"
+name = "Install/remove AbiWord"
 command = "/bin/bash scripts/actions/add_remove_abiword"
 # user = "root"  # optional
 # cwd = "/" # optional
 # accepted_return_codes = [0, 1, 2, 3]  # optional
 accepted_return_codes = [0]
-description = "Install or remove abiword"
+description = "Install or remove AbiWord"
 
 [add_remove_libreoffice]
-name = "Install/remove libreoffice"
+name = "Install/remove LibreOffice"
 command = "/bin/bash scripts/actions/add_remove_libreoffice"
 # user = "root"  # optional
 # cwd = "/" # optional
 # accepted_return_codes = [0, 1, 2, 3]  # optional
 accepted_return_codes = [0]
-description = "Install or remove libreoffice"
+description = "Install or remove LibreOffice"
 
 [list_all_pads]
 name = "List all existing pads"
@@ -46,5 +46,5 @@ description = "Change the public access of the app."
     [public_private.arguments]
         [public_private.arguments.is_public]
             type = "boolean"
-            ask = "Is it a public app ?"
+            ask = "Is it a public app?"
             default = true
