@@ -226,7 +226,7 @@ chown -R $app: $final_path
 (cd "$final_path/src"
 ynh_exec_warn_less npm cache clean --force
 # Remove package-lock.json to prevent any shit during npm update...
-#ynh_secure_remove --file="$final_path/src/package-lock.json"
+ynh_secure_remove --file="$final_path/src/package-lock.json"
 ynh_exec_warn_less ynh_exec_as $app PATH="$nodejs_path:$PATH" "$nodejs_path/npm" update)
 
 # Then update the additionnal modules
