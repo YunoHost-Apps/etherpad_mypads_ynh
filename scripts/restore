@@ -141,7 +141,7 @@ chown -R $app: $final_path
 # ADVERTISE SERVICE IN ADMIN PANEL
 #=================================================
 
-yunohost service add $app --log "/var/log/$app/etherpad.log"
+yunohost service add $app --log="/var/log/$app/etherpad.log"
 
 #=================================================
 # RESTORE SYSTEMD
@@ -149,7 +149,7 @@ yunohost service add $app --log "/var/log/$app/etherpad.log"
 ynh_script_progression --message="Restoring the systemd configuration..."
 
 ynh_restore_file --origin_path="/etc/systemd/system/$app.service"
-systemctl enable $app.service
+systemctl enable $app.service --quiet
 
 #=================================================
 # RESTORE FAIL2BAN CONFIGURATION

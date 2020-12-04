@@ -233,7 +233,7 @@ ynh_add_systemd_config
 # ADVERTISE SERVICE IN ADMIN PANEL
 #=================================================
 
-yunohost service add $app --log "/var/log/$app/etherpad.log"
+yunohost service add $app --log="/var/log/$app/etherpad.log"
 
 #=================================================
 # INSTALL FRAMAPAD'S PLUGINS
@@ -298,9 +298,9 @@ fi
 #=================================================
 # SETUP FAIL2BAN
 #=================================================
-ynh_script_progression --message="Configuring Fail2ban..." --weight=13
+ynh_script_progression --message="Configuring Fail2Ban..." --weight=13
 
-# Create a dedicated Fail2ban config
+# Create a dedicated Fail2Ban config
 ynh_add_fail2ban_config --logpath="/var/log/nginx/$domain-access.log" --failregex="<HOST> .* .POST /mypads/api/auth/login HTTP/1.1. 400" --max_retry=5
 
 #=================================================
