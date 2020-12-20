@@ -1,6 +1,6 @@
 [Unit]
 Description=Etherpad-lite, collaborative editing of documents in real-time.
-After=syslog.target network.target postgresql.service
+After=syslog.target network.target
 
 [Service]
 Type=simple
