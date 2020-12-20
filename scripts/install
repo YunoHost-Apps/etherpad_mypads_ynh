@@ -162,16 +162,12 @@ ynh_use_logrotate --specific_user=$app/$app
 ynh_script_progression --message="Installing Etherpad..." --weight=90
 
 # Install dependencies and proceed to the installation
-ynh_use_nodejs
-(
-    cd "$final_path"
-    mkdir -p node_modules
-    cd node_modules
-    [ -e ep_etherpad-lite ] || ln -s ../src ep_etherpad-lite
-    cd ep_etherpad-lite
-    chown -R $app: $final_path
-    ynh_exec_as $app PATH="$nodejs_path:$PATH" "$nodejs_path/npm" install --save --loglevel warn
-)
+chown -R $app: $final_path
+
+pushd "$final_path" || ynh_die
+ 	ynh_use_nodejs
+ 	ynh_exec_as $app env "$ynh_node_load_PATH" bin/installDeps.sh
+popd || ynh_die
 
 #=================================================
 # CONFIGURE ETHERPAD
@@ -225,9 +221,8 @@ chmod 600 $final_path/credentials.json
 #=================================================
 ynh_script_progression --message="Configuring a systemd service..." --weight=4
 
-ynh_replace_string --match_string="__ENV_PATH__" --replace_string="$PATH" --target_file="../conf/systemd.service"
 # Create a dedicated systemd config
-ynh_add_systemd_config
+ynh_add_systemd_config --others_var="ynh_node_load_PATH"
 
 #=================================================
 # ADVERTISE SERVICE IN ADMIN PANEL
