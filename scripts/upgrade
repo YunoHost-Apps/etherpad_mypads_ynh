@@ -359,6 +359,12 @@ chmod 600 "$final_path/credentials.json"
 chown $app -R /var/log/$app/etherpad.log
 
 #=================================================
+# ADVERTISE SERVICE IN ADMIN PANEL
+#=================================================
+
+yunohost service add $app --log="/var/log/$app/etherpad.log"
+
+#=================================================
 # UPGRADE FAIL2BAN
 #=================================================
 ynh_script_progression --message="Reconfiguring Fail2ban..." --weight=8
