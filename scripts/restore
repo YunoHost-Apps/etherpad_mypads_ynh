@@ -154,7 +154,7 @@ systemctl enable $app.service --quiet
 #=================================================
 # RESTORE FAIL2BAN CONFIGURATION
 #=================================================
-ynh_script_progression --message="Restoring the Fail2ban configuration..." --weight=6
+ynh_script_progression --message="Restoring the Fail2Ban configuration..." --weight=6
 
 ynh_restore_file "/etc/fail2ban/jail.d/$app.conf"
 ynh_restore_file "/etc/fail2ban/filter.d/$app.conf"
@@ -173,7 +173,7 @@ ynh_systemd_action --action=reload --service_name=nginx
 ynh_script_progression --message="Restarting Etherpad..." --weight=8
 
 # Wait for etherpad to be fully started
-ynh_systemd_action --action=restart --line_match="You can access your Etherpad instance at" --log_path="/var/log/$app/etherpad.log" --timeout="120"
+ynh_systemd_action --action=start --line_match="Your Etherpad version is" --log_path="systemd" --timeout="60"
 
 #=================================================
 # DEACTIVE MAINTENANCE MODE
