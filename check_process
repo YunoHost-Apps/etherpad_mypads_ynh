@@ -85,8 +85,6 @@
 		useldap=0
 	; Checks
 		setup_root=1
-;;; Levels
-	Level 5=auto
 ;;; Options
 Email=
 Notification=change
