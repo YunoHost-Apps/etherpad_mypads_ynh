@@ -71,7 +71,7 @@
 		useldap=0
 	; Checks
 		setup_root=1
-		upgrade=1	from_commit=8bf300413ec3adcb416d168d2e9e98975dd9405b
+		upgrade=1	from_commit=15e25666a6045a581af30bde3935e07916889123
 ;; Test sans export
 	; Manifest
 		domain="domain.tld"	(DOMAIN)
@@ -89,6 +89,6 @@
 Email=
 Notification=change
 ;;; Upgrade options
-	; commit=8bf300413ec3adcb416d168d2e9e98975dd9405b
-		name= Fix nodejs & global update
+	; commit=15e25666a6045a581af30bde3935e07916889123
+		name= Upgrade to 1.7.0
 		manifest_arg=domain=DOMAIN&path=PATH&admin=USER&password=password&language=en&is_public=1&abiword=0&
