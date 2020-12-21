@@ -1,12 +1,12 @@
 Changelog
 =========
 
-## [1.8.6~ynh1](https://github.com/YunoHost-Apps/etherpad_mypads_ynh/pull/105) - 2020-12-10
+## [1.8.6~ynh1](https://github.com/YunoHost-Apps/etherpad_mypads_ynh/pull/121) - 2020-12-10
 
 #### Changed
-* [Upgrade to 1.8.6](https://github.com/YunoHost-Apps/etherpad_mypads_ynh/pull/105/commits/db2ffa6fc5ebac447410e1018c9b3d1bd3be79a2)
-* [Update to MyPads 1.7.18](https://github.com/YunoHost-Apps/etherpad_mypads_ynh/pull/105/commits/db2ffa6fc5ebac447410e1018c9b3d1bd3be79a2)
-* [Upgrade plugins to upstream](https://github.com/YunoHost-Apps/etherpad_mypads_ynh/pull/105/commits/28f2069099fe81d8c9b188e3461494323e437cfe)
+* [Upgrade to 1.8.6](https://github.com/YunoHost-Apps/etherpad_mypads_ynh/pull/121/commits/42ac7d6c2697648112b7caf984b04e5bba12e3fc)
+* [Update to MyPads 1.7.18](https://github.com/YunoHost-Apps/etherpad_mypads_ynh/pull/121/commits/e8bfe4994ec3dc41af0ab0382edda1cb5aecf8d0)
+* [Upgrade plugins to upstream](https://github.com/YunoHost-Apps/etherpad_mypads_ynh/pull/121/commits/e8bfe4994ec3dc41af0ab0382edda1cb5aecf8d0)
 
 
 ## [1.8.4~ynh1](https://github.com/YunoHost-Apps/etherpad_mypads_ynh/pull/105) - 2020-08-09
