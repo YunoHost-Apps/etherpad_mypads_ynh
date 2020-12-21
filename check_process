@@ -1,4 +1,4 @@
-;; Test complet avec libreoffice et mypads
+;; Test complet avec LibreOffice et MyPads
 	; Manifest
 		domain="domain.tld"	(DOMAIN)
 		path="/path"	(PATH)
@@ -42,7 +42,7 @@
 		change_url=1
         actions=1
         config_panel=1
-;; Test sans mypads
+;; Test sans MyPads
 	; Manifest
 		domain="domain.tld"	(DOMAIN)
 		path="/path"	(PATH)
@@ -58,7 +58,7 @@
 		setup_root=1
 		upgrade=1
 		backup_restore=1
-;; Test abiword
+;; Test AbiWord
 	; Manifest
 		domain="domain.tld"	(DOMAIN)
 		path="/"	(PATH)
