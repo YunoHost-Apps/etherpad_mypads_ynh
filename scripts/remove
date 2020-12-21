@@ -81,7 +81,7 @@ ynh_secure_remove --file="/var/www/$app"
 #=================================================
 ynh_script_progression --message="Removing NGINX web server configuration..." --weight=2
 
-# Remove the dedicated nginx config
+# Remove the dedicated NGINX config
 ynh_remove_nginx_config
 
 #=================================================
@@ -95,9 +95,9 @@ ynh_remove_logrotate
 #=================================================
 # REMOVE FAIL2BAN CONFIGURATION
 #=================================================
-ynh_script_progression --message="Removing Fail2ban configuration..." --weight=7
+ynh_script_progression --message="Removing Fail2Ban configuration..." --weight=7
 
-# Remove the dedicated fail2ban config
+# Remove the dedicated Fail2Ban config
 ynh_remove_fail2ban_config
 
 #=================================================

@@ -1,7 +1,7 @@
 Changelog
 =========
 
-## [1.8.6~ynh1](https://github.com/YunoHost-Apps/etherpad_mypads_ynh/pull/121) - 2020-12-10
+## [1.8.6~ynh1](https://github.com/YunoHost-Apps/etherpad_mypads_ynh/pull/121) - 2020-12-20
 
 #### Changed
 * [Upgrade to 1.8.6](https://github.com/YunoHost-Apps/etherpad_mypads_ynh/pull/121/commits/42ac7d6c2697648112b7caf984b04e5bba12e3fc)

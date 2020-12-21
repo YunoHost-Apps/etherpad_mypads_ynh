@@ -5,7 +5,7 @@
 
 *[Lire ce readme en français.](./README_fr.md)*
 
-> *This package allow you to install Etherpad quickly and simply on a YunoHost server.  
+> *This package allow you to install Etherpad MyPads quickly and simply on a YunoHost server.  
 If you don't have YunoHost, please see [here](https://yunohost.org/#/install) to know how to install and enjoy it.*
 
 ## Overview
@@ -38,7 +38,7 @@ You can also find a configuration file for Etherpad at this path `/var/www/ether
 
 #### Multi-users support
 
- * Is LDAP auth supported (for MyPads access only)? **Yes**
+ * Is LDAP auth supported? **Yes** (for MyPads access only)
  * Can the app be used by multiple users? **Yes**
 
 #### Supported architectures

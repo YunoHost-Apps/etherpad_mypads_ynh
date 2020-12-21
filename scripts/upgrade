@@ -47,7 +47,7 @@ pad_config_skinname=$(ynh_app_setting_get --app=$app --key=pad_config_skinname)
 # CHECK VERSION
 #=================================================
 
-# Wait for etherpad to be fully started
+# Wait for Etherpad to be fully started
 ynh_systemd_action --action=start --line_match="Your Etherpad version is" --log_path="systemd" --timeout="60"
 
 upgrade_type=$(ynh_check_app_version_changed)
@@ -72,13 +72,13 @@ if [ -z "$db_name" ]; then
 	ynh_app_setting_set --app=$app --key=db_name --value=$db_name
 fi
 
-# If abiword setting doesn't exist
+# If AbiWord setting doesn't exist
 if [ -z "$abiword" ]; then
 	abiword=0
 	ynh_app_setting_set --app=$app --key=abiword --value=$abiword
 fi
 
-# If abiword setting exists
+# If AbiWord setting exists
 if [ -n "$abiword" ]; then
 	if [ $abiword -eq 1 ]; then
 		export=abiword
@@ -93,7 +93,7 @@ if [ -z "$export" ]; then
 	ynh_app_setting_set --app=$app --key=export --value=$export
 fi
 
-# If mypads setting doesn't exist
+# If MyPads setting doesn't exist
 if [ -z "$mypads" ]; then
 	mypads=1
 	ynh_app_setting_set --app=$app --key=mypads --value=$mypads
@@ -196,7 +196,7 @@ fi
 #=================================================
 ynh_script_progression --message="Upgrading NGINX web server configuration..."
 
-# Overwrite the nginx configuration only if it's allowed
+# Overwrite the NGINX configuration only if it's allowed
 if [ $overwrite_nginx -eq 1 ]
 then
 	ynh_add_nginx_config
@@ -221,7 +221,7 @@ ynh_install_nodejs --nodejs_version=$nodejs_version
 #=================================================
 ynh_script_progression --message="Upgrading Etherpad npm modules..." --weight=60
 
-# Update the main modules of etherpad
+# Update the main modules of Etherpad
 chown -R $app: $final_path
 
 pushd "$final_path" || ynh_die
@@ -272,15 +272,15 @@ then
 
     if [ "$export" = "abiword" ]
     then
-      # Get abiword binary path
+      # Get AbiWord binary path
       abiword_path=`which abiword`
-      # Set the path of abiword into etherpad config
+      # Set the path of AbiWord into Etherpad config
       ynh_replace_string --match_string="\"abiword\" : null" --replace_string="\"abiword\" : \"$abiword_path\"" --target_file="$final_path/settings.json"
     elif [ "$export" = "libreoffice" ]
     then
       # Get soffice binary path
       soffice_path=`which soffice`
-      # Set the path of soffice into etherpad config
+      # Set the path of soffice into Etherpad config
       ynh_replace_string --match_string="\"soffice\" : null" --replace_string="\"soffice\" : \"$soffice_path\"" --target_file="$final_path/settings.json"
     fi
 
@@ -291,7 +291,7 @@ then
     fi
     ynh_replace_string --match_string="__LANGUAGE__" --replace_string="$language" --target_file="$final_path/settings.json"
 
-    # Use ldap for mypads
+    # Use LDAP for MyPads
     if [ $mypads -eq 1 ] && [ $useldap -eq 1 ]
     then
       ynh_replace_string --match_string="//noldap" --replace_string="" --target_file="$final_path/settings.json"
@@ -352,7 +352,7 @@ ynh_system_user_create --username=$app --home_dir=$final_path
 # SECURING FILES AND DIRECTORIES
 #=================================================
 
-# Set files ownership to etherpad
+# Set files ownership to Etherpad
 chown -R $app: $final_path
 chmod 600 "$final_path/credentials.json"
 # Restrict access to credentials.json
@@ -369,7 +369,7 @@ yunohost service add $app --log="/var/log/$app/etherpad.log"
 #=================================================
 ynh_script_progression --message="Reconfiguring Fail2ban..." --weight=8
 
-# Create a dedicated fail2ban config
+# Create a dedicated Fail2Ban config
 ynh_add_fail2ban_config --logpath="/var/log/nginx/$domain-access.log" --failregex="<HOST> .* .POST /mypads/api/auth/login HTTP/1.1. 400" --max_retry=5
 
 #=================================================
@@ -399,7 +399,7 @@ if [ "$upgrade_type" == "UPGRADE_APP" ] && [ $mypads -eq 1 ]
 then
 	# Find the /div just after the field to open a pad
 	mod_line=$(grep -nA5 "index.createOpenPad" $final_path/src/templates/index.html | grep "</div>" | cut -d '-' -f 1)
-	# In order to add a link to mypads plugin.
+	# In order to add a link to MyPads plugin.
 	sed -i "$mod_line s@div>@&\n\t<center><br><font size="5"><a href="./mypads/">Mypads</a></font></center>@" $final_path/src/templates/index.html
 fi
 
@@ -412,7 +412,7 @@ ynh_script_progression --message="Upgrading SSOwat configuration..."
 if [ $is_public -eq 1 ]; then
 	ynh_app_setting_set --app=$app --key=skipped_uris --value="/"
 else
-	# etherpad admin page doesn't support SSO...
+	# Etherpad admin page doesn't support SSO...
 	ynh_app_setting_set --app=$app --key=skipped_uris --value="/admin"
 fi
 
@@ -428,7 +428,7 @@ ynh_systemd_action --action=reload --service_name=nginx
 #=================================================
 ynh_script_progression --message="Restarting Etherpad..." --weight=9
 
-# Wait for etherpad to be fully started
+# Wait for Etherpad to be fully started
 ynh_systemd_action --action=start --line_match="Your Etherpad version is" --log_path="systemd" --timeout="60"
 
 #=================================================
@@ -442,14 +442,14 @@ ynh_maintenance_mode_OFF
 # SEND A README FOR THE ADMIN
 #=================================================
 
-# Get main domain and buid the url of the admin panel of the app.
+# Get main domain and buid the URL of the admin panel of the app.
 admin_panel="https://$(grep portal_domain /etc/ssowat/conf.json | cut -d'"' -f4)/yunohost/admin/#/apps/$app"
 
 # Build the changelog
 # Get the value of admin_mail_html
 admin_mail_html=$(ynh_app_setting_get $app admin_mail_html)
 admin_mail_html="${admin_mail_html:-0}"
-# If a html email is required. Apply html to the changelog.
+# If a HTML email is required. Apply html to the changelog.
 if [ "$admin_mail_html" -eq 1 ]; then
     format=html
 else

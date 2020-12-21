@@ -105,7 +105,8 @@
 					"fr": "Voulez-vous installer le plugin MyPads ?"
 				},
 				"help": {
-					"en": "<a href=https://git.framasoft.org/framasoft/ep_mypads target=_blank>mypads plugin</a>"
+					"en": "<a href=https://framagit.org/framasoft/Etherpad/ep_mypads target=_blank>MyPads plugin</a>",
+					"fr": "<a href=https://framagit.org/framasoft/Etherpad/ep_mypads target=_blank>Plugin MyPads</a>"
 				},
 				"default": true
 			},

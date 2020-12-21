@@ -183,20 +183,20 @@ ynh_replace_string --match_string="__ADMIN__" --replace_string="$admin" --target
 ynh_print_OFF; ynh_replace_special_string --match_string="__PASSWD__" --replace_string="$password" --target_file="$final_path/credentials.json"; ynh_print_ON
 if [ "$export" = "abiword" ]
 then
-	# Get abiword binary path
+	# Get AbiWord binary path
 	abiword_path=`which abiword`
-	# Set the path of abiword into etherpad config
+	# Set the path of abiword into Etherpad config
 	ynh_replace_string --match_string="\"abiword\" : null" --replace_string="\"abiword\" : \"$abiword_path\"" --target_file="$final_path/settings.json"
 elif [ "$export" = "libreoffice" ]
 then
 	# Get soffice binary path
 	soffice_path=`which soffice`
-	# Set the path of soffice into etherpad config
+	# Set the path of soffice into Etherpad config
 	ynh_replace_string --match_string="\"soffice\" : null" --replace_string="\"soffice\" : \"$soffice_path\"" --target_file="$final_path/settings.json"
 fi
 ynh_replace_string --match_string="__LANGUAGE__" --replace_string="$language" --target_file="$final_path/settings.json"
 
-# Use ldap for mypads
+# Use LDAP for MyPads
 if [ $mypads -eq 1 ] && [ $useldap -eq 1 ]
 then
 	ynh_replace_string --match_string="//noldap\(.*\)" --replace_string="\1 //useldap" --target_file="$final_path/settings.json"
@@ -211,7 +211,7 @@ ynh_store_file_checksum --file="$final_path/credentials.json"
 # SECURING FILES AND DIRECTORIES
 #=================================================
 
-# Set files ownership to etherpad
+# Set files ownership to Etherpad
 chown -R $app: $final_path
 # Restrict access to credentials.json
 chmod 600 $final_path/credentials.json
@@ -244,8 +244,6 @@ npm install ep_author_hover@${ep_author_hover_version} >> $install_log 2>&1
 npm install ep_automatic_logut@${ep_automatic_logut_version} >> $install_log 2>&1
 # Framapad - Adds comments on sidebar and link it to the text.
 npm install ep_comments_page@${ep_comments_page_version} >> $install_log 2>&1
-# Framapad - Displays paragraphs, sentences, words and characters counts.
-#npm install ep_countable@${ep_countable_version} >> $install_log 2>&1
 # Framapad - Delete pads which were never edited
 npm install ep_delete_empty_pads@${ep_delete_empty_pads_version} >> $install_log 2>&1
 # Framapad - Apply colors to fonts
@@ -255,7 +253,7 @@ npm install ep_headings2@${ep_headings2_version} >> $install_log 2>&1
 # Framapad - Edit and Export as Markdown in Etherpad
 npm install ep_markdown@${ep_markdown_version} >> $install_log 2>&1
 if [ $mypads -eq 1 ]; then
-	# Framapad - Groups and private pads for etherpad
+	# Framapad - Groups and private pads for Etherpad
 	npm install ep_mypads@${mypads_version} >> $install_log 2>&1
 fi
 # Framapad - Add support to do 'page view', with a toggle on/off option in Settings, also Page Breaks with Control Enter
@@ -277,25 +275,25 @@ chown -R $app: $final_path/node_modules
 
 if [ $mypads -eq 1 ]
 then
-	# Add a link to etherpad to allow anonymous pads creation from Mypads.
+	# Add a link to Etherpad to allow anonymous pads creation from MyPads.
 	ynh_replace_string --match_string="^ *\"DESCRIPTION\": .*</ul>" --replace_string="&<a href=../>Pads anonymes</a>" --target_file=$final_path/node_modules/ep_mypads/static/l10n/fr.json
 	ynh_replace_string --match_string="^ *\"DESCRIPTION\": .*</ul>" --replace_string="&<a href=../>Anonymous pads</a>" --target_file=$final_path/node_modules/ep_mypads/static/l10n/en.json
-	# And a link to etherpad admin from Mypads.
+	# And a link to Etherpad admin from MyPads.
 	ynh_replace_string --match_string="^ *\"FOOTER\": .*2.0" --replace_string="& | <a href='../admin'>Etherpad admin</a>" --target_file=$final_path/node_modules/ep_mypads/static/l10n/en.json
 	ynh_replace_string --match_string="^ *\"FOOTER\": .*2.0" --replace_string="& | <a href='../admin'>Etherpad admin</a>" --target_file=$final_path/node_modules/ep_mypads/static/l10n/fr.json
 
 	# Find the /div just after the field to open a pad
 	mod_line=$(grep -nA5 "index.createOpenPad" $final_path/src/templates/index.html | grep "</div>" | cut -d '-' -f 1)
-	# In order to add a link to mypads plugin.
+	# In order to add a link to MyPads plugin.
 	sed -i "$mod_line s@div>@&\n\t<center><br><font size="5"><a href="./mypads/">Mypads</a></font></center>@" $final_path/src/templates/index.html
 fi
 
 #=================================================
 # SETUP FAIL2BAN
 #=================================================
-ynh_script_progression --message="Configuring Fail2ban..." --weight=13
+ynh_script_progression --message="Configuring Fail2Ban..." --weight=13
 
-# Create a dedicated fail2ban config
+# Create a dedicated Fail2Ban config
 ynh_add_fail2ban_config --logpath="/var/log/nginx/$domain-access.log" --failregex="<HOST> .* .POST /mypads/api/auth/login HTTP/1.1. 400" --max_retry=5
 
 #=================================================
@@ -306,7 +304,7 @@ ynh_script_progression --message="Configuring SSOwat..."
 if [ $is_public -eq 1 ]; then
 	ynh_app_setting_set --app=$app --key=skipped_uris --value="/"
 else
-	# etherpad admin page doesn't support SSO...
+	# Etherpad admin page doesn't support SSO...
 	ynh_app_setting_set --app=$app --key=skipped_uris --value="/admin"
 fi
 
@@ -322,7 +320,7 @@ ynh_systemd_action --action=reload --service_name=nginx
 #=================================================
 ynh_script_progression --message="Restarting Etherpad..." --weight=20
 
-# Wait for etherpad to be fully started
+# Wait for Etherpad to be fully started
 ynh_systemd_action --action=start --line_match="Your Etherpad version is" --log_path="systemd" --timeout="60"
 
 if [ $mypads -eq 1 ]
@@ -330,7 +328,7 @@ then
 	ynh_replace_string --match_string="__LANGUAGE__" --replace_string="$language" --target_file="../conf/lang_mypads.sql"
 	mysql -u $db_name -p$db_pwd $db_name < "../conf/lang_mypads.sql"
 
-	# Wait for etherpad to be fully started
+	# Wait for Etherpad to be fully started
 	ynh_systemd_action --action=start --line_match="Your Etherpad version is" --log_path="systemd" --timeout="60"
 fi
 
@@ -338,7 +336,7 @@ fi
 # SEND A README FOR THE ADMIN
 #=================================================
 
-# Get main domain and buid the url of the admin panel of the app.
+# Get main domain and buid the URL of the admin panel of the app.
 admin_panel="https://$(grep portal_domain /etc/ssowat/conf.json | cut -d'"' -f4)/yunohost/admin/#/apps/$app"
 
 if [ $mypads -eq 1 ]
