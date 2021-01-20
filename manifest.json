@@ -6,7 +6,7 @@
 		"en": "Online editor providing collaborative editing in real-time.",
 		"fr": "Éditeur en ligne fournissant l'édition collaborative en temps réel."
 	},
-	"version": "1.8.4~ynh1",
+	"version": "1.8.4~ynh2",
 	"url": "https://framapad.org",
 	"license": "Apache-2.0",
 	"maintainer": {
@@ -18,7 +18,7 @@
 		"email": "maniackc_dev@crudelis.fr"
 	}],
 	"requirements": {
-		"yunohost": ">= 3.6"
+		"yunohost": ">= 3.8.1"
 	},
 	"multi_instance": true,
 	"services": [
