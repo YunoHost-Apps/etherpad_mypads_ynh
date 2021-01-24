@@ -36,7 +36,6 @@ ynh_print_info --message="Declaring files to be backed up..."
 # BACKUP THE APP MAIN DIR
 #=================================================
 
-CHECK_SIZE "$final_path"
 ynh_backup --src_path="$final_path"
 
 #=================================================
@@ -51,7 +50,6 @@ ynh_backup --src_path="/etc/nginx/conf.d/$domain.d/$app.conf"
 ynh_print_info --message="Backing up the MySQL database..."
 
 ynh_mysql_dump_db --database="$db_name" > db.sql
-CHECK_SIZE "db.sql"
 
 #=================================================
 # SPECIFIC BACKUP
