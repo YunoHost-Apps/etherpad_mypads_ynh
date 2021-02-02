@@ -81,7 +81,7 @@ ynh_app_setting_set --app=$app --key=overwrite_systemd --value="1"
 #=================================================
 # FIND AND OPEN A PORT
 #=================================================
-ynh_script_progression --message="Configuring firewall..." --weight=2
+ynh_script_progression --message="Finding an available port..." --weight=2
 
 # Find a free port
 port=$(ynh_find_port --port=9001)
@@ -154,7 +154,7 @@ touch $install_log
 chown $app -R /var/log/$app
 
 # Setup logrotate
-ynh_use_logrotate
+ynh_use_logrotate --specific_user=$app/$app
 
 #=================================================
 # INSTALL ETHERPAD
