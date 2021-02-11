@@ -328,15 +328,16 @@ ynh_systemd_action --action=reload --service_name=nginx
 ynh_script_progression --message="Restarting Etherpad..." --weight=20
 
 # Wait for Etherpad to be fully started
-ynh_systemd_action --action=restart --line_match="You can access your Etherpad instance at" --log_path="/var/log/$app/etherpad.log" --timeout="120"
-
+ynh_systemd_action --action=restart --line_match="You can access your Etherpad instance at" --log_path="/var/log/$app/etherpad.log" #--timeout="120"
+sleep 120
 if [ $mypads -eq 1 ]
 then
 	ynh_replace_string --match_string="__LANGUAGE__" --replace_string="$language" --target_file="../conf/lang_mypads.sql"
 	mysql -u $db_name -p$db_pwd $db_name < "../conf/lang_mypads.sql"
 
 	# Wait for Etherpad to be fully started
-	ynh_systemd_action --action=restart --line_match="You can access your Etherpad instance at" --log_path="/var/log/$app/etherpad.log" --timeout="120"
+	ynh_systemd_action --action=restart --line_match="You can access your Etherpad instance at" --log_path="/var/log/$app/etherpad.log" #--timeout="120"
+	sleep 120
 fi
 
 #=================================================
