@@ -23,11 +23,11 @@ domain=$(ynh_app_setting_get --app=$app --key=domain)
 path_url=$(ynh_app_setting_get --app=$app --key=path)
 admin=$(ynh_app_setting_get --app=$app --key=admin)
 language=$(ynh_app_setting_get --app=$app --key=language)
-is_public=$(ynh_app_setting_get --app=$app --key=is_public)
 final_path=$(ynh_app_setting_get --app=$app --key=final_path)
 port=$(ynh_app_setting_get --app=$app --key=port)
 export=$(ynh_app_setting_get --app=$app --key=export)
 db_name=$(ynh_app_setting_get --app=$app --key=db_name)
+db_pwd=$(ynh_app_setting_get --app=$app --key=mysqlpwd)
 mypads=$(ynh_app_setting_get --app=$app --key=mypads)
 useldap=$(ynh_app_setting_get --app=$app --key=useldap)
 overwrite_settings=$(ynh_app_setting_get --app=$app --key=overwrite_settings)
@@ -135,6 +135,18 @@ if [ -z "$overwrite_systemd" ]; then
 	ynh_app_setting_set $app overwrite_systemd $overwrite_systemd
 fi
 
+# Cleaning legacy permissions
+if ynh_legacy_permissions_exists; then
+  ynh_legacy_permissions_delete_all
+
+  ynh_app_setting_delete --app=$app --key=is_public
+fi
+
+if ! ynh_permission_exists --permission="admin"; then
+  # Create the required permissions
+  ynh_permission_create --permission="admin" --url="/admin" --allowed=$admin
+fi
+
 #=================================================
 # BACKUP BEFORE UPGRADE THEN ACTIVE TRAP
 #=================================================
@@ -207,13 +219,6 @@ fi
 #=================================================
 ynh_script_progression --message="Upgrading NodeJS..." --weight=4
 
-# Remove the old nvm helper.
-if [ -d /opt/nvm ]
-then
-	ynh_secure_remove --file="/opt/nvm"
-	sed --in-place "/NVM_DIR/d" /root/.bashrc
-fi
-
 ynh_install_nodejs --nodejs_version=$nodejs_version
 
 #=================================================
@@ -221,36 +226,14 @@ ynh_install_nodejs --nodejs_version=$nodejs_version
 #=================================================
 ynh_script_progression --message="Upgrading Etherpad npm modules..." --weight=60
 
-# Update the main modules of etherpad
 chown -R $app: $final_path
-(cd "$final_path/src"
-ynh_exec_warn_less npm cache clean --force
-# Remove package-lock.json to prevent any shit during npm update...
-#ynh_secure_remove --file="$final_path/src/package-lock.json"
-ynh_exec_warn_less ynh_exec_as $app PATH="$nodejs_path:$PATH" "$nodejs_path/npm" update)
 
-# Then update the additionnal modules
-(cd "$final_path"
-ynh_exec_warn_less npm cache clean --force
-while read node_module
-do
-    # Ignore ep_etherpad-lite, this part is updated before in this script.
-    if [ "$node_module" = "ep_etherpad-lite" ]; then
-        continue
-    fi
-    echo "Update $node_module"
-    # Build the name of the variable with the version.
-    module_version=${node_module}_version
-    # Get the content of the variable (from the file _variables)
-    module_version=${!module_version:-}
-    # If the module has no version stored in a variable into the file, keep it empty.
-    # That way, the upgrade will not be specific to a version.
-    ## Otherwise, add @ before the version number to force the upgrade to this version.
-    if [ -n "${module_version}" ]; then
-        module_version=@${module_version}
-    fi
-    ynh_exec_warn_less ynh_exec_as $app PATH="$nodejs_path:$PATH" "$nodejs_path/npm" install --upgrade ${node_module}${module_version} || true
-done <<< "$(ls -1 "$final_path/node_modules" | grep "^ep_")")
+pushd $final_path
+  ynh_use_nodejs
+  ynh_exec_as $app env "$ynh_node_load_PATH" bin/installDeps.sh
+  ynh_exec_warn_less ynh_exec_as $app env "$ynh_node_load_PATH" npm cache clean --force
+  ynh_exec_warn_less ynh_exec_as $app env "$ynh_node_load_PATH" npm install --upgrade 
+popd
 
 #=================================================
 # SPECIFIC UPGRADE
@@ -291,7 +274,7 @@ then
     fi
     ynh_replace_string --match_string="__LANGUAGE__" --replace_string="$language" --target_file="$final_path/settings.json"
 
-    # Use ldap for mypads
+    # Use LDAP for MyPads
     if [ $mypads -eq 1 ] && [ $useldap -eq 1 ]
     then
       ynh_replace_string --match_string="//noldap" --replace_string="" --target_file="$final_path/settings.json"
@@ -329,11 +312,10 @@ then
     cp ../conf/credentials.json "$final_path/credentials.json"
 
     ynh_replace_string --match_string="__DB_USER__" --replace_string="$app" --target_file="$final_path/credentials.json"
-    db_pwd=$(ynh_app_setting_get --app=$app --key=mysqlpwd)
     ynh_print_OFF; password=$(ynh_app_setting_get --app=$app --key=password); ynh_print_ON
     ynh_replace_string --match_string="__DB_PWD__" --replace_string="$db_pwd" --target_file="$final_path/credentials.json"
     ynh_replace_string --match_string="__ADMIN__" --replace_string="$admin" --target_file="$final_path/credentials.json"
-    ynh_print_OFF; ynh_replace_special_string --match_string="__PASSWD__" --replace_string="$password" --target_file="$final_path/credentials.json"; ynh_print_ON
+    ynh_print_OFF; ynh_replace_special_string --match_string="__PASSWORD__" --replace_string="$password" --target_file="$final_path/credentials.json"; ynh_print_ON
 
     # Recalculate and store the checksum of the file for the next upgrade.
     ynh_store_file_checksum --file="$final_path/credentials.json"
@@ -388,8 +370,7 @@ ynh_script_progression --message="Upgrading systemd configuration..." --weight=2
 # Overwrite the systemd configuration only if it's allowed
 if [ $overwrite_systemd -eq 1 ]
 then
-	ynh_replace_string --match_string="__ENV_PATH__" --replace_string="$PATH" --target_file="../conf/systemd.service"
-	ynh_add_systemd_config
+	ynh_add_systemd_config --others_var="ynh_node_load_PATH"
 fi
 
 #=================================================
@@ -402,19 +383,6 @@ then
 	mod_line=$(grep -nA5 "index.createOpenPad" $final_path/src/templates/index.html | grep "</div>" | cut -d '-' -f 1)
 	# In order to add a link to mypads plugin.
 	sed -i "$mod_line s@div>@&\n\t<center><br><font size="5"><a href="./mypads/">Mypads</a></font></center>@" $final_path/src/templates/index.html
-fi
-
-#=================================================
-# SETUP SSOWAT
-#=================================================
-ynh_script_progression --message="Upgrading SSOwat configuration..."
-
-# Make app public if necessary
-if [ $is_public -eq 1 ]; then
-	ynh_app_setting_set --app=$app --key=skipped_uris --value="/"
-else
-	# etherpad admin page doesn't support SSO...
-	ynh_app_setting_set --app=$app --key=skipped_uris --value="/admin"
 fi
 
 #=================================================
