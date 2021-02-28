@@ -113,7 +113,7 @@
    * "full-width-editor" variant (by default editor is rendered as a page, with
    * a max-width of 900px).
    */
-  "skinVariants": "super-light-toolbar super-light-editor light-background",
+   "skinVariants": "light-toolbar super-light-editor dark-background",
 
   /*
    * IP and port which Etherpad should bind at.

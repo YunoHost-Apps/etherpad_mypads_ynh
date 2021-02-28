@@ -7,8 +7,6 @@
 #=================================================
 
 # Load common variables for all scripts.
-source _variables
-
 source _common.sh
 source /usr/share/yunohost/helpers
 
@@ -209,7 +207,7 @@ fi
 #=================================================
 ynh_script_progression --message="Upgrading NGINX web server configuration..."
 
-# Overwrite the nginx configuration only if it's allowed
+# Overwrite the NGINX configuration only if it's allowed
 if [ $overwrite_nginx -eq 1 ]
 then
 	ynh_add_nginx_config

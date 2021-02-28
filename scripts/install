@@ -7,8 +7,6 @@
 #=================================================
 
 # Load common variables for all scripts.
-source _variables
-
 source _common.sh
 source /usr/share/yunohost/helpers
 
@@ -331,8 +329,7 @@ ynh_systemd_action --action=reload --service_name=nginx
 ynh_script_progression --message="Restarting Etherpad..." --weight=20
 
 # Wait for Etherpad to be fully started
-ynh_systemd_action --action=restart --line_match="You can access your Etherpad instance at" --log_path="/var/log/$app/etherpad.log" #--timeout="120"
-sleep 120
+ynh_systemd_action --action=restart --log_path=systemd --line_match="Your Etherpad version is"
 
 if [ $mypads -eq 1 ]
 then
@@ -340,8 +337,7 @@ then
 	mysql -u $db_name -p$db_pwd $db_name < "../conf/lang_mypads.sql"
 
 	# Wait for Etherpad to be fully started
-	ynh_systemd_action --action=restart --line_match="You can access your Etherpad instance at" --log_path="/var/log/$app/etherpad.log" #--timeout="120"
-	sleep 120
+	ynh_systemd_action --action=restart --log_path=systemd --line_match="Your Etherpad version is"
 fi
 
 #=================================================

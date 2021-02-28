@@ -4,6 +4,35 @@
 # PERSONAL HELPERS
 #=================================================
 
+# Dependencies for AbiWord
+abiword_app_depencencies="abiword"
+
+# Dependencies for LibreOffice
+libreoffice_app_dependencies="unoconv libreoffice-writer"
+
+# NodeJS version
+nodejs_version=14
+
+# MyPads version
+# This variable is mostly used to force an upgrade of the package in case of new versions of MyPads.
+# mypads_version=1.7.19
+
+# Plugin versions
+# ep_align_version=0.3.31
+# ep_author_hover_version=0.3.17
+# ep_automatic_logut_version=1.0.8
+# ep_comments_page_version=0.1.51
+# ep_countable_version=0.0.8
+# ep_delete_empty_pads_version=0.0.6
+# ep_font_color_version=0.0.38
+# ep_font_size_version=0.4.18
+# ep_headings2_version=0.2.24
+# ep_markdown_version=0.1.30
+# ep_page_view_version=0.5.26
+# ep_spellcheck_version=0.0.25
+# ep_subscript_and_superscript_version=0.2.21
+# ep_table_of_contents_version=0.3.17
+
 #=================================================
 # BACKUP
 #=================================================
