@@ -406,46 +406,46 @@ ynh_script_progression --message="Disabling maintenance mode..." --weight=5
 
 ynh_maintenance_mode_OFF
 
-#=================================================
-# SEND A README FOR THE ADMIN
-#=================================================
+# #=================================================
+# # SEND A README FOR THE ADMIN
+# #=================================================
 
-# Get main domain and buid the url of the admin panel of the app.
-admin_panel="https://$(grep portal_domain /etc/ssowat/conf.json | cut -d'"' -f4)/yunohost/admin/#/apps/$app"
+# # Get main domain and buid the url of the admin panel of the app.
+# admin_panel="https://$(grep portal_domain /etc/ssowat/conf.json | cut -d'"' -f4)/yunohost/admin/#/apps/$app"
 
-# Build the changelog
-# Get the value of admin_mail_html
-admin_mail_html=$(ynh_app_setting_get $app admin_mail_html)
-admin_mail_html="${admin_mail_html:-0}"
-# If a html email is required. Apply html to the changelog.
-if [ "$admin_mail_html" -eq 1 ]; then
-    format=html
-else
-    format=plain
-fi
-ynh_app_changelog --format=$format
+# # Build the changelog
+# # Get the value of admin_mail_html
+# admin_mail_html=$(ynh_app_setting_get $app admin_mail_html)
+# admin_mail_html="${admin_mail_html:-0}"
+# # If a html email is required. Apply html to the changelog.
+# if [ "$admin_mail_html" -eq 1 ]; then
+#     format=html
+# else
+#     format=plain
+# fi
+# ynh_app_changelog --format=$format
 
-if [ $mypads -eq 1 ]
-then
-	Informations="You can access 2 different admin panels, for Etherpad by accessing https://$domain${path_url%/}/admin and for MyPads by accessing https://$domain${path_url%/}/mypads/?/admin."
-else
-	Informations="You can access the admin panel by accessing https://$domain${path_url%/}/admin."
-fi
+# if [ $mypads -eq 1 ]
+# then
+# 	Informations="You can access 2 different admin panels, for Etherpad by accessing https://$domain${path_url%/}/admin and for MyPads by accessing https://$domain${path_url%/}/mypads/?/admin."
+# else
+# 	Informations="You can access the admin panel by accessing https://$domain${path_url%/}/admin."
+# fi
 
-echo "$Informations
-You can also find a config file for Etherpad at this path /var/www/etherpad_mypads/settings.json.
+# echo "$Informations
+# You can also find a config file for Etherpad at this path /var/www/etherpad_mypads/settings.json.
 
-You can configure this app easily by using the experimental config-panel feature $admin_panel/config-panel.
-You can also find some specific actions for this app by using the experimental action feature $admin_panel/actions.
+# You can configure this app easily by using the experimental config-panel feature $admin_panel/config-panel.
+# You can also find some specific actions for this app by using the experimental action feature $admin_panel/actions.
 
-If you are facing an issue or want to improve this app, please open a new issue in this project: https://github.com/YunoHost-Apps/etherpad_mypads_ynh
+# If you are facing an issue or want to improve this app, please open a new issue in this project: https://github.com/YunoHost-Apps/etherpad_mypads_ynh
 
----
+# ---
 
-Changelog since your last upgrade:
-$(cat changelog)" > mail_to_send
+# Changelog since your last upgrade:
+# $(cat changelog)" > mail_to_send
 
-ynh_send_readme_to_admin --app_message="mail_to_send" --recipients="$admin" --type=upgrade
+# ynh_send_readme_to_admin --app_message="mail_to_send" --recipients="$admin" --type=upgrade
 
 #=================================================
 # END OF SCRIPT
