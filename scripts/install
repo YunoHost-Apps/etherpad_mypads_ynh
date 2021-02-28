@@ -147,7 +147,7 @@ ynh_script_progression --message="Configuring log rotation..."
 
 # Create log directory
 mkdir -p /var/log/$app
-touch /var/log/$app/etherpad.log
+touch /var/log/$app/$app.log
 install_log=/var/log/$app/installation.log
 touch $install_log
 chown $app -R /var/log/$app
@@ -174,7 +174,6 @@ ynh_script_progression --message="Configuring Etherpad..." --weight=6
 
 cp ../conf/settings.json "$final_path/settings.json"
 cp ../conf/credentials.json "$final_path/credentials.json"
-ynh_replace_string --match_string="__PORT__" --replace_string="$port" --target_file="$final_path/settings.json"
 ynh_replace_string --match_string="__DB_USER__" --replace_string="$db_name" --target_file="$final_path/credentials.json"
 ynh_replace_string --match_string="__DB_PWD__" --replace_string="$db_pwd" --target_file="$final_path/credentials.json"
 ynh_replace_string --match_string="__ADMIN__" --replace_string="$admin" --target_file="$final_path/credentials.json"
@@ -193,8 +192,9 @@ then
 	ynh_replace_string --match_string="\"soffice\" : null" --replace_string="\"soffice\" : \"$soffice_path\"" --target_file="$final_path/settings.json"
 fi
 ynh_replace_string --match_string="__LANGUAGE__" --replace_string="$language" --target_file="$final_path/settings.json"
+ynh_replace_string --match_string="__PORT__" --replace_string="$port" --target_file="$final_path/settings.json"
 
-# Use ldap for mypads
+# Use LDAP for MyPads
 if [ $mypads -eq 1 ] && [ $useldap -eq 1 ]
 then
 	ynh_replace_string --match_string="//noldap\(.*\)" --replace_string="\1 //useldap" --target_file="$final_path/settings.json"
@@ -225,7 +225,7 @@ ynh_add_systemd_config --others_var="ynh_node_load_PATH"
 # ADVERTISE SERVICE IN ADMIN PANEL
 #=================================================
 
-yunohost service add $app --log="/var/log/$app/etherpad.log"
+yunohost service add $app --description="Collaborative editor" --log="/var/log/$app/etherpad.log"
 
 #=================================================
 # INSTALL FRAMAPAD'S PLUGINS
@@ -233,39 +233,40 @@ yunohost service add $app --log="/var/log/$app/etherpad.log"
 ynh_script_progression --message="Installing Etherpad plugins..." --weight=90
 
 pushd "$final_path"
-# Add Left/Center/Right/Justify to lines of text in a pad
-npm install ep_align@${ep_align_version} >> $install_log 2>&1
-# Framapad - Adds author names to span titles
-npm install ep_author_hover@${ep_author_hover_version} >> $install_log 2>&1
-# Automatically disconnects user after some period of time (Prevent server overload)
-npm install ep_automatic_logut@${ep_automatic_logut_version} >> $install_log 2>&1
-# Framapad - Adds comments on sidebar and link it to the text.
-npm install ep_comments_page@${ep_comments_page_version} >> $install_log 2>&1
-# Framapad - Displays paragraphs, sentences, words and characters counts.
-npm install ep_countable@${ep_countable_version} >> $install_log 2>&1
-# Framapad - Delete pads which were never edited
-npm install ep_delete_empty_pads@${ep_delete_empty_pads_version} >> $install_log 2>&1
-# Framapad - Apply colors to fonts
-npm install ep_font_color@${ep_font_color_version} >> $install_log 2>&1
-# Framapad - User Pad Contents font size can be set in settings, this does not effect other peoples views
-npm install ep_font_size@${ep_font_size_version} >> $install_log 2>&1
-# Framapad - Adds heading support to Etherpad Lite.
-npm install ep_headings2@${ep_headings2_version} >> $install_log 2>&1
-# Framapad - Edit and Export as Markdown in Etherpad
-npm install ep_markdown@${ep_markdown_version} >> $install_log 2>&1
-if [ $mypads -eq 1 ]; then
-	# Framapad - Groups and private pads for etherpad
-	npm install ep_mypads@${mypads_version} >> $install_log 2>&1
-fi
-# Framapad - Add support to do 'page view', with a toggle on/off option in Settings, also Page Breaks with Control Enter
-npm install ep_page_view@${ep_page_view_version} >> $install_log 2>&1
-# Framapad - Add support to do 'Spell checking'
-npm install ep_spellcheck@${ep_spellcheck_version} >> $install_log 2>&1
-# Framapad - Add support for Subscript and Superscript
-npm install ep_subscript_and_superscript@${ep_subscript_and_superscript_version} >> $install_log 2>&1
-# Framapad - View a table of contents for your pad
-npm install ep_table_of_contents@${ep_table_of_contents_version} >> $install_log 2>&1
+	# Add Left/Center/Right/Justify to lines of text in a pad
+	npm install ep_align@${ep_align_version} >> $install_log 2>&1
+	# Framapad - Adds author names to span titles
+	npm install ep_author_hover@${ep_author_hover_version} >> $install_log 2>&1
+	# Automatically disconnects user after some period of time (Prevent server overload)
+	npm install ep_automatic_logut@${ep_automatic_logut_version} >> $install_log 2>&1
+	# Framapad - Adds comments on sidebar and link it to the text.
+	npm install ep_comments_page@${ep_comments_page_version} >> $install_log 2>&1
+	# Framapad - Displays paragraphs, sentences, words and characters counts.
+	npm install ep_countable@${ep_countable_version} >> $install_log 2>&1
+	# Framapad - Delete pads which were never edited
+	npm install ep_delete_empty_pads@${ep_delete_empty_pads_version} >> $install_log 2>&1
+	# Framapad - Apply colors to fonts
+	npm install ep_font_color@${ep_font_color_version} >> $install_log 2>&1
+	# Framapad - User Pad Contents font size can be set in settings, this does not effect other peoples views
+	npm install ep_font_size@${ep_font_size_version} >> $install_log 2>&1
+	# Framapad - Adds heading support to Etherpad Lite.
+	npm install ep_headings2@${ep_headings2_version} >> $install_log 2>&1
+	# Framapad - Edit and Export as Markdown in Etherpad
+	npm install ep_markdown@${ep_markdown_version} >> $install_log 2>&1
+	if [ $mypads -eq 1 ]; then
+		# Framapad - Groups and private pads for Etherpad
+		npm install ep_mypads@${mypads_version} >> $install_log 2>&1
+	fi
+	# Framapad - Add support to do 'page view', with a toggle on/off option in Settings, also Page Breaks with Control Enter
+	npm install ep_page_view@${ep_page_view_version} >> $install_log 2>&1
+	# Framapad - Add support to do 'Spell checking'
+	npm install ep_spellcheck@${ep_spellcheck_version} >> $install_log 2>&1
+	# Framapad - Add support for Subscript and Superscript
+	npm install ep_subscript_and_superscript@${ep_subscript_and_superscript_version} >> $install_log 2>&1
+	# Framapad - View a table of contents for your pad
+	npm install ep_table_of_contents@${ep_table_of_contents_version} >> $install_log 2>&1
 popd
+
 chown -R $app: $final_path/node_modules
 
 #=================================================
@@ -322,6 +323,7 @@ ynh_script_progression --message="Restarting Etherpad..." --weight=20
 # Wait for Etherpad to be fully started
 ynh_systemd_action --action=restart --line_match="You can access your Etherpad instance at" --log_path="/var/log/$app/etherpad.log" #--timeout="120"
 sleep 120
+
 if [ $mypads -eq 1 ]
 then
 	ynh_replace_string --match_string="__LANGUAGE__" --replace_string="$language" --target_file="../conf/lang_mypads.sql"

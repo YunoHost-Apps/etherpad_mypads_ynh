@@ -30,7 +30,7 @@ export=$(ynh_app_setting_get --app=$app --key=export)
 # Remove a service from the admin panel, added by `yunohost service add`
 if ynh_exec_fully_quiet yunohost service status $app
 then
-	ynh_script_progression --message="Removing $app service..."
+	ynh_script_progression --message="Removing Etherpad service..."
 	yunohost service remove $app
 fi
 
@@ -97,7 +97,7 @@ ynh_remove_logrotate
 #=================================================
 ynh_script_progression --message="Removing Fail2ban configuration..." --weight=7
 
-# Remove the dedicated fail2ban config
+# Remove the dedicated Fail2Ban config
 ynh_remove_fail2ban_config
 
 #=================================================
