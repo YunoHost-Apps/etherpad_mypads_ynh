@@ -16,7 +16,7 @@ source /usr/share/yunohost/helpers
 
 app=$YNH_APP_INSTANCE_NAME
 
-final_path=$(ynh_app_setting_get $app final_path)
+final_path=$(ynh_app_setting_get --app=$app --key=final_path)
 
 #=================================================
 # SPECIFIC CODE
@@ -321,7 +321,7 @@ apply_config() {
 	if [ $restart_etherpad -eq 1 ]
 	then
 		# Wait for Etherpad to be fully started
-		ynh_systemd_action --action=restart --line_match="You can access your Etherpad instance at" --log_path="/var/log/$app/etherpad.log" --timeout="120"
+		ynh_systemd_action --action=restart --log_path=systemd --line_match="Your Etherpad version is"
 	fi
 
     #=================================================
