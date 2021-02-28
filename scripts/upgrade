@@ -47,7 +47,7 @@ pad_config_skinname=$(ynh_app_setting_get --app=$app --key=pad_config_skinname)
 #=================================================
 
 # Wait for etherpad to be fully started
-ynh_systemd_action --action=restart --line_match="You can access your Etherpad instance at" --log_path="/var/log/$app/etherpad.log" --timeout="120"
+ynh_systemd_action --action=restart --line_match="You can access your Etherpad instance at" --log_path="systemd"
 
 upgrade_type=$(ynh_check_app_version_changed)
 
