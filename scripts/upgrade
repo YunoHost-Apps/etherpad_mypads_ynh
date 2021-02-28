@@ -28,6 +28,7 @@ port=$(ynh_app_setting_get --app=$app --key=port)
 export=$(ynh_app_setting_get --app=$app --key=export)
 db_name=$(ynh_app_setting_get --app=$app --key=db_name)
 db_pwd=$(ynh_app_setting_get --app=$app --key=mysqlpwd)
+ynh_print_OFF; password=$(ynh_app_setting_get --app=$app --key=password); ynh_print_ON
 mypads=$(ynh_app_setting_get --app=$app --key=mypads)
 useldap=$(ynh_app_setting_get --app=$app --key=useldap)
 overwrite_settings=$(ynh_app_setting_get --app=$app --key=overwrite_settings)
@@ -309,13 +310,13 @@ then
   then
     # Verify the checksum of a file, stored by `ynh_store_file_checksum` in the install script.
     ynh_backup_if_checksum_is_different --file="$final_path/credentials.json"
-    cp ../conf/credentials.json "$final_path/credentials.json"
+    ynh_add_config --template="../conf/credentials.json" --destination="$final_path/credentials.json"
 
-    ynh_replace_string --match_string="__DB_USER__" --replace_string="$app" --target_file="$final_path/credentials.json"
-    ynh_print_OFF; password=$(ynh_app_setting_get --app=$app --key=password); ynh_print_ON
-    ynh_replace_string --match_string="__DB_PWD__" --replace_string="$db_pwd" --target_file="$final_path/credentials.json"
-    ynh_replace_string --match_string="__ADMIN__" --replace_string="$admin" --target_file="$final_path/credentials.json"
-    ynh_print_OFF; ynh_replace_special_string --match_string="__PASSWORD__" --replace_string="$password" --target_file="$final_path/credentials.json"; ynh_print_ON
+    #cp ../conf/credentials.json "$final_path/credentials.json"
+    #ynh_replace_string --match_string="__DB_NAME__" --replace_string="$db_name" --target_file="$final_path/credentials.json"
+    #ynh_replace_string --match_string="__DB_PWD__" --replace_string="$db_pwd" --target_file="$final_path/credentials.json"
+    #ynh_replace_string --match_string="__ADMIN__" --replace_string="$admin" --target_file="$final_path/credentials.json"
+    #ynh_print_OFF; ynh_replace_special_string --match_string="__PASSWORD__" --replace_string="$password" --target_file="$final_path/credentials.json"; ynh_print_ON
 
     # Recalculate and store the checksum of the file for the next upgrade.
     ynh_store_file_checksum --file="$final_path/credentials.json"
@@ -349,7 +350,7 @@ yunohost service add $app --description="Collaborative editor" --log="/var/log/$
 #=================================================
 # UPGRADE FAIL2BAN
 #=================================================
-ynh_script_progression --message="Reconfiguring Fail2ban..." --weight=8
+ynh_script_progression --message="Reconfiguring Fail2Ban..." --weight=8
 
 # Create a dedicated fail2ban config
 ynh_add_fail2ban_config --logpath="/var/log/nginx/$domain-access.log" --failregex="<HOST> .* .POST /mypads/api/auth/login HTTP/1.1. 400" --max_retry=5

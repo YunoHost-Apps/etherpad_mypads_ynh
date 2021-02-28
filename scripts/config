@@ -85,11 +85,11 @@ pad_config_automatic_logout="${YNH_CONFIG_MAIN_PAD_CONFIGURATION_PAD_CONFIG_AUTO
 # Etherpad skin
 old_pad_config_skinname="$(get_config_value skinName)"
 if [ "$old_pad_config_skinname" = "no-skin" ]; then
-    old_pad_config_skinname=noskin
+    old_pad_config_skinname=colibris
 fi
 pad_config_skinname="${YNH_CONFIG_MAIN_PAD_CONFIGURATION_PAD_CONFIG_SKINNAME:-$old_pad_config_skinname}"
 if [ "$pad_config_skinname" = "no-skin" ]; then
-    pad_config_skinname=noskin
+    pad_config_skinname=colibris
 fi
 
 # MyPads
