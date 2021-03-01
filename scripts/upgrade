@@ -47,8 +47,8 @@ pad_config_skinname=$(ynh_app_setting_get --app=$app --key=pad_config_skinname)
 # CHECK VERSION
 #=================================================
 
-# Wait for etherpad to be fully started
-ynh_systemd_action --action=restart --log_path=systemd --line_match="Your Etherpad version is"
+# Wait for Etherpad to be fully started
+#ynh_systemd_action --action=restart --log_path=systemd --line_match="Your Etherpad version is"
 
 upgrade_type=$(ynh_check_app_version_changed)
 
@@ -187,6 +187,9 @@ ynh_systemd_action --action=stop
 if [ "$upgrade_type" == "UPGRADE_APP" ]
 then
 	ynh_script_progression --message="Upgrading source files..." --weight=4
+
+  ynh_secure_remove --file="$final_path/bin"
+  ynh_secure_remove --file="$final_path/tests"
 
 	# Download, check integrity, uncompress and patch the source from app.src
 	ynh_setup_source --dest_dir="$final_path"
