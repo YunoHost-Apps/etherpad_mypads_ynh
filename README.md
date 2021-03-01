@@ -1,4 +1,4 @@
-# Etherpad with MyPads plugin for YunoHost
+# Etherpad MyPads for YunoHost
 
 [![Integration level](https://dash.yunohost.org/integration/etherpad_mypads.svg)](https://dash.yunohost.org/appci/app/etherpad_mypads) ![](https://ci-apps.yunohost.org/ci/badges/etherpad_mypads.status.svg) [![](https://ci-apps.yunohost.org/ci/badges/etherpad_mypads.maintain.svg)](https://github.com/YunoHost/Apps/#what-to-do-if-i-cant-maintain-my-app-anymore-)  
 [![Install Etherpad with YunoHost](https://install-app.yunohost.org/install-with-yunohost.svg)](https://install-app.yunohost.org/?app=etherpad_mypads)
@@ -55,11 +55,12 @@ You can also find a configuration file for Etherpad at this path `/var/www/ether
   * [ep_align](https://www.npmjs.com/package/ep_align) - *Add Left/Center/Right/Justify to lines of text in a pad*
   * [ep_author_hover](https://www.npmjs.com/package/ep_author_hover) - *Adds author names to span titles*
   * [ep_automatic_logut](https://www.npmjs.com/package/ep_automatic_logut) - *Automatically disconnects user after some period of time (Prevent server overload)*
-  * [ep_comments_page](https://www.npmjs.com/package/ep_comments_page) - *Adds comments on sidebar and link it to the text.*
+  * [ep_comments_page](https://www.npmjs.com/package/ep_comments_page) - *Adds comments on sidebar and link it to the text*
+  * [ep_countable](https://www.npmjs.com/package/ep_countable) - *Adds paragraphs, words and characters count*
   * [ep_delete_empty_pads](https://www.npmjs.com/package/ep_delete_empty_pads) - *Delete pads which were never edited*
   * [ep_font_color](https://www.npmjs.com/package/ep_font_color) - *Apply colors to fonts*
   * [ep_font_size](https://www.npmjs.com/package/ep_font_size) - *Add support for Font Sizes*
-  * [ep_headings2](https://www.npmjs.com/package/ep_headings2) - *Adds heading support to Etherpad Lite.*
+  * [ep_headings2](https://www.npmjs.com/package/ep_headings2) - *Adds heading support to Etherpad Lite*
   * [ep_markdown](https://www.npmjs.com/package/ep_markdown) - *Edit and Export as Markdown in Etherpad*
   * [ep_mypads](https://www.npmjs.com/package/ep_mypads) - *Groups and private pads for etherpad*
   * [ep_page_view](https://www.npmjs.com/package/ep_page_view) - *Add support to do 'page view', with a toggle on/off option in Settings, also Page Breaks with Control Enter*
