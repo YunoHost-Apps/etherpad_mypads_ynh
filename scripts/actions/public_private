@@ -54,9 +54,9 @@ ynh_script_progression --message="Moving the application to $public_private..." 
 
 if [ $is_public -eq 0 ]
 then
-	ynh_permission_create --permission="admin" --url="/admin" --allowed=$admin	# etherpad admin page doesn't support SSO...
+	ynh_app_setting_set --app=$app --key=skipped_uris --value="/admin"	# etherpad admin page doesn't support SSO...
 else
-	ynh_permission_update --permission="main" --add="visitors"
+	ynh_app_setting_set --app=$app --key=skipped_uris --value="/"
 fi
 
 ynh_script_progression --message="Upgrading SSOwat configuration..."
