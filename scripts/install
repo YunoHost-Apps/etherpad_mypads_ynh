@@ -169,7 +169,6 @@ pushd $final_path
 		# Framapad - Groups and private pads for Etherpad
 		ynh_exec_as $app env "$ynh_node_load_PATH" npm install ep_mypads >> $install_log 2>&1
 	fi
-
 popd
 
 #=================================================
