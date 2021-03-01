@@ -163,7 +163,7 @@ chown -R $app: $final_path
 pushd $final_path
  	ynh_use_nodejs
  	ynh_exec_as $app env "$ynh_node_load_PATH" bin/installDeps.sh
- 	ynh_exec_as $app env "$ynh_node_load_PATH" npm install ep_spellcheck ep_countable ep_delete_empty_pads ep_subscript_and_superscript ep_headings2 ep_author_hover ep_markdown ep_comments_page ep_align ep_font_color ep_embedded_hyperlinks2 >> $install_log 2>&1
+ 	ynh_exec_as $app env "$ynh_node_load_PATH" npm install ep_automatic_logut ep_countable ep_delete_empty_pads ep_subscript_and_superscript ep_headings2 ep_author_hover ep_markdown ep_comments_page ep_align ep_font_color ep_spellcheck ep_embedded_hyperlinks2 >> $install_log 2>&1
 	if [ $mypads -eq 1 ]; then
 		# Framapad - Groups and private pads for Etherpad
 		ynh_exec_as $app env "$ynh_node_load_PATH" npm install ep_mypads >> $install_log 2>&1

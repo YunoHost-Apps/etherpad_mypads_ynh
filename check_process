@@ -38,7 +38,7 @@
 		upgrade=1
 		backup_restore=1
 		multi_instance=1
-		port_already_use=1	(9001)
+		port_already_use=0	(9001)
 		change_url=1
         actions=1
         config_panel=1
@@ -71,7 +71,7 @@
 		useldap=0
 	; Checks
 		setup_root=1
-		upgrade=1	from_commit=8bf300413ec3adcb416d168d2e9e98975dd9405b
+		upgrade=1	from_commit=19c92803b4e5ac524a9122251cb9de1fec0b9bf4
 ;; Test sans export
 	; Manifest
 		domain="domain.tld"	(DOMAIN)
@@ -89,6 +89,6 @@
 Email=
 Notification=change
 ;;; Upgrade options
-	; commit=8bf300413ec3adcb416d168d2e9e98975dd9405b
-		name= Fix nodejs & global update
+	; commit=19c92803b4e5ac524a9122251cb9de1fec0b9bf4
+		name= Merge pull request #105 from YunoHost-Apps/testing on 15 Sep 2020
 		manifest_arg=domain=DOMAIN&path=PATH&admin=USER&password=password&language=en&is_public=1&abiword=0&
