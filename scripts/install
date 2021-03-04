@@ -164,10 +164,7 @@ chown -R $app: $final_path
 pushd $final_path
  	ynh_use_nodejs
  	ynh_exec_as $app env "$ynh_node_load_PATH" bin/installDeps.sh
- 	ynh_exec_as $app env "$ynh_node_load_PATH" npm install ep_align ep_author_hover ep_automatic_logut ep_comments_page \
- 		ep_countable ep_delete_empty_pads ep_font_color ep_font_size ep_headings2 ep_markdown ep_page_view ep_spellcheck \
- 		ep_subscript_and_superscript ep_table_of_contents
- >> $install_log 2>&1
+ 	ynh_exec_as $app env "$ynh_node_load_PATH" npm install ep_automatic_logut ep_countable ep_delete_empty_pads ep_subscript_and_superscript ep_headings2 ep_author_hover ep_markdown ep_comments_page ep_align ep_font_color ep_spellcheck ep_embedded_hyperlinks2 >> $install_log 2>&1
 	if [ $mypads -eq 1 ]; then
 		# Framapad - Groups and private pads for Etherpad
 		ynh_exec_as $app env "$ynh_node_load_PATH" npm install ep_mypads >> $install_log 2>&1
@@ -241,11 +238,44 @@ yunohost service add $app --description="Collaborative editor" --log="/var/log/$
 # #=================================================
 # # INSTALL FRAMAPAD'S PLUGINS
 # #=================================================
+# ynh_script_progression --message="Installing Etherpad plugins..." --weight=90
 
-       
-ep_align ep_author_hover ep_automatic_logut ep_comments_page ep_countable \
-ep_delete_empty_pads ep_font_color ep_font_size ep_headings2 ep_markdown \
-ep_page_view ep_spellcheck ep_subscript_and_superscript ep_table_of_contents
+# pushd "$final_path"
+# 	# Add Left/Center/Right/Justify to lines of text in a pad
+# 	npm install ep_align@${ep_align_version} >> $install_log 2>&1
+# 	# Framapad - Adds author names to span titles
+# 	npm install ep_author_hover@${ep_author_hover_version} >> $install_log 2>&1
+# 	# Automatically disconnects user after some period of time (Prevent server overload)
+# 	npm install ep_automatic_logut@${ep_automatic_logut_version} >> $install_log 2>&1
+# 	# Framapad - Adds comments on sidebar and link it to the text.
+# 	npm install ep_comments_page@${ep_comments_page_version} >> $install_log 2>&1
+# 	# Framapad - Displays paragraphs, sentences, words and characters counts.
+# 	npm install ep_countable@${ep_countable_version} >> $install_log 2>&1
+# 	# Framapad - Delete pads which were never edited
+# 	npm install ep_delete_empty_pads@${ep_delete_empty_pads_version} >> $install_log 2>&1
+# 	# Framapad - Apply colors to fonts
+# 	npm install ep_font_color@${ep_font_color_version} >> $install_log 2>&1
+# 	# Framapad - User Pad Contents font size can be set in settings, this does not effect other peoples views
+# 	npm install ep_font_size@${ep_font_size_version} >> $install_log 2>&1
+# 	# Framapad - Adds heading support to Etherpad Lite.
+# 	npm install ep_headings2@${ep_headings2_version} >> $install_log 2>&1
+# 	# Framapad - Edit and Export as Markdown in Etherpad
+# 	npm install ep_markdown@${ep_markdown_version} >> $install_log 2>&1
+# 	if [ $mypads -eq 1 ]; then
+# 		# Framapad - Groups and private pads for Etherpad
+# 		npm install ep_mypads@${mypads_version} >> $install_log 2>&1
+# 	fi
+# 	# Framapad - Add support to do 'page view', with a toggle on/off option in Settings, also Page Breaks with Control Enter
+# 	npm install ep_page_view@${ep_page_view_version} >> $install_log 2>&1
+# 	# Framapad - Add support to do 'Spell checking'
+# 	npm install ep_spellcheck@${ep_spellcheck_version} >> $install_log 2>&1
+# 	# Framapad - Add support for Subscript and Superscript
+# 	npm install ep_subscript_and_superscript@${ep_subscript_and_superscript_version} >> $install_log 2>&1
+# 	# Framapad - View a table of contents for your pad
+# 	npm install ep_table_of_contents@${ep_table_of_contents_version} >> $install_log 2>&1
+# popd
+
+# chown -R $app: $final_path/node_modules
 
 #=================================================
 # SOME HACKS
