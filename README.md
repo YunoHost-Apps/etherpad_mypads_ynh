@@ -31,7 +31,7 @@ You can also find a configuration file for Etherpad at this path `/var/www/ether
 
 ## Documentation
 
- * Official documentation: http://etherpad.org/doc/v1.8.6
+ * Official documentation: http://etherpad.org/doc/v1.8.11
  * YunoHost documentation: https://yunohost.org/#/app_etherpad_mypads
 
 ## YunoHost specific features
