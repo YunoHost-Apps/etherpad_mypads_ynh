@@ -55,7 +55,7 @@
  *
  *    "password": "${PASSW}"  // if PASSW is not defined would result in password === null
  *    "password": "${PASSW:}" // if PASSW is not defined would result in password === ''
-
+ *
  *    If you want to use an empty value (null) as default value for a variable,
  *    simply do not set it, without putting any colons: "${ABIWORD}".
  *
@@ -113,8 +113,8 @@
    * "full-width-editor" variant (by default editor is rendered as a page, with
    * a max-width of 900px).
    */
-  "skinVariants": "super-light-toolbar super-light-editor light-background",
-  
+   "skinVariants": "light-toolbar super-light-editor dark-background",
+
   /*
    * IP and port which Etherpad should bind at.
    *
@@ -270,12 +270,6 @@
   "editOnly": false,
 
   /*
-   * If set to true, those users who have a valid session will automatically be
-   * granted access to password protected pads.
-   */
-  "sessionNoPassword": false,
-
-  /*
    * If true, all css & js will be minified before sending to the client.
    *
    * This will improve the loading performance massively, but makes it difficult
@@ -346,6 +340,24 @@
   "trustProxy": false,
 
   /*
+   * Settings controlling the session cookie issued by Etherpad.
+   */
+  "cookie": {
+    /*
+     * Value of the SameSite cookie property. "Lax" is recommended unless
+     * Etherpad will be embedded in an iframe from another site, in which case
+     * this must be set to "None". Note: "None" will not work (the browser will
+     * not send the cookie to Etherpad) unless https is used to access Etherpad
+     * (either directly or via a reverse proxy with "trustProxy" set to true).
+     *
+     * "Strict" is not recommended because it has few security benefits but
+     * significant usability drawbacks vs. "Lax". See
+     * https://stackoverflow.com/q/41841880 for discussion.
+     */
+    "sameSite": "Lax"
+  },
+
+  /*
    * Privacy: disable IP logging
    */
   "disableIPlogging": false,
@@ -404,6 +416,17 @@
    */
   "socketTransportProtocols" : ["xhr-polling", "jsonp-polling", "htmlfile"],
 
+  "socketIo": {
+    /*
+     * Maximum permitted client message size (in bytes). All messages from
+     * clients that are larger than this will be rejected. Large values make it
+     * possible to paste large amounts of text, and plugins may require a larger
+     * value to work properly, but increasing the value increases susceptibility
+     * to denial of service attacks (malicious clients can exhaust memory).
+     */
+    "maxHttpBufferSize": 10000
+  },
+
   /*
    * Allow Load Testing tools to hit the Etherpad Instance.
    *
@@ -421,7 +444,7 @@
   */
 
   /*
-  * From Etherpad 1.8.3 onwards, import and export of pads is always rate
+   * From Etherpad 1.8.3 onwards, import and export of pads is always rate
    * limited.
    *
    * The default is to allow at most 10 requests per IP in a 90 seconds window.
@@ -445,21 +468,8 @@
    */
   "importMaxFileSize": 52428800, // 50 * 1024 * 1024
 
-
   /*
-   * From Etherpad 1.8.3 onwards import was restricted to authors who had
-   * content within the pad.
-   *
-   * This setting will override that restriction and allow any user to import
-   * without the requirement to add content to a pad.
-   *
-   * This setting is useful for when you use a plugin for authentication so you
-   * can already trust each user.
-   */
-  "allowAnyoneToImport": false, 
-
-  /*
-   * From Etherpad 1.9.0 onwards, when Etherpad is in production mode commits from individual users are rate limited
+   * From Etherpad 1.8.5 onwards, when Etherpad is in production mode commits from individual users are rate limited
    *
    * The default is to allow at most 10 changes per IP in a 1 second window.
    * After that the change is rejected.
@@ -470,7 +480,7 @@
     // duration of the rate limit window (seconds)
     "duration": 1,
 
-    // maximum number of chanes per IP to allow during the rate limit window
+    // maximum number of changes per IP to allow during the rate limit window
     "points": 10
   },
 
@@ -522,7 +532,7 @@
   "logconfig" :
     { "appenders": [
         { "type": "console"
-      , // "category": "access" // only logs pad access
+        //, "category": "access"// only logs pad access
         }
 
       /*
@@ -566,5 +576,8 @@
     }, // logconfig
 
   /* Override any strings found in locale directories */
-  "customLocaleStrings": {}
+  "customLocaleStrings": {},
+
+  /* Disable Admin UI tests */
+  "enableAdminUITests": false
 }

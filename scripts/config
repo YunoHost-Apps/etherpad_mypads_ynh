@@ -7,8 +7,6 @@
 #=================================================
 
 # Load common variables for all scripts.
-source _variables
-
 source _common.sh
 source /usr/share/yunohost/helpers
 
@@ -18,7 +16,7 @@ source /usr/share/yunohost/helpers
 
 app=$YNH_APP_INSTANCE_NAME
 
-final_path=$(ynh_app_setting_get $app final_path)
+final_path=$(ynh_app_setting_get --app=$app --key=final_path)
 
 #=================================================
 # SPECIFIC CODE
@@ -85,14 +83,14 @@ pad_config_automatic_logout="${YNH_CONFIG_MAIN_PAD_CONFIGURATION_PAD_CONFIG_AUTO
 # Etherpad skin
 old_pad_config_skinname="$(get_config_value skinName)"
 if [ "$old_pad_config_skinname" = "no-skin" ]; then
-    old_pad_config_skinname=noskin
+    old_pad_config_skinname=colibris
 fi
 pad_config_skinname="${YNH_CONFIG_MAIN_PAD_CONFIGURATION_PAD_CONFIG_SKINNAME:-$old_pad_config_skinname}"
 if [ "$pad_config_skinname" = "no-skin" ]; then
-    pad_config_skinname=noskin
+    pad_config_skinname=colibris
 fi
 
-# Mypads
+# MyPads
 if [ -d $final_path/node_modules/ep_mypads ]
 then
     # Enable
@@ -103,7 +101,7 @@ else
 fi
 mypads="${YNH_CONFIG_MAIN_MYPADS_CONFIGURATION_MYPADS:-$old_mypads}"
 
-# Ldap for Mypads
+# LDAP for MyPads
 if grep -q "//noldap" $config_file
 then
     # Disable
@@ -126,7 +124,7 @@ overwrite_settings="${YNH_CONFIG_MAIN_OVERWRITE_FILES_OVERWRITE_SETTINGS:-$old_o
 old_overwrite_credentials="$(ynh_app_setting_get --app=$app --key=overwrite_credentials)"
 overwrite_credentials="${YNH_CONFIG_MAIN_OVERWRITE_FILES_OVERWRITE_CREDENTIALS:-$old_overwrite_credentials}"
 
-# Overwrite nginx configuration
+# Overwrite NGINX configuration
 old_overwrite_nginx="$(ynh_app_setting_get --app=$app --key=overwrite_nginx)"
 overwrite_nginx="${YNH_CONFIG_MAIN_OVERWRITE_FILES_OVERWRITE_NGINX:-$old_overwrite_nginx}"
 
@@ -259,7 +257,7 @@ apply_config() {
 	then
 		if [ "$export" = "abiword" ]
 		then
-			# if abiword isn't installed, call the action add_remove_abiword.
+			# if Abiword isn't installed, call the action add_remove_abiword.
 			if ! which abiword > /dev/null
 			then
 				yunohost app action run $app add_remove_abiword
@@ -268,7 +266,7 @@ apply_config() {
 			ynh_replace_string --match_string="\(\"soffice\" *: \).*," --replace_string="\1null," --target_file="$config_file"
 		elif [ "$export" = "libreoffice" ]
 		then
-			# if libreoffice isn't installed, call the action add_remove_libreoffice.
+			# if LibreOffice isn't installed, call the action add_remove_libreoffice.
 			if ! which soffice > /dev/null
 			then
 				yunohost app action run $app add_remove_libreoffice
@@ -285,7 +283,7 @@ apply_config() {
 		restart_etherpad=1
 	fi
 
-	# Mypads
+	# MyPads
 	if [ "$mypads" != "$old_mypads" ]
 	then
 		ynh_use_nodejs
@@ -304,7 +302,7 @@ apply_config() {
 		restart_etherpad=1
 	fi
 
-	# Ldap for Mypads
+	# LDAP for MyPads
 	if [ "$useldap" != "$old_useldap" ]
 	then
 		if [ "$useldap" = "1" ]
@@ -322,8 +320,8 @@ apply_config() {
 
 	if [ $restart_etherpad -eq 1 ]
 	then
-		# Wait for etherpad to be fully started
-		ynh_systemd_action --action=restart --line_match="You can access your Etherpad instance at" --log_path="/var/log/$app/etherpad.log" --timeout="120"
+		# Wait for Etherpad to be fully started
+		ynh_systemd_action --action=restart --log_path=systemd --line_match="Your Etherpad version is"
 	fi
 
     #=================================================

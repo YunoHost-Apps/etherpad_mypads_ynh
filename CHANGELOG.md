@@ -1,6 +1,16 @@
 Changelog
 =========
 
+## [1.8.11~ynh1]() - 2020-08-09
+
+#### Changed
+* [Upgrade to 1.8.11]()
+* [Remove send mail to admin]()
+* [Remove plugin versioning]()
+
+#### Add
+* [ep_countable plugin](https://github.com/YunoHost-Apps/etherpad_mypads_ynh/pull/105/commits/0a0d26cc5cadb5d51ae0e8dbbef41c9488af2433)
+
 ## [1.8.4~ynh1](https://github.com/YunoHost-Apps/etherpad_mypads_ynh/pull/105) - 2020-08-09
 
 #### Changed

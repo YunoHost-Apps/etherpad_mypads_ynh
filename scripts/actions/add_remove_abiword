@@ -30,17 +30,17 @@ app=$YNH_APP_INSTANCE_NAME
 # CHECK IF AN ACTION HAS TO BE DONE
 #=================================================
 
-# Check the dependencies of the meta packages of etherpad_mypads with apt-cache
+# Check the dependencies of the meta packages of Etherpad_MyPads with apt-cache
 if apt-cache depends ${app//_/-}-ynh-deps | grep --quiet abiword
 then
-	# abiword is already a dependence of etherpad_mypads.
-	# abiword should be removed.
+	# Abiword is already a dependence of Etherpad_MyPads.
+	# Abiword should be removed.
 	abiword=0
 	action1=removed
 	action2=Removing
 else
-	# abiword isn't a dependence of etherpad_mypads.
-	# abiword should be installed.
+	# Abiword isn't a dependence of Etherpad_MyPads.
+	# Abiword should be installed.
 	abiword=1
 	action1=installed
 	action2=Installing
@@ -50,11 +50,11 @@ ynh_print_info --message="Abiword will be $action1."
 
 if apt-cache depends ${app//_/-}-ynh-deps | grep --quiet libreoffice-writer
 then
-	# libreoffice is already a dependence of etherpad_mypads.
+	# LibreOffice is already a dependence of Etherpad_MyPads.
 	# Keep it
 	libreoffice=1
 else
-	# libreoffice isn't a dependence of etherpad_mypads.
+	# LibreOffice isn't a dependence of Etherpad_MyPads.
 	# Do not add it
 	libreoffice=0
 fi
@@ -67,18 +67,18 @@ fi
 
 ynh_script_progression --message="$action2 AbiWord..." --weight=3
 
-# Load common variables, and especially abiword dependencies.
-source scripts/_variables
+# Load common variables, and especially Abiword dependencies.
+source scripts/_common.sh
 
 dependencies=""
 if [ $abiword -eq 1 ]
 then
-	# Add abiword dependencies if abiword has to be installed
+	# Add Abiword dependencies if abiword has to be installed
 	dependencies="$dependencies $abiword_app_depencencies"
 fi
 if [ $libreoffice -eq 1 ]
 then
-	# Add libreoffice dependencies if libreoffice is already installed to keep it as a dependence.
+	# Add LibreOffice dependencies if libreoffice is already installed to keep it as a dependence.
 	dependencies="$dependencies $libreoffice_app_dependencies"
 fi
 

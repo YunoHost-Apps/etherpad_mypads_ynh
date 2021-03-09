@@ -1,4 +1,4 @@
-# Etherpad avec plugin MyPads pour YunoHost
+# Etherpad MyPads pour YunoHost
 
 [![Niveau d'intégration](https://dash.yunohost.org/integration/etherpad_mypads.svg)](https://dash.yunohost.org/appci/app/etherpad_mypads) ![](https://ci-apps.yunohost.org/ci/badges/etherpad_mypads.status.svg) [![](https://ci-apps.yunohost.org/ci/badges/etherpad_mypads.maintain.svg)](https://github.com/YunoHost/Apps/#what-to-do-if-i-cant-maintain-my-app-anymore-)  
 [![Installer Etherpad avec YunoHost](https://install-app.yunohost.org/install-with-yunohost.svg)](https://install-app.yunohost.org/?app=etherpad_mypads)
@@ -12,7 +12,7 @@ Si vous n'avez pas YunoHost, merci de regarder [ici](https://yunohost.org/#/inst
 Etherpad est un éditeur en ligne Open Source hautement personnalisable qui permet l'édition collaborative en temps réel.  
 Ce paquet installera les mêmes plugins que [Framapad](https://framapad.org/).
 
-**Version embarquée :** 1.8.4
+**Version embarquée :** 1.8.12
 
 ## Captures d'écran
 
@@ -30,7 +30,7 @@ Vous pouvez accéder à deux panneaux d'administration différents, pour Etherpa
 
 ## Documentation
 
- * Documentation officielle : http://etherpad.org/doc/v1.8.4
+ * Documentation officielle : http://etherpad.org/doc/v1.8.11
  * Documentation YunoHost : https://yunohost.org/#/app_etherpad_mypads_fr
 
 ## Fonctionnalités spécifiques à YunoHost
@@ -54,16 +54,17 @@ Vous pouvez accéder à deux panneaux d'administration différents, pour Etherpa
   * [ep_align](https://www.npmjs.com/package/ep_align) - *Ajoute Gauche/Centre/Droite/Justifier à des lignes de texte dans un pad*
   * [ep_author_hover](https://www.npmjs.com/package/ep_author_hover) - *Ajoute des noms d'auteurs*
   * [ep_automatic_logut](https://www.npmjs.com/package/ep_automatic_logut) - *Déconnecte automatiquement l'utilisateur après une certaine période de temps (Prévient la surcharge du serveur)*
-  * [ep_comments_page](https://www.npmjs.com/package/ep_comments_page) - *Ajoute des commentaires sur la sidebar et le lie au texte.*
+  * [ep_comments_page](https://www.npmjs.com/package/ep_comments_page) - *Ajoute des commentaires sur la sidebar et le lie au texte*
+  * [ep_countable](https://www.npmjs.com/package/ep_countable) - *Ajoute l'afficher le nombre de paragraphes, de mots et de caractères*
   * [ep_delete_empty_pads](https://www.npmjs.com/package/ep_delete_empty_pads) - *Supprimer les pads qui n'ont jamais été édités*
   * [ep_font_color](https://www.npmjs.com/package/ep_font_color) - *Appliquer les couleurs aux polices de caractères*
-  * [ep_font_size](https://www.npmjs.com/package/ep_font_size) - *Permet de définir la taille de la police*.
-  * [ep_headings2](https://www.npmjs.com/package/ep_headings2) - *Ajoute le support de titre à Etherpad Lite.*
+  * [ep_font_size](https://www.npmjs.com/package/ep_font_size) - *Permet de définir la taille de la police*
+  * [ep_headings2](https://www.npmjs.com/package/ep_headings2) - *Ajoute le support de titre à Etherpad Lite*
   * [ep_markdown](https://www.npmjs.com/package/ep_markdown) - *Modifier et exporter en tant que Markdown dans Etherpad*
   * [ep_mypads](https://www.npmjs.com/package/ep_mypads) - *Groupes et pads privés pour etherpad*
   * [ep_page_view](https://www.npmjs.com/package/ep_page_view) - *Ajouter la prise en charge de 'page view', avec une option d'activation/désactivation dans Paramètres, ainsi que 'Page Breaks' avec Control + Entrée*
   * [ep_spellcheck](https://www.npmjs.com/package/ep_spellcheck) - *Ajouter le support pour faire de la vérification orthographique*
-  * [ep_subscript_and_superscript](https://www.npmjs.com/package/ep_subscript_and_superscript) - *Ajouter la prise en charge de Subscript et Superscript*.
+  * [ep_subscript_and_superscript](https://www.npmjs.com/package/ep_subscript_and_superscript) - *Ajouter la prise en charge de Subscript et Superscript*
   * [ep_table_of_contents](https://www.npmjs.com/package/ep_table_of_contents) - *Voir une table des matières pour votre pad*
 
 ## Liens

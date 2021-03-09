@@ -7,8 +7,6 @@
 #=================================================
 
 # Load common variables for all scripts.
-source _variables
-
 source _common.sh
 source /usr/share/yunohost/helpers
 
@@ -144,11 +142,11 @@ ynh_system_user_create --username=$app --home_dir=$final_path
 #=================================================
 # HANDLE LOG FILES AND LOGROTATE
 #=================================================
-ynh_script_progression --message="Configuring log rotation..."
+ynh_script_progression --message="Configuring log rotation..." --weight=2
 
 # Create log directory
 mkdir -p /var/log/$app
-touch /var/log/$app/etherpad.log
+touch /var/log/$app/$app.log
 install_log=/var/log/$app/installation.log
 touch $install_log
 chown $app -R /var/log/$app
@@ -161,30 +159,33 @@ ynh_use_logrotate --specific_user=$app/$app
 #=================================================
 ynh_script_progression --message="Installing Etherpad..." --weight=90
 
-# Install dependencies and proceed to the installation
-ynh_use_nodejs
-(
-    cd "$final_path"
-    mkdir -p node_modules
-    cd node_modules
-    [ -e ep_etherpad-lite ] || ln -s ../src ep_etherpad-lite
-    cd ep_etherpad-lite
-    chown -R $app: $final_path
-    ynh_exec_as $app PATH="$nodejs_path:$PATH" "$nodejs_path/npm" install --save --loglevel warn
-)
+chown -R $app: $final_path
+
+pushd $final_path
+ 	ynh_use_nodejs
+ 	ynh_exec_as $app env "$ynh_node_load_PATH" bin/installDeps.sh
+ 	ynh_exec_as $app env "$ynh_node_load_PATH" npm install ep_automatic_logut ep_countable ep_delete_empty_pads ep_subscript_and_superscript ep_headings2 ep_author_hover ep_markdown ep_comments_page ep_align ep_font_color ep_font_size ep_spellcheck ep_table_of_contents ep_page_view >> $install_log 2>&1
+	if [ $mypads -eq 1 ]; then
+		# Framapad - Groups and private pads for Etherpad
+		ynh_exec_as $app env "$ynh_node_load_PATH" npm install ep_mypads >> $install_log 2>&1
+	fi
+popd
 
 #=================================================
 # CONFIGURE ETHERPAD
 #=================================================
 ynh_script_progression --message="Configuring Etherpad..." --weight=6
 
+ynh_add_config --template="../conf/credentials.json" --destination="$final_path/credentials.json"
+
+#cp ../conf/credentials.json "$final_path/credentials.json"
+#ynh_replace_string --match_string="__DB_NAME__" --replace_string="$db_name" --target_file="$final_path/credentials.json"
+#ynh_replace_string --match_string="__DB_PWD__" --replace_string="$db_pwd" --target_file="$final_path/credentials.json"
+#ynh_replace_string --match_string="__ADMIN__" --replace_string="$admin" --target_file="$final_path/credentials.json"
+#ynh_print_OFF; ynh_replace_special_string --match_string="__PASSWORD__" --replace_string="$password" --target_file="$final_path/credentials.json"; ynh_print_ON
+
 cp ../conf/settings.json "$final_path/settings.json"
-cp ../conf/credentials.json "$final_path/credentials.json"
-ynh_replace_string --match_string="__PORT__" --replace_string="$port" --target_file="$final_path/settings.json"
-ynh_replace_string --match_string="__DB_USER__" --replace_string="$db_name" --target_file="$final_path/credentials.json"
-ynh_replace_string --match_string="__DB_PWD__" --replace_string="$db_pwd" --target_file="$final_path/credentials.json"
-ynh_replace_string --match_string="__ADMIN__" --replace_string="$admin" --target_file="$final_path/credentials.json"
-ynh_print_OFF; ynh_replace_special_string --match_string="__PASSWD__" --replace_string="$password" --target_file="$final_path/credentials.json"; ynh_print_ON
+
 if [ "$export" = "abiword" ]
 then
 	# Get abiword binary path
@@ -199,8 +200,9 @@ then
 	ynh_replace_string --match_string="\"soffice\" : null" --replace_string="\"soffice\" : \"$soffice_path\"" --target_file="$final_path/settings.json"
 fi
 ynh_replace_string --match_string="__LANGUAGE__" --replace_string="$language" --target_file="$final_path/settings.json"
+ynh_replace_string --match_string="__PORT__" --replace_string="$port" --target_file="$final_path/settings.json"
 
-# Use ldap for mypads
+# Use LDAP for MyPads
 if [ $mypads -eq 1 ] && [ $useldap -eq 1 ]
 then
 	ynh_replace_string --match_string="//noldap\(.*\)" --replace_string="\1 //useldap" --target_file="$final_path/settings.json"
@@ -215,7 +217,7 @@ ynh_store_file_checksum --file="$final_path/credentials.json"
 # SECURING FILES AND DIRECTORIES
 #=================================================
 
-# Set files ownership to etherpad
+# Set files ownership to Etherpad
 chown -R $app: $final_path
 # Restrict access to credentials.json
 chmod 600 $final_path/credentials.json
@@ -225,56 +227,55 @@ chmod 600 $final_path/credentials.json
 #=================================================
 ynh_script_progression --message="Configuring a systemd service..." --weight=4
 
-ynh_replace_string --match_string="__ENV_PATH__" --replace_string="$PATH" --target_file="../conf/systemd.service"
-# Create a dedicated systemd config
-ynh_add_systemd_config
+ynh_add_systemd_config --others_var="ynh_node_load_PATH"
 
 #=================================================
 # ADVERTISE SERVICE IN ADMIN PANEL
 #=================================================
 
-yunohost service add $app --log "/var/log/$app/etherpad.log"
+yunohost service add $app --description="Collaborative editor" --log="/var/log/$app/etherpad.log"
 
-#=================================================
-# INSTALL FRAMAPAD'S PLUGINS
-#=================================================
-ynh_script_progression --message="Installing Etherpad plugins..." --weight=90
+# #=================================================
+# # INSTALL FRAMAPAD'S PLUGINS
+# #=================================================
+# ynh_script_progression --message="Installing Etherpad plugins..." --weight=90
 
-pushd "$final_path"
-# Add Left/Center/Right/Justify to lines of text in a pad
-npm install ep_align@${ep_align_version} >> $install_log 2>&1
-# Framapad - Adds author names to span titles
-npm install ep_author_hover@${ep_author_hover_version} >> $install_log 2>&1
-# Automatically disconnects user after some period of time (Prevent server overload)
-npm install ep_automatic_logut@${ep_automatic_logut_version} >> $install_log 2>&1
-# Framapad - Adds comments on sidebar and link it to the text.
-npm install ep_comments_page@${ep_comments_page_version} >> $install_log 2>&1
-# Framapad - Displays paragraphs, sentences, words and characters counts.
-#npm install ep_countable@${ep_countable_version} >> $install_log 2>&1
-# Framapad - Delete pads which were never edited
-npm install ep_delete_empty_pads@${ep_delete_empty_pads_version} >> $install_log 2>&1
-# Framapad - Apply colors to fonts
-npm install ep_font_color@${ep_font_color_version} >> $install_log 2>&1
-# Framapad - Adds heading support to Etherpad Lite.
-npm install ep_headings2@${ep_headings2_version} >> $install_log 2>&1
-# Framapad - Edit and Export as Markdown in Etherpad
-npm install ep_markdown@${ep_markdown_version} >> $install_log 2>&1
-if [ $mypads -eq 1 ]; then
-	# Framapad - Groups and private pads for etherpad
-	npm install ep_mypads@${mypads_version} >> $install_log 2>&1
-fi
-# Framapad - Add support to do 'page view', with a toggle on/off option in Settings, also Page Breaks with Control Enter
-npm install ep_page_view@${ep_page_view_version} >> $install_log 2>&1
-# Framapad - Add support to do 'Spell checking'
-npm install ep_spellcheck@${ep_spellcheck_version} >> $install_log 2>&1
-# Framapad - Add support for Subscript and Superscript
-npm install ep_subscript_and_superscript@${ep_subscript_and_superscript_version} >> $install_log 2>&1
-# Framapad - View a table of contents for your pad
-npm install ep_table_of_contents@${ep_table_of_contents_version} >> $install_log 2>&1
-# Framapad - User Pad Contents font size can be set in settings, this does not effect other peoples views
-npm install ep_font_size@${ep_font_size_version} >> $install_log 2>&1
-popd
-chown -R $app: $final_path/node_modules
+# pushd "$final_path"
+# 	# Add Left/Center/Right/Justify to lines of text in a pad
+# 	npm install ep_align@${ep_align_version} >> $install_log 2>&1
+# 	# Framapad - Adds author names to span titles
+# 	npm install ep_author_hover@${ep_author_hover_version} >> $install_log 2>&1
+# 	# Automatically disconnects user after some period of time (Prevent server overload)
+# 	npm install ep_automatic_logut@${ep_automatic_logut_version} >> $install_log 2>&1
+# 	# Framapad - Adds comments on sidebar and link it to the text.
+# 	npm install ep_comments_page@${ep_comments_page_version} >> $install_log 2>&1
+# 	# Framapad - Displays paragraphs, sentences, words and characters counts.
+# 	npm install ep_countable@${ep_countable_version} >> $install_log 2>&1
+# 	# Framapad - Delete pads which were never edited
+# 	npm install ep_delete_empty_pads@${ep_delete_empty_pads_version} >> $install_log 2>&1
+# 	# Framapad - Apply colors to fonts
+# 	npm install ep_font_color@${ep_font_color_version} >> $install_log 2>&1
+# 	# Framapad - User Pad Contents font size can be set in settings, this does not effect other peoples views
+# 	npm install ep_font_size@${ep_font_size_version} >> $install_log 2>&1
+# 	# Framapad - Adds heading support to Etherpad Lite.
+# 	npm install ep_headings2@${ep_headings2_version} >> $install_log 2>&1
+# 	# Framapad - Edit and Export as Markdown in Etherpad
+# 	npm install ep_markdown@${ep_markdown_version} >> $install_log 2>&1
+# 	if [ $mypads -eq 1 ]; then
+# 		# Framapad - Groups and private pads for Etherpad
+# 		npm install ep_mypads@${mypads_version} >> $install_log 2>&1
+# 	fi
+# 	# Framapad - Add support to do 'page view', with a toggle on/off option in Settings, also Page Breaks with Control Enter
+# 	npm install ep_page_view@${ep_page_view_version} >> $install_log 2>&1
+# 	# Framapad - Add support to do 'Spell checking'
+# 	npm install ep_spellcheck@${ep_spellcheck_version} >> $install_log 2>&1
+# 	# Framapad - Add support for Subscript and Superscript
+# 	npm install ep_subscript_and_superscript@${ep_subscript_and_superscript_version} >> $install_log 2>&1
+# 	# Framapad - View a table of contents for your pad
+# 	npm install ep_table_of_contents@${ep_table_of_contents_version} >> $install_log 2>&1
+# popd
+
+# chown -R $app: $final_path/node_modules
 
 #=================================================
 # SOME HACKS
@@ -282,38 +283,38 @@ chown -R $app: $final_path/node_modules
 
 if [ $mypads -eq 1 ]
 then
-	# Add a link to etherpad to allow anonymous pads creation from Mypads.
+	# Add a link to Etherpad to allow anonymous pads creation from MyPads.
 	ynh_replace_string --match_string="^ *\"DESCRIPTION\": .*</ul>" --replace_string="&<a href=../>Pads anonymes</a>" --target_file=$final_path/node_modules/ep_mypads/static/l10n/fr.json
 	ynh_replace_string --match_string="^ *\"DESCRIPTION\": .*</ul>" --replace_string="&<a href=../>Anonymous pads</a>" --target_file=$final_path/node_modules/ep_mypads/static/l10n/en.json
-	# And a link to etherpad admin from Mypads.
+	# And a link to etherpad admin from MyPads.
 	ynh_replace_string --match_string="^ *\"FOOTER\": .*2.0" --replace_string="& | <a href='../admin'>Etherpad admin</a>" --target_file=$final_path/node_modules/ep_mypads/static/l10n/en.json
 	ynh_replace_string --match_string="^ *\"FOOTER\": .*2.0" --replace_string="& | <a href='../admin'>Etherpad admin</a>" --target_file=$final_path/node_modules/ep_mypads/static/l10n/fr.json
 
 	# Find the /div just after the field to open a pad
 	mod_line=$(grep -nA5 "index.createOpenPad" $final_path/src/templates/index.html | grep "</div>" | cut -d '-' -f 1)
-	# In order to add a link to mypads plugin.
+	# In order to add a link to MyPads plugin.
 	sed -i "$mod_line s@div>@&\n\t<center><br><font size="5"><a href="./mypads/">Mypads</a></font></center>@" $final_path/src/templates/index.html
 fi
 
 #=================================================
 # SETUP FAIL2BAN
 #=================================================
-ynh_script_progression --message="Configuring Fail2ban..." --weight=13
+ynh_script_progression --message="Configuring Fail2Ban..." --weight=60
 
-# Create a dedicated fail2ban config
+# Create a dedicated Fail2Ban config
 ynh_add_fail2ban_config --logpath="/var/log/nginx/$domain-access.log" --failregex="<HOST> .* .POST /mypads/api/auth/login HTTP/1.1. 400" --max_retry=5
 
 #=================================================
 # SETUP SSOWAT
 #=================================================
-ynh_script_progression --message="Configuring SSOwat..."
+ynh_script_progression --message="Configuring permissions..."
 
 if [ $is_public -eq 1 ]; then
-	ynh_app_setting_set --app=$app --key=skipped_uris --value="/"
-else
-	# etherpad admin page doesn't support SSO...
-	ynh_app_setting_set --app=$app --key=skipped_uris --value="/admin"
+	ynh_permission_update --permission="main" --add="visitors"	
 fi
+
+# Etherpad admin page doesn't support SSO...
+ynh_permission_create --permission="admin" --url="/admin" --allowed=$admin
 
 #=================================================
 # RELOAD NGINX
@@ -327,47 +328,47 @@ ynh_systemd_action --action=reload --service_name=nginx
 #=================================================
 ynh_script_progression --message="Restarting Etherpad..." --weight=20
 
-# Wait for etherpad to be fully started
-ynh_systemd_action --action=restart --line_match="You can access your Etherpad instance at" --log_path="/var/log/$app/etherpad.log" --timeout="120"
+# Wait for Etherpad to be fully started
+ynh_systemd_action --action=restart --log_path=systemd --line_match="Your Etherpad version is"
 
 if [ $mypads -eq 1 ]
 then
 	ynh_replace_string --match_string="__LANGUAGE__" --replace_string="$language" --target_file="../conf/lang_mypads.sql"
 	mysql -u $db_name -p$db_pwd $db_name < "../conf/lang_mypads.sql"
 
-	# Wait for etherpad to be fully started
-	ynh_systemd_action --action=restart --line_match="You can access your Etherpad instance at" --log_path="/var/log/$app/etherpad.log" --timeout="120"
+	# Wait for Etherpad to be fully started
+	ynh_systemd_action --action=restart --log_path=systemd --line_match="Your Etherpad version is"
 fi
 
 #=================================================
 # SEND A README FOR THE ADMIN
 #=================================================
 
-# Get main domain and buid the url of the admin panel of the app.
-admin_panel="https://$(grep portal_domain /etc/ssowat/conf.json | cut -d'"' -f4)/yunohost/admin/#/apps/$app"
+# Get main domain and buid the URL of the admin panel of the app.
+# admin_panel="https://$(grep portal_domain /etc/ssowat/conf.json | cut -d'"' -f4)/yunohost/admin/#/apps/$app"
 
-if [ $mypads -eq 1 ]
-then
-	Informations="You can access 2 different admin panels, for Etherpad by accessing https://$domain${path_url%/}/admin and for MyPads by accessing https://$domain${path_url%/}/mypads/?/admin."
-else
-	Informations="You can access the admin panel by accessing https://$domain${path_url%/}/admin."
-fi
+# if [ $mypads -eq 1 ]
+# then
+# 	Informations="You can access 2 different admin panels, for Etherpad by accessing https://$domain${path_url%/}/admin and for MyPads by accessing https://$domain${path_url%/}/mypads/?/admin."
+# else
+# 	Informations="You can access the admin panel by accessing https://$domain${path_url%/}/admin."
+# fi
 
-ynh_print_OFF
-echo "$Informations
-You can also find a config file for Etherpad at this path /var/www/etherpad_mypads/settings.json.
+# ynh_print_OFF
+# echo "$Informations
+# You can also find a config file for Etherpad at this path /var/www/etherpad_mypads/settings.json.
 
-Your credentials for the admin panel are:
-- login		: $admin
-- password	: $password
+# Your credentials for the admin panel are:
+# - login		: $admin
+# - password	: $password
 
-You can configure this app easily by using the experimental config-panel feature $admin_panel/config-panel.
-You can also find some specific actions for this app by using the experimental action feature $admin_panel/actions.
+# You can configure this app easily by using the experimental config-panel feature $admin_panel/config-panel.
+# You can also find some specific actions for this app by using the experimental action feature $admin_panel/actions.
 
-If you are facing an issue or want to improve this app, please open a new issue in this project: https://github.com/YunoHost-Apps/etherpad_mypads_ynh" > mail_to_send
+# If you are facing an issue or want to improve this app, please open a new issue in this project: https://github.com/YunoHost-Apps/etherpad_mypads_ynh" > mail_to_send
 
-ynh_send_readme_to_admin --app_message="mail_to_send" --recipients="$admin" --type=install
-ynh_print_ON
+# ynh_send_readme_to_admin --app_message="mail_to_send" --recipients="$admin" --type=install
+# ynh_print_ON
 
 #=================================================
 # END OF SCRIPT

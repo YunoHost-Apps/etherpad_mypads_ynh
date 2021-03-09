@@ -67,8 +67,8 @@ fi
 
 ynh_script_progression --message="$action2 LibreOffice..." --weight=3
 
-# Load common variables, and especially libreoffice dependencies.
-source scripts/_variables
+# Load common variables, and especially LibreOffice dependencies.
+source scripts/_common.sh
 
 dependencies=""
 if [ $libreoffice -eq 1 ]

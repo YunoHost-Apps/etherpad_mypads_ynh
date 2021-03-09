@@ -6,7 +6,7 @@
 		"en": "Online editor providing collaborative editing in real-time.",
 		"fr": "Éditeur en ligne fournissant l'édition collaborative en temps réel."
 	},
-	"version": "1.8.4~ynh2",
+	"version": "1.8.12~ynh1",
 	"url": "https://framapad.org",
 	"license": "Apache-2.0",
 	"maintainer": {
@@ -18,7 +18,7 @@
 		"email": "maniackc_dev@crudelis.fr"
 	}],
 	"requirements": {
-		"yunohost": ">= 3.8.1"
+		"yunohost": ">= 4.1.7"
 	},
 	"multi_instance": true,
 	"services": [
@@ -50,8 +50,8 @@
 				"name": "admin",
 				"type": "user",
 				"ask": {
-					"en": "Choose the Etherpad MyPads administrator (must be an existing YunoHost user)",
-					"fr": "Choisissez l'administrateur Etherpad MyPads (doit être un utilisateur YunoHost existant)"
+					"en": "Choose the Etherpad MyPads administrator",
+					"fr": "Choisissez l'administrateur Etherpad MyPads"
 				},
 				"example": "john"
 			},
@@ -71,7 +71,7 @@
 					"en": "Choose your language",
 					"fr": "Choisissez la langue"
 				},
-				"choices" : ["en", "fr"],
+				"choices": ["de", "en", "es", "fr", "it", "pt"],
 				"default" : "en"
 			},
 			{

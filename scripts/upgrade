@@ -7,8 +7,6 @@
 #=================================================
 
 # Load common variables for all scripts.
-source _variables
-
 source _common.sh
 source /usr/share/yunohost/helpers
 
@@ -21,13 +19,15 @@ app=$YNH_APP_INSTANCE_NAME
 
 domain=$(ynh_app_setting_get --app=$app --key=domain)
 path_url=$(ynh_app_setting_get --app=$app --key=path)
+is_public=$(ynh_app_setting_get --app=$app --key=is_public)
 admin=$(ynh_app_setting_get --app=$app --key=admin)
 language=$(ynh_app_setting_get --app=$app --key=language)
-is_public=$(ynh_app_setting_get --app=$app --key=is_public)
 final_path=$(ynh_app_setting_get --app=$app --key=final_path)
 port=$(ynh_app_setting_get --app=$app --key=port)
 export=$(ynh_app_setting_get --app=$app --key=export)
 db_name=$(ynh_app_setting_get --app=$app --key=db_name)
+db_pwd=$(ynh_app_setting_get --app=$app --key=mysqlpwd)
+ynh_print_OFF; password=$(ynh_app_setting_get --app=$app --key=password); ynh_print_ON
 mypads=$(ynh_app_setting_get --app=$app --key=mypads)
 useldap=$(ynh_app_setting_get --app=$app --key=useldap)
 overwrite_settings=$(ynh_app_setting_get --app=$app --key=overwrite_settings)
@@ -47,8 +47,8 @@ pad_config_skinname=$(ynh_app_setting_get --app=$app --key=pad_config_skinname)
 # CHECK VERSION
 #=================================================
 
-# Wait for etherpad to be fully started
-ynh_systemd_action --action=restart --line_match="You can access your Etherpad instance at" --log_path="/var/log/$app/etherpad.log" --timeout="120"
+# Wait for Etherpad to be fully started
+#ynh_systemd_action --action=restart --log_path=systemd --line_match="Your Etherpad version is"
 
 upgrade_type=$(ynh_check_app_version_changed)
 
@@ -135,6 +135,18 @@ if [ -z "$overwrite_systemd" ]; then
 	ynh_app_setting_set $app overwrite_systemd $overwrite_systemd
 fi
 
+# Cleaning legacy permissions
+if ynh_legacy_permissions_exists; then
+  ynh_legacy_permissions_delete_all
+
+  ynh_app_setting_delete --app=$app --key=is_public
+fi
+
+if ! ynh_permission_exists --permission="admin"; then
+  # Create the required permissions
+  ynh_permission_create --permission="admin" --url="/admin" --allowed=$admin
+fi
+
 #=================================================
 # BACKUP BEFORE UPGRADE THEN ACTIVE TRAP
 #=================================================
@@ -176,6 +188,8 @@ if [ "$upgrade_type" == "UPGRADE_APP" ]
 then
 	ynh_script_progression --message="Upgrading source files..." --weight=4
 
+  ynh_secure_remove --file="$final_path"
+
 	# Download, check integrity, uncompress and patch the source from app.src
 	ynh_setup_source --dest_dir="$final_path"
 fi
@@ -196,7 +210,7 @@ fi
 #=================================================
 ynh_script_progression --message="Upgrading NGINX web server configuration..."
 
-# Overwrite the nginx configuration only if it's allowed
+# Overwrite the NGINX configuration only if it's allowed
 if [ $overwrite_nginx -eq 1 ]
 then
 	ynh_add_nginx_config
@@ -207,50 +221,37 @@ fi
 #=================================================
 ynh_script_progression --message="Upgrading NodeJS..." --weight=4
 
-# Remove the old nvm helper.
-if [ -d /opt/nvm ]
-then
-	ynh_secure_remove --file="/opt/nvm"
-	sed --in-place "/NVM_DIR/d" /root/.bashrc
-fi
-
 ynh_install_nodejs --nodejs_version=$nodejs_version
+
+#=================================================
+# HANDLE LOG FILES AND LOGROTATE
+#=================================================
+
+# Create log directory
+mkdir -p /var/log/$app
+touch /var/log/$app/$app.log
+install_log=/var/log/$app/installation.log
+touch $install_log
+chown $app -R /var/log/$app
 
 #=================================================
 # UPGRADE NPM MODULES
 #=================================================
 ynh_script_progression --message="Upgrading Etherpad npm modules..." --weight=60
 
-# Update the main modules of etherpad
 chown -R $app: $final_path
-(cd "$final_path/src"
-ynh_exec_warn_less npm cache clean --force
-# Remove package-lock.json to prevent any shit during npm update...
-ynh_secure_remove --file="$final_path/src/package-lock.json"
-ynh_exec_warn_less ynh_exec_as $app PATH="$nodejs_path:$PATH" "$nodejs_path/npm" update)
 
-# Then update the additionnal modules
-(cd "$final_path"
-ynh_exec_warn_less npm cache clean --force
-while read node_module
-do
-    # Ignore ep_etherpad-lite, this part is updated before in this script.
-    if [ "$node_module" = "ep_etherpad-lite" ]; then
-        continue
-    fi
-    echo "Update $node_module"
-    # Build the name of the variable with the version.
-    module_version=${node_module}_version
-    # Get the content of the variable (from the file _variables)
-    module_version=${!module_version:-}
-    # If the module has no version stored in a variable into the file, keep it empty.
-    # That way, the upgrade will not be specific to a version.
-    ## Otherwise, add @ before the version number to force the upgrade to this version.
-    if [ -n "${module_version}" ]; then
-        module_version=@${module_version}
-    fi
-    ynh_exec_warn_less ynh_exec_as $app PATH="$nodejs_path:$PATH" "$nodejs_path/npm" install --upgrade ${node_module}${module_version} || true
-done <<< "$(ls -1 "$final_path/node_modules" | grep "^ep_")")
+pushd $final_path
+  ynh_use_nodejs
+  ynh_exec_as $app env "$ynh_node_load_PATH" src/bin/installDeps.sh
+  #ynh_exec_warn_less ynh_exec_as $app env "$ynh_node_load_PATH" npm cache clean --force
+  #ynh_exec_warn_less ynh_exec_as $app env "$ynh_node_load_PATH" npm install --upgrade 
+  ynh_exec_as $app env "$ynh_node_load_PATH" npm install ep_automatic_logut ep_countable ep_delete_empty_pads ep_subscript_and_superscript ep_headings2 ep_author_hover ep_markdown ep_comments_page ep_align ep_font_color ep_font_size ep_spellcheck ep_table_of_contents ep_page_view >> $install_log 2>&1
+  if [ $mypads -eq 1 ]; then
+    # Framapad - Groups and private pads for Etherpad
+    ynh_exec_as $app env "$ynh_node_load_PATH" npm install ep_mypads >> $install_log 2>&1
+  fi
+popd
 
 #=================================================
 # SPECIFIC UPGRADE
@@ -291,7 +292,7 @@ then
     fi
     ynh_replace_string --match_string="__LANGUAGE__" --replace_string="$language" --target_file="$final_path/settings.json"
 
-    # Use ldap for mypads
+    # Use LDAP for MyPads
     if [ $mypads -eq 1 ] && [ $useldap -eq 1 ]
     then
       ynh_replace_string --match_string="//noldap" --replace_string="" --target_file="$final_path/settings.json"
@@ -326,14 +327,13 @@ then
   then
     # Verify the checksum of a file, stored by `ynh_store_file_checksum` in the install script.
     ynh_backup_if_checksum_is_different --file="$final_path/credentials.json"
-    cp ../conf/credentials.json "$final_path/credentials.json"
+    ynh_add_config --template="../conf/credentials.json" --destination="$final_path/credentials.json"
 
-    ynh_replace_string --match_string="__DB_USER__" --replace_string="$app" --target_file="$final_path/credentials.json"
-    db_pwd=$(ynh_app_setting_get --app=$app --key=mysqlpwd)
-    ynh_print_OFF; password=$(ynh_app_setting_get --app=$app --key=password); ynh_print_ON
-    ynh_replace_string --match_string="__DB_PWD__" --replace_string="$db_pwd" --target_file="$final_path/credentials.json"
-    ynh_replace_string --match_string="__ADMIN__" --replace_string="$admin" --target_file="$final_path/credentials.json"
-    ynh_print_OFF; ynh_replace_special_string --match_string="__PASSWD__" --replace_string="$password" --target_file="$final_path/credentials.json"; ynh_print_ON
+    #cp ../conf/credentials.json "$final_path/credentials.json"
+    #ynh_replace_string --match_string="__DB_NAME__" --replace_string="$db_name" --target_file="$final_path/credentials.json"
+    #ynh_replace_string --match_string="__DB_PWD__" --replace_string="$db_pwd" --target_file="$final_path/credentials.json"
+    #ynh_replace_string --match_string="__ADMIN__" --replace_string="$admin" --target_file="$final_path/credentials.json"
+    #ynh_print_OFF; ynh_replace_special_string --match_string="__PASSWORD__" --replace_string="$password" --target_file="$final_path/credentials.json"; ynh_print_ON
 
     # Recalculate and store the checksum of the file for the next upgrade.
     ynh_store_file_checksum --file="$final_path/credentials.json"
@@ -352,22 +352,21 @@ ynh_system_user_create --username=$app --home_dir=$final_path
 # SECURING FILES AND DIRECTORIES
 #=================================================
 
-# Set files ownership to etherpad
+# Set files ownership to Etherpad
 chown -R $app: $final_path
-chmod 600 "$final_path/credentials.json"
 # Restrict access to credentials.json
-chown $app -R /var/log/$app/etherpad.log
+chmod 600 "$final_path/credentials.json"
 
 #=================================================
 # ADVERTISE SERVICE IN ADMIN PANEL
 #=================================================
 
-yunohost service add $app --log "/var/log/$app/etherpad.log"
+yunohost service add $app --description="Collaborative editor" --log="/var/log/$app/etherpad.log"
 
 #=================================================
 # UPGRADE FAIL2BAN
 #=================================================
-ynh_script_progression --message="Reconfiguring Fail2ban..." --weight=8
+ynh_script_progression --message="Reconfiguring Fail2Ban..." --weight=8
 
 # Create a dedicated fail2ban config
 ynh_add_fail2ban_config --logpath="/var/log/nginx/$domain-access.log" --failregex="<HOST> .* .POST /mypads/api/auth/login HTTP/1.1. 400" --max_retry=5
@@ -388,8 +387,7 @@ ynh_script_progression --message="Upgrading systemd configuration..." --weight=2
 # Overwrite the systemd configuration only if it's allowed
 if [ $overwrite_systemd -eq 1 ]
 then
-	ynh_replace_string --match_string="__ENV_PATH__" --replace_string="$PATH" --target_file="../conf/systemd.service"
-	ynh_add_systemd_config
+	ynh_add_systemd_config --others_var="ynh_node_load_PATH"
 fi
 
 #=================================================
@@ -405,19 +403,6 @@ then
 fi
 
 #=================================================
-# SETUP SSOWAT
-#=================================================
-ynh_script_progression --message="Upgrading SSOwat configuration..."
-
-# Make app public if necessary
-if [ $is_public -eq 1 ]; then
-	ynh_app_setting_set --app=$app --key=skipped_uris --value="/"
-else
-	# etherpad admin page doesn't support SSO...
-	ynh_app_setting_set --app=$app --key=skipped_uris --value="/admin"
-fi
-
-#=================================================
 # RELOAD NGINX
 #=================================================
 ynh_script_progression --message="Reloading NGINX web server..."
@@ -430,7 +415,7 @@ ynh_systemd_action --action=reload --service_name=nginx
 ynh_script_progression --message="Restarting Etherpad..." --weight=9
 
 # Wait for etherpad to be fully started
-ynh_systemd_action --action=restart --line_match="You can access your Etherpad instance at" --log_path="/var/log/$app/etherpad.log" --timeout="120"
+ynh_systemd_action --action=restart --log_path=systemd --line_match="Your Etherpad version is"
 
 #=================================================
 # DEACTIVE MAINTENANCE MODE
@@ -439,46 +424,46 @@ ynh_script_progression --message="Disabling maintenance mode..." --weight=5
 
 ynh_maintenance_mode_OFF
 
-#=================================================
-# SEND A README FOR THE ADMIN
-#=================================================
+# #=================================================
+# # SEND A README FOR THE ADMIN
+# #=================================================
 
-# Get main domain and buid the url of the admin panel of the app.
-admin_panel="https://$(grep portal_domain /etc/ssowat/conf.json | cut -d'"' -f4)/yunohost/admin/#/apps/$app"
+# # Get main domain and buid the url of the admin panel of the app.
+# admin_panel="https://$(grep portal_domain /etc/ssowat/conf.json | cut -d'"' -f4)/yunohost/admin/#/apps/$app"
 
-# Build the changelog
-# Get the value of admin_mail_html
-admin_mail_html=$(ynh_app_setting_get $app admin_mail_html)
-admin_mail_html="${admin_mail_html:-0}"
-# If a html email is required. Apply html to the changelog.
-if [ "$admin_mail_html" -eq 1 ]; then
-    format=html
-else
-    format=plain
-fi
-ynh_app_changelog --format=$format
+# # Build the changelog
+# # Get the value of admin_mail_html
+# admin_mail_html=$(ynh_app_setting_get $app admin_mail_html)
+# admin_mail_html="${admin_mail_html:-0}"
+# # If a html email is required. Apply html to the changelog.
+# if [ "$admin_mail_html" -eq 1 ]; then
+#     format=html
+# else
+#     format=plain
+# fi
+# ynh_app_changelog --format=$format
 
-if [ $mypads -eq 1 ]
-then
-	Informations="You can access 2 different admin panels, for Etherpad by accessing https://$domain${path_url%/}/admin and for MyPads by accessing https://$domain${path_url%/}/mypads/?/admin."
-else
-	Informations="You can access the admin panel by accessing https://$domain${path_url%/}/admin."
-fi
+# if [ $mypads -eq 1 ]
+# then
+# 	Informations="You can access 2 different admin panels, for Etherpad by accessing https://$domain${path_url%/}/admin and for MyPads by accessing https://$domain${path_url%/}/mypads/?/admin."
+# else
+# 	Informations="You can access the admin panel by accessing https://$domain${path_url%/}/admin."
+# fi
 
-echo "$Informations
-You can also find a config file for Etherpad at this path /var/www/etherpad_mypads/settings.json.
+# echo "$Informations
+# You can also find a config file for Etherpad at this path /var/www/etherpad_mypads/settings.json.
 
-You can configure this app easily by using the experimental config-panel feature $admin_panel/config-panel.
-You can also find some specific actions for this app by using the experimental action feature $admin_panel/actions.
+# You can configure this app easily by using the experimental config-panel feature $admin_panel/config-panel.
+# You can also find some specific actions for this app by using the experimental action feature $admin_panel/actions.
 
-If you are facing an issue or want to improve this app, please open a new issue in this project: https://github.com/YunoHost-Apps/etherpad_mypads_ynh
+# If you are facing an issue or want to improve this app, please open a new issue in this project: https://github.com/YunoHost-Apps/etherpad_mypads_ynh
 
----
+# ---
 
-Changelog since your last upgrade:
-$(cat changelog)" > mail_to_send
+# Changelog since your last upgrade:
+# $(cat changelog)" > mail_to_send
 
-ynh_send_readme_to_admin --app_message="mail_to_send" --recipients="$admin" --type=upgrade
+# ynh_send_readme_to_admin --app_message="mail_to_send" --recipients="$admin" --type=upgrade
 
 #=================================================
 # END OF SCRIPT
