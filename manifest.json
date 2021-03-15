@@ -10,7 +10,7 @@
 	"url": "https://framapad.org",
 	"license": "Apache-2.0",
 	"maintainer": {
-		"name": "None...",
+		"name": "",
 		"email": ""
 	},
 	"previous_maintainers": [{
@@ -30,38 +30,22 @@
 			{
 				"name": "domain",
 				"type": "domain",
-				"ask": {
-					"en": "Choose a domain for Etherpad MyPads",
-					"fr": "Choisissez un domaine pour Etherpad MyPads"
-				},
 				"example": "sub.domain.org"
 			},
 			{
 				"name": "path",
 				"type": "path",
-				"ask": {
-					"en": "Choose a path for Etherpad MyPads",
-					"fr": "Choisissez un chemin pour Etherpad MyPads"
-				},
 				"example": "/pad",
 				"default": "/pad"
 			},
 			{
 				"name": "admin",
 				"type": "user",
-				"ask": {
-					"en": "Choose the Etherpad MyPads administrator",
-					"fr": "Choisissez l'administrateur Etherpad MyPads"
-				},
 				"example": "john"
 			},
 			{
 				"name": "password",
 				"type": "password",
-				"ask": {
-					"en": "Set the administrator password (between 8 and 30 characters)",
-					"fr": "Définissez le mot de passe administrateur (entre 8 et 30 caractères)"
-				},
 				"example": "Choose a password"
 			},
 			{
@@ -77,10 +61,6 @@
 			{
 				"name": "is_public",
 				"type": "boolean",
-				"ask": {
-					"en": "Is it a public website?",
-					"fr": "Est-ce un site public ?"
-				},
 				"help": {
 					"en": "If your Etherpad instance is public, everyone will be able to create a pad or see an existing one.",
 					"fr": "Si votre instance Etherpad est publique, tout le monde pourra créer un pad ou voir un pad existant."
@@ -105,7 +85,7 @@
 					"fr": "Voulez-vous installer le plugin MyPads ?"
 				},
 				"help": {
-					"en": "<a href=https://git.framasoft.org/framasoft/ep_mypads target=_blank>mypads plugin</a>"
+					"en": "<a href=https://git.framasoft.org/framasoft/ep_mypads target=_blank>MyPads plugin</a>"
 				},
 				"default": true
 			},
