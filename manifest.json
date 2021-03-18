@@ -7,7 +7,7 @@
 		"fr": "Éditeur en ligne fournissant l'édition collaborative en temps réel."
 	},
 	"version": "1.8.12~ynh1",
-	"url": "https://framapad.org",
+	"url": "http://etherpad.org/",
 	"license": "Apache-2.0",
 	"maintainer": {
 		"name": "",
