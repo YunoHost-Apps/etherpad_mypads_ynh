@@ -30,7 +30,7 @@ Vous pouvez accéder à deux panneaux d'administration différents, pour Etherpa
 
 ## Documentation
 
- * Documentation officielle : http://etherpad.org/doc/v1.8.11
+ * Documentation officielle : http://etherpad.org/doc/v1.8.12
  * Documentation YunoHost : https://yunohost.org/#/app_etherpad_mypads_fr
 
 ## Fonctionnalités spécifiques à YunoHost

@@ -171,7 +171,7 @@ ynh_systemd_action --action=stop
 #=================================================
 # CREATE DEDICATED USER
 #=================================================
-ynh_script_progression --message="Making sure dedicated system user exists..."
+ynh_script_progression --message="Making sure dedicated system user exists..." --weight=2
 
 # Create a dedicated user (if not existing)
 ynh_system_user_create --username=$app --home_dir=$final_path
@@ -353,7 +353,7 @@ ynh_add_fail2ban_config --logpath="/var/log/nginx/$domain-access.log" --failrege
 #=================================================
 # SETUP LOGROTATE
 #=================================================
-ynh_script_progression --message="Upgrading logrotate configuration..."
+ynh_script_progression --message="Upgrading logrotate configuration..." --weight=2
 
 # Use logrotate to manage app-specific logfile(s)
 ynh_use_logrotate --non-append --specific_user=$app/$app
@@ -384,7 +384,7 @@ fi
 #=================================================
 # RELOAD NGINX
 #=================================================
-ynh_script_progression --message="Reloading NGINX web server..."
+ynh_script_progression --message="Reloading NGINX web server..." --weight=2
 
 ynh_systemd_action --action=reload --service_name=nginx
 
