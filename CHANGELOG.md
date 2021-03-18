@@ -1,11 +1,11 @@
 Changelog
 =========
 
-## [1.8.12~ynh1]() - 2020-08-09
+## [1.8.12~ynh1]() - 2021-03-19
 
 #### Changed
 * [Upgrade to 1.8.12]()
-* [Remove send mail to admin]()
+* [Remove password from mail to admin]()
 * [Remove plugin versioning]()
 
 #### Add

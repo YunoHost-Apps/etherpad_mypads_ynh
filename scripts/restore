@@ -183,6 +183,25 @@ ynh_script_progression --message="Disabling maintenance mode..." --weight=7
 ynh_maintenance_mode_OFF
 
 #=================================================
+# SEND A README FOR THE ADMIN
+#=================================================
+
+if [ $mypads -eq 1 ]
+then
+	Informations="You can access 2 different admin panels, for Etherpad by accessing https://$domain${path_url%/}/admin and for MyPads by accessing https://$domain${path_url%/}/mypads/?/admin."
+else
+	Informations="You can access to the admin panel, by accessing https://$domain${path_url%/}/admin."
+fi
+
+ynh_print_OFF
+echo "$Informations
+You can also find a config file for Etherpad at this path /var/www/etherpad_mypads/settings.json.
+If you are facing an issue or want to improve this app, please open a new issue in this project: https://github.com/YunoHost-Apps/etherpad_mypads_ynh" > mail_to_send
+
+ynh_send_readme_to_admin --app_message="mail_to_send" --recipients="$admin" --type=restore
+ynh_print_ON
+
+#=================================================
 # END OF SCRIPT
 #=================================================
 
