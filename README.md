@@ -63,7 +63,6 @@ You can also find a configuration file for Etherpad at this path `/var/www/ether
   * [ep_headings2](https://www.npmjs.com/package/ep_headings2) - *Adds heading support to Etherpad Lite*
   * [ep_markdown](https://www.npmjs.com/package/ep_markdown) - *Edit and Export as Markdown in Etherpad*
   * [ep_mypads](https://www.npmjs.com/package/ep_mypads) - *Groups and private pads for etherpad*
-  * [ep_page_view](https://www.npmjs.com/package/ep_page_view) - *Add support to do 'page view', with a toggle on/off option in Settings, also Page Breaks with Control Enter*
   * [ep_spellcheck](https://www.npmjs.com/package/ep_spellcheck) - *Add support to do 'Spell checking'*
   * [ep_subscript_and_superscript](https://www.npmjs.com/package/ep_subscript_and_superscript) - *Add support for Subscript and Superscript*
   * [ep_table_of_contents](https://www.npmjs.com/package/ep_table_of_contents) - *View a table of contents for your pad*

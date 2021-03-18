@@ -9,7 +9,7 @@ Group=__APP__
 WorkingDirectory=__FINALPATH__
 Environment="NODE_ENV=production"
 Environment="__YNH_NODE_LOAD_PATH__"
-ExecStart=__FINALPATH__/node_modules/ep_etherpad-lite/node/server.js
+ExecStart=__FINALPATH__/src/bin/run.sh
 Restart=always
 
 [Install]
