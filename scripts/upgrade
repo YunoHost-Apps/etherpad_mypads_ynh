@@ -19,7 +19,6 @@ app=$YNH_APP_INSTANCE_NAME
 
 domain=$(ynh_app_setting_get --app=$app --key=domain)
 path_url=$(ynh_app_setting_get --app=$app --key=path)
-is_public=$(ynh_app_setting_get --app=$app --key=is_public)
 admin=$(ynh_app_setting_get --app=$app --key=admin)
 language=$(ynh_app_setting_get --app=$app --key=language)
 final_path=$(ynh_app_setting_get --app=$app --key=final_path)
@@ -56,15 +55,6 @@ upgrade_type=$(ynh_check_app_version_changed)
 # ENSURE DOWNWARD COMPATIBILITY
 #=================================================
 ynh_script_progression --message="Ensuring downward compatibility..." --weight=2
-
-# Fix is_public as a boolean value
-if [ "$is_public" = "Yes" ]; then
-	ynh_app_setting_set --app=$app --key=is_public --value=1
-	is_public=1
-elif [ "$is_public" = "No" ]; then
-	ynh_app_setting_set --app=$app --key=is_public --value=0
-	is_public=0
-fi
 
 # If db_name doesn't exist, create it
 if [ -z "$db_name" ]; then
@@ -177,6 +167,14 @@ ynh_maintenance_mode_ON
 ynh_script_progression --message="Stopping Etherpad service..." --weight=3
 
 ynh_systemd_action --action=stop
+
+#=================================================
+# CREATE DEDICATED USER
+#=================================================
+ynh_script_progression --message="Making sure dedicated system user exists..."
+
+# Create a dedicated user (if not existing)
+ynh_system_user_create --username=$app --home_dir=$final_path
 
 #=================================================
 # STANDARD UPGRADE STEPS
@@ -325,28 +323,9 @@ then
   # Overwrite the credentials config file only if it's allowed
   if [ $overwrite_credentials -eq 1 ]
   then
-    # Verify the checksum of a file, stored by `ynh_store_file_checksum` in the install script.
-    ynh_backup_if_checksum_is_different --file="$final_path/credentials.json"
     ynh_add_config --template="../conf/credentials.json" --destination="$final_path/credentials.json"
-
-    #cp ../conf/credentials.json "$final_path/credentials.json"
-    #ynh_replace_string --match_string="__DB_NAME__" --replace_string="$db_name" --target_file="$final_path/credentials.json"
-    #ynh_replace_string --match_string="__DB_PWD__" --replace_string="$db_pwd" --target_file="$final_path/credentials.json"
-    #ynh_replace_string --match_string="__ADMIN__" --replace_string="$admin" --target_file="$final_path/credentials.json"
-    #ynh_print_OFF; ynh_replace_special_string --match_string="__PASSWORD__" --replace_string="$password" --target_file="$final_path/credentials.json"; ynh_print_ON
-
-    # Recalculate and store the checksum of the file for the next upgrade.
-    ynh_store_file_checksum --file="$final_path/credentials.json"
   fi
 fi
-
-#=================================================
-# CREATE DEDICATED USER
-#=================================================
-ynh_script_progression --message="Making sure dedicated system user exists..."
-
-# Create a dedicated user (if not existing)
-ynh_system_user_create --username=$app --home_dir=$final_path
 
 #=================================================
 # SECURING FILES AND DIRECTORIES
@@ -423,47 +402,6 @@ ynh_systemd_action --action=restart --log_path=systemd --line_match="Your Etherp
 ynh_script_progression --message="Disabling maintenance mode..." --weight=5
 
 ynh_maintenance_mode_OFF
-
-# #=================================================
-# # SEND A README FOR THE ADMIN
-# #=================================================
-
-# # Get main domain and buid the url of the admin panel of the app.
-# admin_panel="https://$(grep portal_domain /etc/ssowat/conf.json | cut -d'"' -f4)/yunohost/admin/#/apps/$app"
-
-# # Build the changelog
-# # Get the value of admin_mail_html
-# admin_mail_html=$(ynh_app_setting_get $app admin_mail_html)
-# admin_mail_html="${admin_mail_html:-0}"
-# # If a html email is required. Apply html to the changelog.
-# if [ "$admin_mail_html" -eq 1 ]; then
-#     format=html
-# else
-#     format=plain
-# fi
-# ynh_app_changelog --format=$format
-
-# if [ $mypads -eq 1 ]
-# then
-# 	Informations="You can access 2 different admin panels, for Etherpad by accessing https://$domain${path_url%/}/admin and for MyPads by accessing https://$domain${path_url%/}/mypads/?/admin."
-# else
-# 	Informations="You can access the admin panel by accessing https://$domain${path_url%/}/admin."
-# fi
-
-# echo "$Informations
-# You can also find a config file for Etherpad at this path /var/www/etherpad_mypads/settings.json.
-
-# You can configure this app easily by using the experimental config-panel feature $admin_panel/config-panel.
-# You can also find some specific actions for this app by using the experimental action feature $admin_panel/actions.
-
-# If you are facing an issue or want to improve this app, please open a new issue in this project: https://github.com/YunoHost-Apps/etherpad_mypads_ynh
-
-# ---
-
-# Changelog since your last upgrade:
-# $(cat changelog)" > mail_to_send
-
-# ynh_send_readme_to_admin --app_message="mail_to_send" --recipients="$admin" --type=upgrade
 
 #=================================================
 # END OF SCRIPT
