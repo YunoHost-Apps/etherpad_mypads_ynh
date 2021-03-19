@@ -1,4 +1,4 @@
-;; Test complet avec libreoffice et mypads
+;; Test complet avec LibreOffice et MyPads
 	; Manifest
 		domain="domain.tld"	(DOMAIN)
 		path="/path"	(PATH)
@@ -10,7 +10,7 @@
 		mypads=1
 		useldap=1
     ; Actions
-        is_public=0|1
+        #is_public=0|1
     ; Config_panel
         main.export.export=none|abiword|libreoffice
         main.pad_configuration.pad_config_nocolors=1|0
@@ -18,12 +18,9 @@
         main.pad_configuration.pad_config_chatandusers=1|0
         main.pad_configuration.pad_config_alwaysshowchat=1|0
         main.pad_configuration.pad_config_show_markdown=1|0
-        #main.pad_configuration.pad_config_pageview=1|0
         main.pad_configuration.pad_config_automatic_logout=0|1
-        main.pad_configuration.pad_config_skinname=noskin|colibris|noskin
         main.mypads_configuration.mypads=0|1
         main.mypads_configuration.useldap=0|1
-        main.is_public.is_public=1|0
         main.overwrite_files.overwrite_settings=0|1
         main.overwrite_files.overwrite_credentials=0|1
         main.overwrite_files.overwrite_nginx=0|1
@@ -38,11 +35,11 @@
 		upgrade=1
 		backup_restore=1
 		multi_instance=1
-		port_already_use=1	(9001)
+		port_already_use=0	(9001)
 		change_url=1
         actions=1
         config_panel=1
-;; Test sans mypads
+;; Test sans MyPads
 	; Manifest
 		domain="domain.tld"	(DOMAIN)
 		path="/path"	(PATH)
@@ -58,10 +55,10 @@
 		setup_root=1
 		upgrade=1
 		backup_restore=1
-;; Test abiword
+;; Test Abiword
 	; Manifest
 		domain="domain.tld"	(DOMAIN)
-		path="/"	(PATH)
+		path="/path"	(PATH)
 		admin="john"	(USER)
 		password="password"
 		language="en"

@@ -65,10 +65,6 @@ pad_config_alwaysshowchat="${YNH_CONFIG_MAIN_PAD_CONFIGURATION_PAD_CONFIG_ALWAYS
 old_pad_config_show_markdown="$(get_config_value ep_markdown_default)"
 pad_config_show_markdown="${YNH_CONFIG_MAIN_PAD_CONFIGURATION_PAD_CONFIG_SHOW_MARKDOWN:-$old_pad_config_show_markdown}"
 
-# # Plugin option ep_page_view_default
-# old_pad_config_pageview="$(get_config_value ep_page_view_default)"
-# pad_config_pageview="${YNH_CONFIG_MAIN_PAD_CONFIGURATION_PAD_CONFIG_PAGEVIEW:-$old_pad_config_pageview}"
-
 # Enable/disable ep_automatic_logut
 if grep -q "//.*\"automatic_logut_" $config_file
 then
@@ -80,15 +76,15 @@ else
 fi
 pad_config_automatic_logout="${YNH_CONFIG_MAIN_PAD_CONFIGURATION_PAD_CONFIG_AUTOMATIC_LOGOUT:-$old_pad_config_automatic_logout}"
 
-# Etherpad skin
-old_pad_config_skinname="$(get_config_value skinName)"
-if [ "$old_pad_config_skinname" = "no-skin" ]; then
-    old_pad_config_skinname=colibris
-fi
-pad_config_skinname="${YNH_CONFIG_MAIN_PAD_CONFIGURATION_PAD_CONFIG_SKINNAME:-$old_pad_config_skinname}"
-if [ "$pad_config_skinname" = "no-skin" ]; then
-    pad_config_skinname=colibris
-fi
+# # Etherpad skin
+# old_pad_config_skinname="$(get_config_value skinName)"
+# if [ "$old_pad_config_skinname" = "no-skin" ]; then
+#     old_pad_config_skinname=colibris
+# fi
+# pad_config_skinname="${YNH_CONFIG_MAIN_PAD_CONFIGURATION_PAD_CONFIG_SKINNAME:-$old_pad_config_skinname}"
+# if [ "$pad_config_skinname" = "no-skin" ]; then
+#     pad_config_skinname=colibris
+# fi
 
 # MyPads
 if [ -d $final_path/node_modules/ep_mypads ]
@@ -113,8 +109,8 @@ fi
 useldap="${YNH_CONFIG_MAIN_MYPADS_CONFIGURATION_USELDAP:-$old_useldap}"
 
 # is_public
-old_is_public="$(ynh_app_setting_get --app=$app --key=is_public)"
-is_public="${YNH_CONFIG_MAIN_IS_PUBLIC_IS_PUBLIC:-$old_is_public}"
+# old_is_public="$(ynh_app_setting_get --app=$app --key=is_public)"
+# is_public="${YNH_CONFIG_MAIN_IS_PUBLIC_IS_PUBLIC:-$old_is_public}"
 
 # Overwrite settings.json file
 old_overwrite_settings="$(ynh_app_setting_get --app=$app --key=overwrite_settings)"
@@ -147,14 +143,13 @@ show_config() {
 	ynh_return "YNH_CONFIG_MAIN_PAD_CONFIGURATION_PAD_CONFIG_CHATANDUSERS=$pad_config_chatandusers"
 	ynh_return "YNH_CONFIG_MAIN_PAD_CONFIGURATION_PAD_CONFIG_ALWAYSSHOWCHAT=$pad_config_alwaysshowchat"
 	ynh_return "YNH_CONFIG_MAIN_PAD_CONFIGURATION_PAD_CONFIG_SHOW_MARKDOWN=$pad_config_show_markdown"
-	#ynh_return "YNH_CONFIG_MAIN_PAD_CONFIGURATION_PAD_CONFIG_PAGEVIEW=$pad_config_pageview"
 	ynh_return "YNH_CONFIG_MAIN_PAD_CONFIGURATION_PAD_CONFIG_AUTOMATIC_LOGOUT=$pad_config_automatic_logout"
-	ynh_return "YNH_CONFIG_MAIN_PAD_CONFIGURATION_PAD_CONFIG_SKINNAME=$pad_config_skinname"
+	#ynh_return "YNH_CONFIG_MAIN_PAD_CONFIGURATION_PAD_CONFIG_SKINNAME=$pad_config_skinname"
 
 	ynh_return "YNH_CONFIG_MAIN_MYPADS_CONFIGURATION_MYPADS=$mypads"
 	ynh_return "YNH_CONFIG_MAIN_MYPADS_CONFIGURATION_USELDAP=$useldap"
 
-	ynh_return "YNH_CONFIG_MAIN_IS_PUBLIC_IS_PUBLIC=$is_public"
+	#ynh_return "YNH_CONFIG_MAIN_IS_PUBLIC_IS_PUBLIC=$is_public"
 
 	ynh_return "YNH_CONFIG_MAIN_OVERWRITE_FILES_OVERWRITE_SETTINGS=$overwrite_settings"
 	ynh_return "YNH_CONFIG_MAIN_OVERWRITE_FILES_OVERWRITE_CREDENTIALS=$overwrite_credentials"
@@ -215,14 +210,6 @@ apply_config() {
 		restart_etherpad=1
 	fi
 
-	# # Plugin option ep_page_view_default
-	# if [ "$pad_config_pageview" != "$old_pad_config_pageview" ]
-	# then
-	# 	ynh_replace_string --match_string="\(\"ep_page_view_default\" *: \).*," --replace_string="\1$pad_config_pageview," --target_file="$config_file"
-	# 	ynh_app_setting_set --app=$app --key=pad_config_pageview --value="$pad_config_pageview"
-	# 	restart_etherpad=1
-	# fi
-
     # Plugin option ep_automatic_logut
     if [ "$pad_config_automatic_logout" != "$old_pad_config_automatic_logout" ]
     then
@@ -242,15 +229,15 @@ apply_config() {
     fi
 
 	# Plugin option ep_page_view_default
-	if [ "$pad_config_skinname" != "$old_pad_config_skinname" ]
-	then
-        if [ "$pad_config_skinname" = "noskin" ]; then
-            pad_config_skinname="no-skin"
-        fi
-		ynh_replace_string --match_string="\( *\"skinName\" *: \).*," --replace_string="\1\"$pad_config_skinname\"," --target_file="$config_file"
-		ynh_app_setting_set --app=$app --key=pad_config_skinname --value="$pad_config_skinname"
-		restart_etherpad=1
-	fi
+	# if [ "$pad_config_skinname" != "$old_pad_config_skinname" ]
+	# then
+ #        if [ "$pad_config_skinname" = "noskin" ]; then
+ #            pad_config_skinname="no-skin"
+ #        fi
+	# 	ynh_replace_string --match_string="\( *\"skinName\" *: \).*," --replace_string="\1\"$pad_config_skinname\"," --target_file="$config_file"
+	# 	ynh_app_setting_set --app=$app --key=pad_config_skinname --value="$pad_config_skinname"
+	# 	restart_etherpad=1
+	# fi
 
 	# Export
 	if [ "$export" != "$old_export" ]
@@ -324,20 +311,20 @@ apply_config() {
 		ynh_systemd_action --action=restart --log_path=systemd --line_match="Your Etherpad version is"
 	fi
 
-    #=================================================
-    # MODIFY PUBLIC ACCESSIBILITY
-    #=================================================
+ #    #=================================================
+ #    # MODIFY PUBLIC ACCESSIBILITY
+ #    #=================================================
 
-	# Change public accessibility
-	if [ "$is_public" != "$old_is_public" ]
-	then
-        if [ "$is_public" = "1" ]
-        then
-            yunohost app action run $app public_private --args is_public=1
-        else
-            yunohost app action run $app public_private --args is_public=0
-        fi
-	fi
+	# # Change public accessibility
+	# if [ "$is_public" != "$old_is_public" ]
+	# then
+ #        if [ "$is_public" = "1" ]
+ #        then
+ #            yunohost app action run $app public_private --args is_public=1
+ #        else
+ #            yunohost app action run $app public_private --args is_public=0
+ #        fi
+	# fi
 
     #=================================================
     # MODIFY OVERWRITTING SETTINGS
