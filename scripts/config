@@ -65,9 +65,9 @@ pad_config_alwaysshowchat="${YNH_CONFIG_MAIN_PAD_CONFIGURATION_PAD_CONFIG_ALWAYS
 old_pad_config_show_markdown="$(get_config_value ep_markdown_default)"
 pad_config_show_markdown="${YNH_CONFIG_MAIN_PAD_CONFIGURATION_PAD_CONFIG_SHOW_MARKDOWN:-$old_pad_config_show_markdown}"
 
-# Plugin option ep_page_view_default
-old_pad_config_pageview="$(get_config_value ep_page_view_default)"
-pad_config_pageview="${YNH_CONFIG_MAIN_PAD_CONFIGURATION_PAD_CONFIG_PAGEVIEW:-$old_pad_config_pageview}"
+# # Plugin option ep_page_view_default
+# old_pad_config_pageview="$(get_config_value ep_page_view_default)"
+# pad_config_pageview="${YNH_CONFIG_MAIN_PAD_CONFIGURATION_PAD_CONFIG_PAGEVIEW:-$old_pad_config_pageview}"
 
 # Enable/disable ep_automatic_logut
 if grep -q "//.*\"automatic_logut_" $config_file
@@ -147,7 +147,7 @@ show_config() {
 	ynh_return "YNH_CONFIG_MAIN_PAD_CONFIGURATION_PAD_CONFIG_CHATANDUSERS=$pad_config_chatandusers"
 	ynh_return "YNH_CONFIG_MAIN_PAD_CONFIGURATION_PAD_CONFIG_ALWAYSSHOWCHAT=$pad_config_alwaysshowchat"
 	ynh_return "YNH_CONFIG_MAIN_PAD_CONFIGURATION_PAD_CONFIG_SHOW_MARKDOWN=$pad_config_show_markdown"
-	ynh_return "YNH_CONFIG_MAIN_PAD_CONFIGURATION_PAD_CONFIG_PAGEVIEW=$pad_config_pageview"
+	#ynh_return "YNH_CONFIG_MAIN_PAD_CONFIGURATION_PAD_CONFIG_PAGEVIEW=$pad_config_pageview"
 	ynh_return "YNH_CONFIG_MAIN_PAD_CONFIGURATION_PAD_CONFIG_AUTOMATIC_LOGOUT=$pad_config_automatic_logout"
 	ynh_return "YNH_CONFIG_MAIN_PAD_CONFIGURATION_PAD_CONFIG_SKINNAME=$pad_config_skinname"
 
@@ -215,13 +215,13 @@ apply_config() {
 		restart_etherpad=1
 	fi
 
-	# Plugin option ep_page_view_default
-	if [ "$pad_config_pageview" != "$old_pad_config_pageview" ]
-	then
-		ynh_replace_string --match_string="\(\"ep_page_view_default\" *: \).*," --replace_string="\1$pad_config_pageview," --target_file="$config_file"
-		ynh_app_setting_set --app=$app --key=pad_config_pageview --value="$pad_config_pageview"
-		restart_etherpad=1
-	fi
+	# # Plugin option ep_page_view_default
+	# if [ "$pad_config_pageview" != "$old_pad_config_pageview" ]
+	# then
+	# 	ynh_replace_string --match_string="\(\"ep_page_view_default\" *: \).*," --replace_string="\1$pad_config_pageview," --target_file="$config_file"
+	# 	ynh_app_setting_set --app=$app --key=pad_config_pageview --value="$pad_config_pageview"
+	# 	restart_etherpad=1
+	# fi
 
     # Plugin option ep_automatic_logut
     if [ "$pad_config_automatic_logout" != "$old_pad_config_automatic_logout" ]
