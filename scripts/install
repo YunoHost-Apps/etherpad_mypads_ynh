@@ -65,7 +65,6 @@ ynh_script_progression --message="Storing installation settings..." --weight=3
 ynh_app_setting_set --app=$app --key=domain --value=$domain
 ynh_app_setting_set --app=$app --key=path --value=$path_url
 ynh_app_setting_set --app=$app --key=admin --value=$admin
-ynh_app_setting_set --app=$app --key=is_public --value=$is_public
 ynh_print_OFF; ynh_app_setting_set --app=$app --key=password --value=$password; ynh_print_ON
 ynh_app_setting_set --app=$app --key=language --value=$language
 ynh_app_setting_set --app=$app --key=export --value=$export
@@ -250,7 +249,7 @@ npm install ep_automatic_logut@${ep_automatic_logut_version} >> $install_log 2>&
 # Framapad - Adds comments on sidebar and link it to the text.
 npm install ep_comments_page@${ep_comments_page_version} >> $install_log 2>&1
 # Framapad - Displays paragraphs, sentences, words and characters counts.
-#npm install ep_countable@${ep_countable_version} >> $install_log 2>&1
+npm install ep_countable@${ep_countable_version} >> $install_log 2>&1
 # Framapad - Delete pads which were never edited
 npm install ep_delete_empty_pads@${ep_delete_empty_pads_version} >> $install_log 2>&1
 # Framapad - Apply colors to fonts
@@ -306,14 +305,14 @@ ynh_add_fail2ban_config --logpath="/var/log/nginx/$domain-access.log" --failrege
 #=================================================
 # SETUP SSOWAT
 #=================================================
-ynh_script_progression --message="Configuring SSOwat..."
+ynh_script_progression --message="Configuring permissions..." --weight=2
 
 if [ $is_public -eq 1 ]; then
-	ynh_app_setting_set --app=$app --key=skipped_uris --value="/"
-else
-	# etherpad admin page doesn't support SSO...
-	ynh_app_setting_set --app=$app --key=skipped_uris --value="/admin"
+	ynh_permission_update --permission="main" --add="visitors"	
 fi
+
+# Etherpad admin page doesn't support SSO...
+ynh_permission_create --permission="admin" --url="/admin" --allowed=$admin
 
 #=================================================
 # RELOAD NGINX
