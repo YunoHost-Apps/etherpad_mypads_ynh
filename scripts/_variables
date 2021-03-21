@@ -11,19 +11,20 @@ nodejs_version=12
 
 # MyPads version
 # This variable is mostly used to force an upgrade of the package in case of new versions of MyPads.
-mypads_version=1.7.17
+mypads_version=1.7.19
 
 # Plugin versions
-ep_align_version=0.2.5
-ep_author_hover_version=0.3.0
+ep_align_version=0.3.31
+ep_author_hover_version=0.3.17
 ep_automatic_logut_version=1.0.8
-ep_comments_page_version=0.1.5
-ep_countable_version=0.0.7
-ep_delete_empty_pads_version=0.0.6
-ep_font_color_version=0.0.15
-ep_headings2_version=0.1.3
-ep_markdown_version=0.1.7
-ep_spellcheck_version=0.0.7
-ep_subscript_and_superscript_version=0.1.2
-ep_table_of_contents_version=0.2.3
-ep_font_size_version=0.3.8
+ep_comments_page_version=0.1.58
+ep_countable_version=0.0.9
+ep_delete_empty_pads_version=0.0.7
+ep_font_color_version=0.0.40
+ep_headings2_version=0.2.26
+ep_markdown_version=0.1.30
+ep_page_view_version=0.5.24
+ep_spellcheck_version=0.0.25
+ep_subscript_and_superscript_version=0.2.22
+ep_table_of_contents_version=0.3.18
+ep_font_size_version=0.4.19
