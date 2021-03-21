@@ -263,8 +263,6 @@ if [ $mypads -eq 1 ]; then
 	# Framapad - Groups and private pads for etherpad
 	npm install ep_mypads@${mypads_version} >> $install_log 2>&1
 fi
-# Framapad - Add support to do 'page view', with a toggle on/off option in Settings, also Page Breaks with Control Enter
-npm install ep_page_view@${ep_page_view_version} >> $install_log 2>&1
 # Framapad - Add support to do 'Spell checking'
 npm install ep_spellcheck@${ep_spellcheck_version} >> $install_log 2>&1
 # Framapad - Add support for Subscript and Superscript
