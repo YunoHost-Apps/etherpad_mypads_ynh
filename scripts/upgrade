@@ -364,7 +364,7 @@ chown $app -R /var/log/$app/etherpad.log
 # ADVERTISE SERVICE IN ADMIN PANEL
 #=================================================
 
-yunohost service add $app --log "/var/log/$app/etherpad.log"
+yunohost service add $app --description="Collaborative editor" --log="/var/log/$app/etherpad.log"
 
 #=================================================
 # UPGRADE FAIL2BAN

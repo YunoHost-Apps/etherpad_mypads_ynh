@@ -232,7 +232,7 @@ ynh_add_systemd_config
 # ADVERTISE SERVICE IN ADMIN PANEL
 #=================================================
 
-yunohost service add $app --log "/var/log/$app/etherpad.log"
+yunohost service add $app --description="Collaborative editor" --log="/var/log/$app/etherpad.log"
 
 #=================================================
 # INSTALL FRAMAPAD'S PLUGINS
