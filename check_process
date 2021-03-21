@@ -70,7 +70,7 @@
 		useldap=0
 	; Checks
 		setup_root=1
-		upgrade=1	from_commit=8bf300413ec3adcb416d168d2e9e98975dd9405b
+		upgrade=1	from_commit=978e77403a6d8e9512ec1f5203e9834e945c2d8c
 ;; Test sans export
 	; Manifest
 		domain="domain.tld"	(DOMAIN)
@@ -88,6 +88,6 @@
 Email=
 Notification=change
 ;;; Upgrade options
-	; commit=8bf300413ec3adcb416d168d2e9e98975dd9405b
-		name= Fix nodejs & global update
+	; commit=978e77403a6d8e9512ec1f5203e9834e945c2d8c
+		name= #113
 		manifest_arg=domain=DOMAIN&path=PATH&admin=USER&password=password&language=en&is_public=1&abiword=0&
