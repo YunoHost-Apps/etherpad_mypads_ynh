@@ -27,6 +27,8 @@ final_path=$(ynh_app_setting_get --app=$app --key=final_path)
 port=$(ynh_app_setting_get --app=$app --key=port)
 export=$(ynh_app_setting_get --app=$app --key=export)
 db_name=$(ynh_app_setting_get --app=$app --key=db_name)
+db_pwd=$(ynh_app_setting_get --app=$app --key=mysqlpwd)
+ynh_print_OFF; password=$(ynh_app_setting_get --app=$app --key=password); ynh_print_ON
 mypads=$(ynh_app_setting_get --app=$app --key=mypads)
 useldap=$(ynh_app_setting_get --app=$app --key=useldap)
 overwrite_settings=$(ynh_app_setting_get --app=$app --key=overwrite_settings)
@@ -40,14 +42,13 @@ pad_config_showlinenumbers=$(ynh_app_setting_get --app=$app --key=pad_config_sho
 pad_config_chatandusers=$(ynh_app_setting_get --app=$app --key=pad_config_chatandusers)
 pad_config_alwaysshowchat=$(ynh_app_setting_get --app=$app --key=pad_config_alwaysshowchat)
 pad_config_show_markdown=$(ynh_app_setting_get --app=$app --key=pad_config_show_markdown)
-pad_config_skinname=$(ynh_app_setting_get --app=$app --key=pad_config_skinname)
 
 #=================================================
 # CHECK VERSION
 #=================================================
 
 # Wait for etherpad to be fully started
-ynh_systemd_action --action=restart --line_match="You can access your Etherpad instance at" --log_path="/var/log/$app/etherpad.log" --timeout="120"
+ynh_systemd_action --action=restart --line_match="You can access your Etherpad instance at" --log_path="systemd" --timeout="120"
 
 upgrade_type=$(ynh_check_app_version_changed)
 
@@ -209,13 +210,6 @@ fi
 #=================================================
 ynh_script_progression --message="Upgrading NodeJS..." --weight=4
 
-# Remove the old nvm helper.
-if [ -d /opt/nvm ]
-then
-	ynh_secure_remove --file="/opt/nvm"
-	sed --in-place "/NVM_DIR/d" /root/.bashrc
-fi
-
 ynh_install_nodejs --nodejs_version=$nodejs_version
 
 #=================================================
@@ -231,9 +225,24 @@ ynh_exec_warn_less npm cache clean --force
 ynh_secure_remove --file="$final_path/src/package-lock.json"
 ynh_exec_warn_less ynh_exec_as $app PATH="$nodejs_path:$PATH" "$nodejs_path/npm" update)
 
+
+pushd $final_path
+  ynh_use_nodejs
+  ynh_exec_as $app env "$ynh_node_load_PATH" src/bin/installDeps.sh
+  #ynh_exec_warn_less ynh_exec_as $app env "$ynh_node_load_PATH" npm cache clean --force
+  #ynh_exec_warn_less ynh_exec_as $app env "$ynh_node_load_PATH" npm install --upgrade 
+  ynh_exec_as $app env "$ynh_node_load_PATH" npm install ep_automatic_logut ep_countable ep_delete_empty_pads ep_subscript_and_superscript ep_headings2 ep_author_hover ep_markdown ep_comments_page ep_align ep_font_color ep_font_size ep_spellcheck ep_table_of_contents >> $install_log 2>&1
+  if [ $mypads -eq 1 ]; then
+    # Framapad - Groups and private pads for Etherpad
+    ynh_exec_as $app env "$ynh_node_load_PATH" npm install ep_mypads >> $install_log 2>&1
+  fi
+popd
+
+
 # Then update the additionnal modules
 (cd "$final_path"
-ynh_exec_warn_less npm cache clean --force
+#ynh_exec_warn_less npm cache clean --force
+ynh_exec_warn_less ynh_exec_as $app env "$ynh_node_load_PATH" npm cache clean --force
 while read node_module
 do
     # Ignore ep_etherpad-lite, this part is updated before in this script.
@@ -251,8 +260,11 @@ do
     if [ -n "${module_version}" ]; then
         module_version=@${module_version}
     fi
-    ynh_exec_warn_less ynh_exec_as $app PATH="$nodejs_path:$PATH" "$nodejs_path/npm" install --upgrade ${node_module}${module_version} || true
+    ynh_exec_warn_less ynh_exec_as $app env "$ynh_node_load_PATH" npm install --upgrade ${node_module}${module_version} || true
 done <<< "$(ls -1 "$final_path/node_modules" | grep "^ep_")")
+
+#     ynh_exec_warn_less ynh_exec_as $app PATH="$nodejs_path:$PATH" "$nodejs_path/npm" install --upgrade ${node_module}${module_version} || true
+# done <<< "$(ls -1 "$final_path/node_modules" | grep "^ep_")")
 
 #=================================================
 # SPECIFIC UPGRADE
@@ -315,9 +327,6 @@ then
     if [ -n "$pad_config_show_markdown" ]; then
       ynh_replace_string --match_string="\(\"ep_markdown_default\" *: \).*," --replace_string="\1$pad_config_show_markdown," --target_file="$final_path/settings.json"
     fi
-    if [ -n "$pad_config_skinname" ]; then
-      ynh_replace_string --match_string="\(\"skinName\" *: \).*," --replace_string="\1\"$pad_config_skinname\"," --target_file="$final_path/settings.json"
-    fi
 
     # Recalculate and store the checksum of the file for the next upgrade.
     ynh_store_file_checksum --file="$final_path/settings.json"
@@ -326,19 +335,7 @@ then
   # Overwrite the credentials config file only if it's allowed
   if [ $overwrite_credentials -eq 1 ]
   then
-    # Verify the checksum of a file, stored by `ynh_store_file_checksum` in the install script.
-    ynh_backup_if_checksum_is_different --file="$final_path/credentials.json"
-    cp ../conf/credentials.json "$final_path/credentials.json"
-
-    ynh_replace_string --match_string="__DB_USER__" --replace_string="$app" --target_file="$final_path/credentials.json"
-    db_pwd=$(ynh_app_setting_get --app=$app --key=mysqlpwd)
-    ynh_print_OFF; password=$(ynh_app_setting_get --app=$app --key=password); ynh_print_ON
-    ynh_replace_string --match_string="__DB_PWD__" --replace_string="$db_pwd" --target_file="$final_path/credentials.json"
-    ynh_replace_string --match_string="__ADMIN__" --replace_string="$admin" --target_file="$final_path/credentials.json"
-    ynh_print_OFF; ynh_replace_special_string --match_string="__PASSWD__" --replace_string="$password" --target_file="$final_path/credentials.json"; ynh_print_ON
-
-    # Recalculate and store the checksum of the file for the next upgrade.
-    ynh_store_file_checksum --file="$final_path/credentials.json"
+    ynh_add_config --template="../conf/credentials.json" --destination="$final_path/credentials.json"
   fi
 fi
 
@@ -390,8 +387,7 @@ ynh_script_progression --message="Upgrading systemd configuration..." --weight=2
 # Overwrite the systemd configuration only if it's allowed
 if [ $overwrite_systemd -eq 1 ]
 then
-	ynh_replace_string --match_string="__ENV_PATH__" --replace_string="$PATH" --target_file="../conf/systemd.service"
-	ynh_add_systemd_config
+	ynh_add_systemd_config --others_var="ynh_node_load_PATH"
 fi
 
 #=================================================

@@ -6,7 +6,7 @@
 		"en": "Online editor providing collaborative editing in real-time.",
 		"fr": "Éditeur en ligne fournissant l'édition collaborative en temps réel."
 	},
-	"version": "1.8.4~ynh3",
+	"version": "1.8.12~ynh1",
 	"url": "https://framapad.org",
 	"license": "Apache-2.0",
 	"maintainer": {
@@ -18,7 +18,7 @@
 		"email": "maniackc_dev@crudelis.fr"
 	}],
 	"requirements": {
-		"yunohost": ">= 3.8.1"
+		"yunohost": ">= 4.1.7"
 	},
 	"multi_instance": true,
 	"services": [
@@ -30,38 +30,22 @@
 			{
 				"name": "domain",
 				"type": "domain",
-				"ask": {
-					"en": "Choose a domain for Etherpad MyPads",
-					"fr": "Choisissez un domaine pour Etherpad MyPads"
-				},
 				"example": "sub.domain.org"
 			},
 			{
 				"name": "path",
 				"type": "path",
-				"ask": {
-					"en": "Choose a path for Etherpad MyPads",
-					"fr": "Choisissez un chemin pour Etherpad MyPads"
-				},
 				"example": "/pad",
 				"default": "/pad"
 			},
 			{
 				"name": "admin",
 				"type": "user",
-				"ask": {
-					"en": "Choose the Etherpad MyPads administrator (must be an existing YunoHost user)",
-					"fr": "Choisissez l'administrateur Etherpad MyPads (doit être un utilisateur YunoHost existant)"
-				},
 				"example": "john"
 			},
 			{
 				"name": "password",
 				"type": "password",
-				"ask": {
-					"en": "Set the administrator password (between 8 and 30 characters)",
-					"fr": "Définissez le mot de passe administrateur (entre 8 et 30 caractères)"
-				},
 				"example": "Choose a password"
 			},
 			{
@@ -77,10 +61,6 @@
 			{
 				"name": "is_public",
 				"type": "boolean",
-				"ask": {
-					"en": "Is it a public website?",
-					"fr": "Est-ce un site public ?"
-				},
 				"help": {
 					"en": "If your Etherpad instance is public, everyone will be able to create a pad or see an existing one.",
 					"fr": "Si votre instance Etherpad est publique, tout le monde pourra créer un pad ou voir un pad existant."

@@ -78,16 +78,6 @@ else
 fi
 pad_config_automatic_logout="${YNH_CONFIG_MAIN_PAD_CONFIGURATION_PAD_CONFIG_AUTOMATIC_LOGOUT:-$old_pad_config_automatic_logout}"
 
-# Etherpad skin
-old_pad_config_skinname="$(get_config_value skinName)"
-if [ "$old_pad_config_skinname" = "no-skin" ]; then
-    old_pad_config_skinname=noskin
-fi
-pad_config_skinname="${YNH_CONFIG_MAIN_PAD_CONFIGURATION_PAD_CONFIG_SKINNAME:-$old_pad_config_skinname}"
-if [ "$pad_config_skinname" = "no-skin" ]; then
-    pad_config_skinname=noskin
-fi
-
 # Mypads
 if [ -d $final_path/node_modules/ep_mypads ]
 then
@@ -146,7 +136,6 @@ show_config() {
 	ynh_return "YNH_CONFIG_MAIN_PAD_CONFIGURATION_PAD_CONFIG_ALWAYSSHOWCHAT=$pad_config_alwaysshowchat"
 	ynh_return "YNH_CONFIG_MAIN_PAD_CONFIGURATION_PAD_CONFIG_SHOW_MARKDOWN=$pad_config_show_markdown"
 	ynh_return "YNH_CONFIG_MAIN_PAD_CONFIGURATION_PAD_CONFIG_AUTOMATIC_LOGOUT=$pad_config_automatic_logout"
-	ynh_return "YNH_CONFIG_MAIN_PAD_CONFIGURATION_PAD_CONFIG_SKINNAME=$pad_config_skinname"
 
 	ynh_return "YNH_CONFIG_MAIN_MYPADS_CONFIGURATION_MYPADS=$mypads"
 	ynh_return "YNH_CONFIG_MAIN_MYPADS_CONFIGURATION_USELDAP=$useldap"
@@ -230,17 +219,6 @@ apply_config() {
         restart_etherpad=1
     fi
 
-	# Plugin option ep_page_view_default
-	if [ "$pad_config_skinname" != "$old_pad_config_skinname" ]
-	then
-        if [ "$pad_config_skinname" = "noskin" ]; then
-            pad_config_skinname="no-skin"
-        fi
-		ynh_replace_string --match_string="\( *\"skinName\" *: \).*," --replace_string="\1\"$pad_config_skinname\"," --target_file="$config_file"
-		ynh_app_setting_set --app=$app --key=pad_config_skinname --value="$pad_config_skinname"
-		restart_etherpad=1
-	fi
-
 	# Export
 	if [ "$export" != "$old_export" ]
 	then
@@ -310,7 +288,7 @@ apply_config() {
 	if [ $restart_etherpad -eq 1 ]
 	then
 		# Wait for etherpad to be fully started
-		ynh_systemd_action --action=restart --line_match="You can access your Etherpad instance at" --log_path="/var/log/$app/etherpad.log" --timeout="120"
+		ynh_systemd_action --action=restart --line_match="You can access your Etherpad instance at" --log_path="systemd" --timeout="120"
 	fi
 
     #=================================================
