@@ -206,6 +206,7 @@ apply_config() {
     then
         ynh_use_nodejs
         pushd "$final_path"
+        ynh_secure_remove --file="$final_path/src/package-lock.json" #added to fix saveError ENOENT: no such file or directory
         if [ "$pad_config_automatic_logout" = "0" ]
         then
             ynh_replace_string --match_string="^\(.*\"automatic_logut.*$\)" --replace_string="\/\/\1" --target_file="$config_file"
@@ -255,6 +256,7 @@ apply_config() {
 	then
 		ynh_use_nodejs
 		pushd "$final_path"
+		ynh_secure_remove --file="$final_path/src/package-lock.json" #added to fix saveError ENOENT: no such file or directory
 		if [ "$mypads" = "1" ]
 		then
 			npm install ep_mypads@${mypads_version}
@@ -269,8 +271,8 @@ apply_config() {
 		restart_etherpad=1
 	fi
 
-	# Ldap for Mypads
-	if [ "$useldap" != "$old_useldap" ]
+	# LDAP for MyPads
+	if [ "$useldap" != "$old_useldap" ]	
 	then
 		if [ "$useldap" = "1" ]
 		then
