@@ -115,6 +115,14 @@ ynh_app_setting_set --app=$app --key=db_name --value=$db_name
 ynh_mysql_setup_db --db_user=$db_name --db_name=$db_name
 
 #=================================================
+# CREATE DEDICATED USER
+#=================================================
+ynh_script_progression --message="Configuring system user..." --weight=3
+
+# Create a dedicated system user
+ynh_system_user_create --username=$app --home_dir=$final_path
+
+#=================================================
 # DOWNLOAD, CHECK AND UNPACK SOURCE
 #=================================================
 ynh_script_progression --message="Setting up source files..." --weight=4
@@ -130,14 +138,6 @@ ynh_script_progression --message="Configuring NGINX web server..." --weight=2
 
 # Create a dedicated nginx config
 ynh_add_nginx_config
-
-#=================================================
-# CREATE DEDICATED USER
-#=================================================
-ynh_script_progression --message="Configuring system user..." --weight=3
-
-# Create a dedicated system user
-ynh_system_user_create --username=$app --home_dir=$final_path
 
 #=================================================
 # SPECIFIC SETUP
@@ -160,18 +160,6 @@ ynh_use_logrotate --specific_user=$app/$app
 # INSTALL ETHERPAD
 #=================================================
 ynh_script_progression --message="Installing Etherpad..." --weight=90
-
-# Install dependencies and proceed to the installation
-# ynh_use_nodejs
-# (
-#     cd "$final_path"
-#     mkdir -p node_modules
-#     cd node_modules
-#     [ -e ep_etherpad-lite ] || ln -s ../src ep_etherpad-lite
-#     cd ep_etherpad-lite
-#     chown -R $app: $final_path
-#     ynh_exec_as $app PATH="$nodejs_path:$PATH" "$nodejs_path/npm" install --save --loglevel warn
-# )
 
 chown -R $app: $final_path
 pushd $final_path

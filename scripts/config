@@ -78,7 +78,7 @@ else
 fi
 pad_config_automatic_logout="${YNH_CONFIG_MAIN_PAD_CONFIGURATION_PAD_CONFIG_AUTOMATIC_LOGOUT:-$old_pad_config_automatic_logout}"
 
-# Mypads
+# MyPads
 if [ -d $final_path/node_modules/ep_mypads ]
 then
     # Enable
@@ -89,7 +89,7 @@ else
 fi
 mypads="${YNH_CONFIG_MAIN_MYPADS_CONFIGURATION_MYPADS:-$old_mypads}"
 
-# Ldap for Mypads
+# Ldap for MyPads
 if grep -q "//noldap" $config_file
 then
     # Disable
@@ -224,7 +224,7 @@ apply_config() {
 	then
 		if [ "$export" = "abiword" ]
 		then
-			# if abiword isn't installed, call the action add_remove_abiword.
+			# if Abiword isn't installed, call the action add_remove_abiword.
 			if ! which abiword > /dev/null
 			then
 				yunohost app action run $app add_remove_abiword
@@ -233,7 +233,7 @@ apply_config() {
 			ynh_replace_string --match_string="\(\"soffice\" *: \).*," --replace_string="\1null," --target_file="$config_file"
 		elif [ "$export" = "libreoffice" ]
 		then
-			# if libreoffice isn't installed, call the action add_remove_libreoffice.
+			# if LibreOffice isn't installed, call the action add_remove_libreoffice.
 			if ! which soffice > /dev/null
 			then
 				yunohost app action run $app add_remove_libreoffice
@@ -250,7 +250,7 @@ apply_config() {
 		restart_etherpad=1
 	fi
 
-	# Mypads
+	# MyPads
 	if [ "$mypads" != "$old_mypads" ]
 	then
 		ynh_use_nodejs

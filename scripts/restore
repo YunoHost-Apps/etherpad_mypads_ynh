@@ -154,7 +154,7 @@ systemctl enable $app.service --quiet
 #=================================================
 # RESTORE FAIL2BAN CONFIGURATION
 #=================================================
-ynh_script_progression --message="Restoring the Fail2ban configuration..." --weight=6
+ynh_script_progression --message="Restoring the Fail2Ban configuration..." --weight=6
 
 ynh_restore_file "/etc/fail2ban/jail.d/$app.conf"
 ynh_restore_file "/etc/fail2ban/filter.d/$app.conf"

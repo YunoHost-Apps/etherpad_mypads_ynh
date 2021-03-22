@@ -171,6 +171,14 @@ ynh_script_progression --message="Stopping Etherpad service..." --weight=3
 ynh_systemd_action --action=stop
 
 #=================================================
+# CREATE DEDICATED USER
+#=================================================
+ynh_script_progression --message="Making sure dedicated system user exists..."
+
+# Create a dedicated user (if not existing)
+ynh_system_user_create --username=$app --home_dir=$final_path
+
+#=================================================
 # STANDARD UPGRADE STEPS
 #=================================================
 # DOWNLOAD, CHECK AND UNPACK SOURCE
@@ -218,22 +226,6 @@ ynh_install_nodejs --nodejs_version=$nodejs_version
 #=================================================
 ynh_script_progression --message="Upgrading Etherpad npm modules..." --weight=60
 
-# # Update the main modules of etherpad
-# chown -R $app: $final_path
-# (cd "$final_path/src"
-# ynh_exec_warn_less npm cache clean --force
-# # Remove package-lock.json to prevent any shit during npm update...
-# ynh_secure_remove --file="$final_path/src/package-lock.json"
-# ynh_exec_warn_less ynh_exec_as $app PATH="$nodejs_path:$PATH" "$nodejs_path/npm" update)
-
-
-# pushd $final_path
-#   ynh_use_nodejs
-#   ynh_exec_as $app env "$ynh_node_load_PATH" src/bin/installDeps.sh
-
-# popd
-
-
 # Then update the additionnal modules
 pushd $final_path
   ynh_use_nodejs
@@ -261,9 +253,6 @@ do
 done <<< "$(ls -1 "$final_path/node_modules" | grep "^ep_")"
 popd
 
-#     ynh_exec_warn_less ynh_exec_as $app PATH="$nodejs_path:$PATH" "$nodejs_path/npm" install --upgrade ${node_module}${module_version} || true
-# done <<< "$(ls -1 "$final_path/node_modules" | grep "^ep_")")
-
 #=================================================
 # SPECIFIC UPGRADE
 #=================================================
@@ -286,13 +275,13 @@ then
     then
       # Get abiword binary path
       abiword_path=`which abiword`
-      # Set the path of abiword into etherpad config
+      # Set the path of Abiword into Etherpad config
       ynh_replace_string --match_string="\"abiword\" : null" --replace_string="\"abiword\" : \"$abiword_path\"" --target_file="$final_path/settings.json"
     elif [ "$export" = "libreoffice" ]
     then
       # Get soffice binary path
       soffice_path=`which soffice`
-      # Set the path of soffice into etherpad config
+      # Set the path of soffice into Etherpad config
       ynh_replace_string --match_string="\"soffice\" : null" --replace_string="\"soffice\" : \"$soffice_path\"" --target_file="$final_path/settings.json"
     fi
 
@@ -303,7 +292,7 @@ then
     fi
     ynh_replace_string --match_string="__LANGUAGE__" --replace_string="$language" --target_file="$final_path/settings.json"
 
-    # Use ldap for mypads
+    # Use LDAP for MyPads
     if [ $mypads -eq 1 ] && [ $useldap -eq 1 ]
     then
       ynh_replace_string --match_string="//noldap" --replace_string="" --target_file="$final_path/settings.json"
@@ -338,14 +327,6 @@ then
 fi
 
 #=================================================
-# CREATE DEDICATED USER
-#=================================================
-ynh_script_progression --message="Making sure dedicated system user exists..."
-
-# Create a dedicated user (if not existing)
-ynh_system_user_create --username=$app --home_dir=$final_path
-
-#=================================================
 # SECURING FILES AND DIRECTORIES
 #=================================================
 
@@ -364,7 +345,7 @@ yunohost service add $app --description="Collaborative editor" --log="/var/log/$
 #=================================================
 # UPGRADE FAIL2BAN
 #=================================================
-ynh_script_progression --message="Reconfiguring Fail2ban..." --weight=8
+ynh_script_progression --message="Reconfiguring Fail2Ban..." --weight=8
 
 # Create a dedicated fail2ban config
 ynh_add_fail2ban_config --logpath="/var/log/nginx/$domain-access.log" --failregex="<HOST> .* .POST /mypads/api/auth/login HTTP/1.1. 400" --max_retry=5
