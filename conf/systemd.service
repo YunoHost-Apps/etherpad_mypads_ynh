@@ -10,7 +10,16 @@ WorkingDirectory=__FINALPATH__
 Environment=NODE_ENV=production
 Environment="__YNH_NODE_LOAD_PATH__"
 ExecStart=__FINALPATH__/src/bin/run.sh
+StandardOutput=append:/var/log/__APP__/etherpad.log
+StandardError=inherit
 Restart=always
+
+PrivateDevices=true
+ProtectControlGroups=true
+ProtectHome=true
+ProtectKernelTunables=true
+ProtectSystem=full
+RestrictSUIDSGID=true
 
 [Install]
 WantedBy=multi-user.target

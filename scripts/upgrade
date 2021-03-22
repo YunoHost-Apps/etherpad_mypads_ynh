@@ -49,7 +49,7 @@ pad_config_show_markdown=$(ynh_app_setting_get --app=$app --key=pad_config_show_
 #=================================================
 
 # Wait for etherpad to be fully started
-ynh_systemd_action --action=restart --line_match="You can access your Etherpad instance at" --log_path="systemd" --timeout="120"
+ynh_systemd_action --action=restart --line_match="You can access your Etherpad instance at" --log_path="/var/log/$app/etherpad.log" --timeout="120"
 
 upgrade_type=$(ynh_check_app_version_changed)
 
@@ -187,6 +187,8 @@ ynh_system_user_create --username=$app --home_dir=$final_path
 if [ "$upgrade_type" == "UPGRADE_APP" ]
 then
 	ynh_script_progression --message="Upgrading source files..." --weight=4
+
+  ynh_secure_remove --file="$final_path"
 
 	# Download, check integrity, uncompress and patch the source from app.src
 	ynh_setup_source --dest_dir="$final_path"
@@ -394,7 +396,7 @@ ynh_systemd_action --action=reload --service_name=nginx
 ynh_script_progression --message="Restarting Etherpad..." --weight=9
 
 # Wait for etherpad to be fully started
-ynh_systemd_action --action=restart --line_match="You can access your Etherpad instance at" --log_path="systemd" --timeout="120"
+ynh_systemd_action --action=restart --line_match="You can access your Etherpad instance at" --log_path="/var/log/$app/etherpad.log" --timeout="120"
 
 #=================================================
 # DEACTIVE MAINTENANCE MODE
