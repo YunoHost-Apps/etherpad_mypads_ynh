@@ -218,30 +218,26 @@ ynh_install_nodejs --nodejs_version=$nodejs_version
 #=================================================
 ynh_script_progression --message="Upgrading Etherpad npm modules..." --weight=60
 
-# Update the main modules of etherpad
-chown -R $app: $final_path
-(cd "$final_path/src"
-ynh_exec_warn_less npm cache clean --force
-# Remove package-lock.json to prevent any shit during npm update...
-ynh_secure_remove --file="$final_path/src/package-lock.json"
-ynh_exec_warn_less ynh_exec_as $app PATH="$nodejs_path:$PATH" "$nodejs_path/npm" update)
+# # Update the main modules of etherpad
+# chown -R $app: $final_path
+# (cd "$final_path/src"
+# ynh_exec_warn_less npm cache clean --force
+# # Remove package-lock.json to prevent any shit during npm update...
+# ynh_secure_remove --file="$final_path/src/package-lock.json"
+# ynh_exec_warn_less ynh_exec_as $app PATH="$nodejs_path:$PATH" "$nodejs_path/npm" update)
 
 
-pushd $final_path
-  ynh_use_nodejs
-  ynh_exec_as $app env "$ynh_node_load_PATH" src/bin/installDeps.sh
-  #ynh_exec_warn_less ynh_exec_as $app env "$ynh_node_load_PATH" npm cache clean --force
-  #ynh_exec_warn_less ynh_exec_as $app env "$ynh_node_load_PATH" npm install --upgrade 
-  ynh_exec_as $app env "$ynh_node_load_PATH" npm install ep_automatic_logut ep_countable ep_delete_empty_pads ep_subscript_and_superscript ep_headings2 ep_author_hover ep_markdown ep_comments_page ep_align ep_font_color ep_font_size ep_spellcheck ep_table_of_contents >> $install_log 2>&1
-  if [ $mypads -eq 1 ]; then
-    # Framapad - Groups and private pads for Etherpad
-    ynh_exec_as $app env "$ynh_node_load_PATH" npm install ep_mypads >> $install_log 2>&1
-  fi
-popd
+# pushd $final_path
+#   ynh_use_nodejs
+#   ynh_exec_as $app env "$ynh_node_load_PATH" src/bin/installDeps.sh
+
+# popd
 
 
 # Then update the additionnal modules
-(cd "$final_path"
+pushd $final_path
+  ynh_use_nodejs
+  ynh_exec_as $app env "$ynh_node_load_PATH" src/bin/installDeps.sh
 #ynh_exec_warn_less npm cache clean --force
 ynh_exec_warn_less ynh_exec_as $app env "$ynh_node_load_PATH" npm cache clean --force
 while read node_module
@@ -262,7 +258,8 @@ do
         module_version=@${module_version}
     fi
     ynh_exec_warn_less ynh_exec_as $app env "$ynh_node_load_PATH" npm install --upgrade ${node_module}${module_version} || true
-done <<< "$(ls -1 "$final_path/node_modules" | grep "^ep_")")
+done <<< "$(ls -1 "$final_path/node_modules" | grep "^ep_")"
+popd
 
 #     ynh_exec_warn_less ynh_exec_as $app PATH="$nodejs_path:$PATH" "$nodejs_path/npm" install --upgrade ${node_module}${module_version} || true
 # done <<< "$(ls -1 "$final_path/node_modules" | grep "^ep_")")
