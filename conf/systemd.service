@@ -8,7 +8,7 @@ User=__APP__
 Group=__APP__
 Environment="PATH=__ENV_PATH__"
 Environment=NODE_ENV=production
-ExecStart=__FINALPATH__/bin/safeRun.sh /var/log/__APP__/etherpad.log
+ExecStart=__FINALPATH__/src/bin/run.sh /var/log/__APP__/etherpad.log
 Restart=always
 
 [Install]
