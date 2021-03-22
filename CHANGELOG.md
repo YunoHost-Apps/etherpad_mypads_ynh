@@ -1,6 +1,21 @@
 Changelog
 =========
 
+## [1.8.13~ynh1]() - 2021-03-22
+
+#### Changed
+* [Upgrade to 1.8.13]()
+* [Upgrade NodeJS to 14]()
+* [Update to MyPads 1.7.19]()
+* [Upgrade plugins to upstream]()
+* [Set new permissions]
+
+#### Added
+* [ep_countable plugin (working again)]()
+
+#### Disabled
+* [ep_page_view plugin (now part of the core)]()
+
 ## [1.8.4~ynh1](https://github.com/YunoHost-Apps/etherpad_mypads_ynh/pull/105) - 2020-08-09
 
 #### Changed
