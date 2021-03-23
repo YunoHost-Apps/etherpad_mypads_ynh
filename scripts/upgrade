@@ -229,6 +229,8 @@ ynh_install_nodejs --nodejs_version=$nodejs_version
 ynh_script_progression --message="Upgrading Etherpad npm modules..." --weight=60
 
 # Then update the additionnal modules
+chown -R $app: $final_path
+
 pushd $final_path
   ynh_use_nodejs
   ynh_exec_as $app env "$ynh_node_load_PATH" src/bin/installDeps.sh
