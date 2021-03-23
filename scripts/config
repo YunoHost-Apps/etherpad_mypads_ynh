@@ -99,10 +99,6 @@ else
 fi
 useldap="${YNH_CONFIG_MAIN_MYPADS_CONFIGURATION_USELDAP:-$old_useldap}"
 
-# is_public
-# old_is_public="$(ynh_app_setting_get --app=$app --key=is_public)"
-# is_public="${YNH_CONFIG_MAIN_IS_PUBLIC_IS_PUBLIC:-$old_is_public}"
-
 # Overwrite settings.json file
 old_overwrite_settings="$(ynh_app_setting_get --app=$app --key=overwrite_settings)"
 overwrite_settings="${YNH_CONFIG_MAIN_OVERWRITE_FILES_OVERWRITE_SETTINGS:-$old_overwrite_settings}"
@@ -128,7 +124,6 @@ show_config() {
 	# ynh_return "YNH_CONFIG_${PANEL_ID}_${SECTION_ID}_${OPTION_ID}=value"
 
 	ynh_return "YNH_CONFIG_MAIN_EXPORT_EXPORT=$export"
-
 	ynh_return "YNH_CONFIG_MAIN_PAD_CONFIGURATION_PAD_CONFIG_NOCOLORS=$pad_config_nocolors"
 	ynh_return "YNH_CONFIG_MAIN_PAD_CONFIGURATION_PAD_CONFIG_SHOWLINENUMBERS=$pad_config_showlinenumbers"
 	ynh_return "YNH_CONFIG_MAIN_PAD_CONFIGURATION_PAD_CONFIG_CHATANDUSERS=$pad_config_chatandusers"
@@ -137,9 +132,6 @@ show_config() {
 	ynh_return "YNH_CONFIG_MAIN_PAD_CONFIGURATION_PAD_CONFIG_AUTOMATIC_LOGOUT=$pad_config_automatic_logout"
 	ynh_return "YNH_CONFIG_MAIN_MYPADS_CONFIGURATION_MYPADS=$mypads"
 	ynh_return "YNH_CONFIG_MAIN_MYPADS_CONFIGURATION_USELDAP=$useldap"
-
-	#ynh_return "YNH_CONFIG_MAIN_IS_PUBLIC_IS_PUBLIC=$is_public"
-
 	ynh_return "YNH_CONFIG_MAIN_OVERWRITE_FILES_OVERWRITE_SETTINGS=$overwrite_settings"
 	ynh_return "YNH_CONFIG_MAIN_OVERWRITE_FILES_OVERWRITE_CREDENTIALS=$overwrite_credentials"
 	ynh_return "YNH_CONFIG_MAIN_OVERWRITE_FILES_OVERWRITE_NGINX=$overwrite_nginx"
@@ -288,21 +280,6 @@ apply_config() {
 		# Wait for Etherpad to be fully started
 		ynh_systemd_action --action=restart --log_path=systemd --line_match="Your Etherpad version is"
 	fi
-
- #    #=================================================
- #    # MODIFY PUBLIC ACCESSIBILITY
- #    #=================================================
-
-	# # Change public accessibility
-	# if [ "$is_public" != "$old_is_public" ]
-	# then
- #        if [ "$is_public" = "1" ]
- #        then
- #            yunohost app action run $app public_private --args is_public=1
- #        else
- #            yunohost app action run $app public_private --args is_public=0
- #        fi
-	# fi
 
     #=================================================
     # MODIFY OVERWRITTING SETTINGS
