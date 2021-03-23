@@ -6,7 +6,7 @@
 		"en": "Online editor providing collaborative editing in real-time.",
 		"fr": "Éditeur en ligne fournissant l'édition collaborative en temps réel."
 	},
-	"version": "1.8.4~ynh2",
+	"version": "1.8.4~ynh3",
 	"url": "https://framapad.org",
 	"license": "Apache-2.0",
 	"maintainer": {
@@ -105,7 +105,7 @@
 					"fr": "Voulez-vous installer le plugin MyPads ?"
 				},
 				"help": {
-					"en": "<a href=https://git.framasoft.org/framasoft/ep_mypads target=_blank>mypads plugin</a>"
+					"en": "<a href=https://git.framasoft.org/framasoft/ep_mypads target=_blank>MyPads plugin</a>"
 				},
 				"default": true
 			},

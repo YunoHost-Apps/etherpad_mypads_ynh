@@ -211,10 +211,6 @@
 		// ep_markdown
 		"ep_markdown_default": false,	// Setting as default
 
-		// ep_page_view
-		"ep_page_view_default" : false,	// Set page view as default
-		"ep_page_view_disable_change" : false,	// Disable change of page view setting in UI
-
   // Other plugins config
 	// ep_comments_page
 		// Display comments as icons, not boxes
