@@ -100,10 +100,6 @@ else
 fi
 useldap="${YNH_CONFIG_MAIN_MYPADS_CONFIGURATION_USELDAP:-$old_useldap}"
 
-# # is_public
-# old_is_public="$(ynh_app_setting_get --app=$app --key=is_public)"
-# is_public="${YNH_CONFIG_MAIN_IS_PUBLIC_IS_PUBLIC:-$old_is_public}"
-
 # Overwrite settings.json file
 old_overwrite_settings="$(ynh_app_setting_get --app=$app --key=overwrite_settings)"
 overwrite_settings="${YNH_CONFIG_MAIN_OVERWRITE_FILES_OVERWRITE_SETTINGS:-$old_overwrite_settings}"
@@ -205,7 +201,7 @@ apply_config() {
     if [ "$pad_config_automatic_logout" != "$old_pad_config_automatic_logout" ]
     then
         ynh_use_nodejs
-        pushd "$final_path"
+        pushd "$final_path/src"
         ynh_secure_remove --file="$final_path/src/package-lock.json" #added to fix saveError ENOENT: no such file or directory
         if [ "$pad_config_automatic_logout" = "0" ]
         then
@@ -255,7 +251,7 @@ apply_config() {
 	if [ "$mypads" != "$old_mypads" ]
 	then
 		ynh_use_nodejs
-		pushd "$final_path"
+		pushd "$final_path/src"
 		ynh_secure_remove --file="$final_path/src/package-lock.json" #added to fix saveError ENOENT: no such file or directory
 		if [ "$mypads" = "1" ]
 		then
@@ -292,21 +288,6 @@ apply_config() {
 		# Wait for etherpad to be fully started
 		ynh_systemd_action --action=restart --line_match="You can access your Etherpad instance at" --log_path="/var/log/$app/etherpad.log" --timeout="120"
 	fi
-
-    #=================================================
-    # MODIFY PUBLIC ACCESSIBILITY
-    #=================================================
-
-	# # Change public accessibility
-	# if [ "$is_public" != "$old_is_public" ]
-	# then
- #        if [ "$is_public" = "1" ]
- #        then
- #            yunohost app action run $app public_private --args is_public=1
- #        else
- #            yunohost app action run $app public_private --args is_public=0
- #        fi
-	# fi
 
     #=================================================
     # MODIFY OVERWRITTING SETTINGS
