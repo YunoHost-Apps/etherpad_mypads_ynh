@@ -14,12 +14,11 @@ StandardOutput=append:/var/log/__APP__/etherpad.log
 StandardError=inherit
 Restart=always
 
-PrivateDevices=true
-ProtectControlGroups=true
-ProtectHome=true
-ProtectKernelTunables=true
-ProtectSystem=full
-RestrictSUIDSGID=true
+#PrivateDevices=true
+#ProtectControlGroups=true
+#ProtectHome=true
+#ProtectKernelTunables=true
+#ProtectSystem=full
 
 [Install]
 WantedBy=multi-user.target
