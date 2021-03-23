@@ -62,14 +62,14 @@ name = "Etherpad configuration"
         default = true
 
 
-    [main.is_public]
-    name = "Public access"
+    # [main.is_public]
+    # name = "Public access"
 
-        [main.is_public.is_public]
-        ask = "Is it a public website?"
-        type = "boolean"
-        default = true
-        help = "If your Etherpad instance is public, everyone will be able to create a pad or see an existing one."
+    #     [main.is_public.is_public]
+    #     ask = "Is it a public website?"
+    #     type = "boolean"
+    #     default = true
+    #     help = "If your Etherpad instance is public, everyone will be able to create a pad or see an existing one."
 
 
     [main.overwrite_files]

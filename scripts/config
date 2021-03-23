@@ -89,7 +89,7 @@ else
 fi
 mypads="${YNH_CONFIG_MAIN_MYPADS_CONFIGURATION_MYPADS:-$old_mypads}"
 
-# Ldap for MyPads
+# LDAP for MyPads
 if grep -q "//noldap" $config_file
 then
     # Disable
@@ -100,9 +100,9 @@ else
 fi
 useldap="${YNH_CONFIG_MAIN_MYPADS_CONFIGURATION_USELDAP:-$old_useldap}"
 
-# is_public
-old_is_public="$(ynh_app_setting_get --app=$app --key=is_public)"
-is_public="${YNH_CONFIG_MAIN_IS_PUBLIC_IS_PUBLIC:-$old_is_public}"
+# # is_public
+# old_is_public="$(ynh_app_setting_get --app=$app --key=is_public)"
+# is_public="${YNH_CONFIG_MAIN_IS_PUBLIC_IS_PUBLIC:-$old_is_public}"
 
 # Overwrite settings.json file
 old_overwrite_settings="$(ynh_app_setting_get --app=$app --key=overwrite_settings)"
@@ -140,7 +140,7 @@ show_config() {
 	ynh_return "YNH_CONFIG_MAIN_MYPADS_CONFIGURATION_MYPADS=$mypads"
 	ynh_return "YNH_CONFIG_MAIN_MYPADS_CONFIGURATION_USELDAP=$useldap"
 
-	ynh_return "YNH_CONFIG_MAIN_IS_PUBLIC_IS_PUBLIC=$is_public"
+	#ynh_return "YNH_CONFIG_MAIN_IS_PUBLIC_IS_PUBLIC=$is_public"
 
 	ynh_return "YNH_CONFIG_MAIN_OVERWRITE_FILES_OVERWRITE_SETTINGS=$overwrite_settings"
 	ynh_return "YNH_CONFIG_MAIN_OVERWRITE_FILES_OVERWRITE_CREDENTIALS=$overwrite_credentials"
@@ -297,16 +297,16 @@ apply_config() {
     # MODIFY PUBLIC ACCESSIBILITY
     #=================================================
 
-	# Change public accessibility
-	if [ "$is_public" != "$old_is_public" ]
-	then
-        if [ "$is_public" = "1" ]
-        then
-            yunohost app action run $app public_private --args is_public=1
-        else
-            yunohost app action run $app public_private --args is_public=0
-        fi
-	fi
+	# # Change public accessibility
+	# if [ "$is_public" != "$old_is_public" ]
+	# then
+ #        if [ "$is_public" = "1" ]
+ #        then
+ #            yunohost app action run $app public_private --args is_public=1
+ #        else
+ #            yunohost app action run $app public_private --args is_public=0
+ #        fi
+	# fi
 
     #=================================================
     # MODIFY OVERWRITTING SETTINGS

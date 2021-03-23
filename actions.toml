@@ -34,17 +34,17 @@ command = "/bin/bash scripts/actions/reset_default_config \"settings.json\""
 accepted_return_codes = [0]
 description = "Reset the config file settings.json."
 
-[public_private]
-name = "Move to public or private"
-command = "/bin/bash scripts/actions/public_private"
-# user = "root"  # optional
-# cwd = "/" # optional
-# accepted_return_codes = [0, 1, 2, 3]  # optional
-accepted_return_codes = [0]
-description = "Change the public access of the app."
+# [public_private]
+# name = "Move to public or private"
+# command = "/bin/bash scripts/actions/public_private"
+# # user = "root"  # optional
+# # cwd = "/" # optional
+# # accepted_return_codes = [0, 1, 2, 3]  # optional
+# accepted_return_codes = [0]
+# description = "Change the public access of the app."
 
-    [public_private.arguments]
-        [public_private.arguments.is_public]
-            type = "boolean"
-            ask = "Is it a public app?"
-            default = true
+#     [public_private.arguments]
+#         [public_private.arguments.is_public]
+#             type = "boolean"
+#             ask = "Is it a public app?"
+#             default = true
