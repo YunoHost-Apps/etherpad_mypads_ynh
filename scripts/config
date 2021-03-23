@@ -201,6 +201,7 @@ apply_config() {
     if [ "$pad_config_automatic_logout" != "$old_pad_config_automatic_logout" ]
     then
         ynh_use_nodejs
+        chown -R $app: $final_path
         pushd "$final_path/src"
         ynh_secure_remove --file="$final_path/src/package-lock.json" #added to fix saveError ENOENT: no such file or directory
         if [ "$pad_config_automatic_logout" = "0" ]
@@ -251,6 +252,7 @@ apply_config() {
 	if [ "$mypads" != "$old_mypads" ]
 	then
 		ynh_use_nodejs
+		chown -R $app: $final_path
 		pushd "$final_path/src"
 		ynh_secure_remove --file="$final_path/src/package-lock.json" #added to fix saveError ENOENT: no such file or directory
 		if [ "$mypads" = "1" ]
