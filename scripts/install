@@ -216,6 +216,7 @@ ynh_store_file_checksum --file="$final_path/credentials.json"
 
 # Set files ownership to etherpad
 chown -R $app: $final_path
+chmod o-rwx $final_path
 # Restrict access to credentials.json
 chmod 600 $final_path/credentials.json
 

@@ -356,6 +356,7 @@ ynh_system_user_create --username=$app --home_dir=$final_path
 
 # Set files ownership to etherpad
 chown -R $app: $final_path
+chmod o-rwx $final_path
 chmod 600 "$final_path/credentials.json"
 # Restrict access to credentials.json
 chown $app -R /var/log/$app/etherpad.log
