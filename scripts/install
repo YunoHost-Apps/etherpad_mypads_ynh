@@ -206,7 +206,8 @@ ynh_add_config --template="../conf/credentials.json" --destination="$final_path/
 #=================================================
 
 # Set files ownership to etherpad
-chown -R $app: $final_path
+chown -R $app:$app $final_path
+chmod o-rwx $final_path
 # Restrict access to credentials.json
 chmod 600 $final_path/credentials.json
 
