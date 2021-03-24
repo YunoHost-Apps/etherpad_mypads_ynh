@@ -92,9 +92,9 @@ ynh_app_setting_set --app=$app --key=port --value=$port
 ynh_script_progression --message="Installing dependencies..." --weight=120
 
 if [ "$export" = "abiword" ]; then
-	ynh_install_app_dependencies $abiword_app_depencencies
+	ynh_exec_warn_less ynh_install_app_dependencies $abiword_app_depencencies
 elif [ "$export" = "libreoffice" ]; then
-	ynh_install_app_dependencies $libreoffice_app_dependencies
+	ynh_exec_warn_less ynh_install_app_dependencies $libreoffice_app_dependencies
 fi
 
 #=================================================

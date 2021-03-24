@@ -212,9 +212,9 @@ fi
 ynh_script_progression --message="Upgrading dependencies..." --weight=5
 
 if [ "$export" = "abiword" ]; then
-	ynh_install_app_dependencies $abiword_app_depencencies
+	ynh_exec_warn_less ynh_install_app_dependencies $abiword_app_depencencies
 elif [ "$export" = "libreoffice" ]; then
-	ynh_install_app_dependencies $libreoffice_app_dependencies
+	ynh_exec_warn_less ynh_install_app_dependencies $libreoffice_app_dependencies
 fi
 
 #=================================================
