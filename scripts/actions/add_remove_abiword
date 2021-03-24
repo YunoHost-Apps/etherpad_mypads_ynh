@@ -84,7 +84,7 @@ fi
 
 # Rebuild the meta package and install the new dependencies
 ( cd scripts	# Move to scripts directory to allow the helper to find the manifest where it expects to find it.
-ynh_install_app_dependencies $dependencies)
+ynh_exec_warn_less ynh_install_app_dependencies $dependencies)
 
 # Remove all unused dependencies
 ynh_package_autopurge
