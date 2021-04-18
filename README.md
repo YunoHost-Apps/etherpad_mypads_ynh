@@ -43,8 +43,8 @@ You can also find a configuration file for Etherpad at this path `/var/www/ether
 
 #### Supported architectures
 
-* x86-64 - [![](https://ci-apps.yunohost.org/ci/logs/etherpad_mypads%20%28Apps%29.svg)](https://ci-apps.yunohost.org/ci/apps/etherpad_mypads/)
-* ARMv8-A - [![](https://ci-apps-arm.yunohost.org/ci/logs/etherpad_mypads%20%28Apps%29.svg)](https://ci-apps-arm.yunohost.org/ci/apps/etherpad_mypads/)
+* x86-64 - [![](https://ci-apps.yunohost.org/ci/logs/etherpad_mypads.svg)](https://ci-apps.yunohost.org/ci/apps/etherpad_mypads/)
+* ARMv8-A - [![](https://ci-apps-arm.yunohost.org/ci/logs/etherpad_mypads.svg)](https://ci-apps-arm.yunohost.org/ci/apps/etherpad_mypads/)
 
 ## Limitations
 
