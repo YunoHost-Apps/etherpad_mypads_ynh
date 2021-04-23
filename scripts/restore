@@ -136,7 +136,6 @@ ynh_exec_warn_less npm cache clean --force
 
 # Restore permissions on app files
 chown -R $app: $final_path
-chmod o-rwx $final_path
 
 #=================================================
 # ADVERTISE SERVICE IN ADMIN PANEL
