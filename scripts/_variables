@@ -7,7 +7,7 @@ abiword_app_depencencies="abiword"
 libreoffice_app_dependencies="unoconv libreoffice-writer"
 
 # NodeJS version
-nodejs_version=12
+nodejs_version=14
 
 # MyPads version
 # This variable is mostly used to force an upgrade of the package in case of new versions of MyPads.
@@ -18,13 +18,13 @@ ep_align_version=0.3.33
 ep_author_hover_version=0.3.18
 ep_automatic_logut_version=1.0.8
 ep_comments_page_version=0.1.60
-ep_countable_version=0.0.9
+ep_countable_version=0.0.11
 ep_delete_empty_pads_version=0.0.7
 ep_font_color_version=0.0.41
 ep_headings2_version=0.2.27
 ep_markdown_version=0.1.31
 ep_page_view_version=0.5.24
 ep_spellcheck_version=0.0.26
-ep_subscript_and_superscript_version=0.2.25
+ep_subscript_and_superscript_version=0.2.26
 ep_table_of_contents_version=0.3.19
 ep_font_size_version=0.4.21
