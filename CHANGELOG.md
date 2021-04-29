@@ -6,7 +6,7 @@ Changelog
 #### Changed
 * [Upgrade to 1.8.13](https://github.com/YunoHost-Apps/etherpad_mypads_ynh/commit/9684b59824b18ea781efb8a26df5d7c3d51a8264)
 * [Upgrade NodeJS to 14](https://github.com/YunoHost-Apps/etherpad_mypads_ynh/commit/5d3ce9996e3f4d0812b000467e5ae2d9ee5416e0)
-* [Update to MyPads 1.7.19](https://github.com/YunoHost-Apps/etherpad_mypads_ynh/commit/943ec31536dabe4f2146253f3e478598cdafe4bf)
+* [Update to MyPads 1.7.20]()
 * [Upgrade plugins to upstream](https://github.com/YunoHost-Apps/etherpad_mypads_ynh/commit/943ec31536dabe4f2146253f3e478598cdafe4bf)
 * [Use new permission system](https://github.com/YunoHost-Apps/etherpad_mypads_ynh/commit/943ec31536dabe4f2146253f3e478598cdafe4bf)
 * [Set YunoHost requirements to 4.1.7](https://github.com/YunoHost-Apps/etherpad_mypads_ynh/commit/5d3ce9996e3f4d0812b000467e5ae2d9ee5416e0)
