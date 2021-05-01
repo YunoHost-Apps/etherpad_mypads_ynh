@@ -8,7 +8,6 @@
 
 # Load common variables for all scripts.
 source _variables
-
 source _common.sh
 source /usr/share/yunohost/helpers
 
@@ -234,6 +233,16 @@ fi
 ynh_script_progression --message="Upgrading NodeJS..." --weight=4
 
 ynh_install_nodejs --nodejs_version=$nodejs_version
+
+#=================================================
+# HANDLE LOG FILES AND LOGROTATE
+#=================================================
+ynh_script_progression --message="Configuring log rotation..."
+
+# Create log directory
+install_log=/var/log/$app/installation.log
+touch $install_log
+chown $app -R /var/log/$app
 
 #=================================================
 # UPGRADE NPM MODULES
