@@ -6,7 +6,7 @@
 *[Lire ce readme en français.](./README_fr.md)*
 
 > *This package allow you to install Etherpad quickly and simply on a YunoHost server.  
-If you don't have YunoHost, please see [here](https://yunohost.org/#/install) to know how to install and enjoy it.*
+If you don't have YunoHost, please see [here](https://yunohost.org/install) to know how to install and enjoy it.*
 
 ## Overview
 Etherpad is a highly customizable Open Source online editor providing collaborative editing in really real-time.  
@@ -43,8 +43,8 @@ You can also find a configuration file for Etherpad at this path `/var/www/ether
 
 #### Supported architectures
 
-* x86-64 - [![](https://ci-apps.yunohost.org/ci/logs/etherpad_mypads%20%28Apps%29.svg)](https://ci-apps.yunohost.org/ci/apps/etherpad_mypads/)
-* ARMv8-A - [![](https://ci-apps-arm.yunohost.org/ci/logs/etherpad_mypads%20%28Apps%29.svg)](https://ci-apps-arm.yunohost.org/ci/apps/etherpad_mypads/)
+* x86-64 - [![](https://ci-apps.yunohost.org/ci/logs/etherpad_mypads.svg)](https://ci-apps.yunohost.org/ci/apps/etherpad_mypads/)
+* ARMv8-A - [![](https://ci-apps-arm.yunohost.org/ci/logs/etherpad_mypads.svg)](https://ci-apps-arm.yunohost.org/ci/apps/etherpad_mypads/)
 
 ## Limitations
 
