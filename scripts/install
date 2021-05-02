@@ -289,7 +289,7 @@ then
 	# Find the /div just after the field to open a pad
 	mod_line=$(grep -nA5 "index.createOpenPad" $final_path/src/templates/index.html | grep "</div>" | cut -d '-' -f 1)
 	# In order to add a link to mypads plugin.
-	sed -i "$mod_line s@div>@&\n\t<center><br><font size="5"><a href="./mypads/">Mypads</a></font></center>@" $final_path/src/templates/index.html
+	sed -i "$mod_line s@div>@&\n\t<center><br><font size="5"><a href="./mypads/">MyPads</a></font></center>@" $final_path/src/templates/index.html
 fi
 
 #=================================================
