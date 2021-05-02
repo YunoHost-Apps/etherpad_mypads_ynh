@@ -247,7 +247,7 @@ chown $app -R /var/log/$app
 #=================================================
 # UPGRADE NPM MODULES
 #=================================================
-ynh_script_progression --message="Upgrading Etherpad npm modules..." --weight=60
+ynh_script_progression --message="Upgrading Etherpad..." --weight=60
 
 # Then update the additionnal modules
 chown -R $app: $final_path
@@ -255,7 +255,7 @@ chown -R $app: $final_path
 pushd $final_path
   ynh_use_nodejs
   ynh_exec_as $app env "$ynh_node_load_PATH" src/bin/installDeps.sh
-#ynh_exec_warn_less npm cache clean --force
+# ynh_exec_warn_less npm cache clean --force
 # ynh_exec_warn_less ynh_exec_as $app env "$ynh_node_load_PATH" npm cache clean --force
 # while read node_module
 # do
