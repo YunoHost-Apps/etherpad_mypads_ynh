@@ -55,7 +55,7 @@
 					"en": "Choose your language",
 					"fr": "Choisissez la langue"
 				},
-				"choices" : ["en", "fr"],
+				"choices" : ["de", "en", "es", "fr", "it"],
 				"default" : "en"
 			},
 			{

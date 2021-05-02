@@ -8,7 +8,6 @@ Changelog
 * [Upgrade NodeJS to 14](https://github.com/YunoHost-Apps/etherpad_mypads_ynh/commit/5d3ce9996e3f4d0812b000467e5ae2d9ee5416e0)
 * [Update to MyPads 1.7.20]()
 * [Upgrade plugins to upstream](https://github.com/YunoHost-Apps/etherpad_mypads_ynh/commit/943ec31536dabe4f2146253f3e478598cdafe4bf)
-* [Use new permission system](https://github.com/YunoHost-Apps/etherpad_mypads_ynh/commit/943ec31536dabe4f2146253f3e478598cdafe4bf)
 * [Set YunoHost requirements to 4.1.7](https://github.com/YunoHost-Apps/etherpad_mypads_ynh/commit/5d3ce9996e3f4d0812b000467e5ae2d9ee5416e0)
 
 #### Added
@@ -16,6 +15,12 @@ Changelog
 
 #### Disabled
 * [ep_page_view plugin (now part of the core)](https://github.com/YunoHost-Apps/etherpad_mypads_ynh/commit/def10182c0d7e7aa8a9123e3606203fbd37a20ea)
+
+## [1.8.4~ynh3](https://github.com/YunoHost-Apps/etherpad_mypads_ynh/pull/133) - 2021-04-23
+
+#### Changed
+* [Remove page_view plugin (part of the core now)](https://github.com/YunoHost-Apps/etherpad_mypads_ynh/pull/133/commits/def10182c0d7e7aa8a9123e3606203fbd37a20ea)
+* [New permissions](https://github.com/YunoHost-Apps/etherpad_mypads_ynh/pull/133/commits/943ec31536dabe4f2146253f3e478598cdafe4bf)
 
 ## [1.8.4~ynh1](https://github.com/YunoHost-Apps/etherpad_mypads_ynh/pull/105) - 2020-08-09
 
