@@ -249,7 +249,7 @@ npm install ep_automatic_logut@${ep_automatic_logut_version} >> $install_log 2>&
 # Framapad - Adds comments on sidebar and link it to the text.
 npm install ep_comments_page@${ep_comments_page_version} >> $install_log 2>&1
 # Framapad - Displays paragraphs, sentences, words and characters counts.
-npm install ep_countable@${ep_countable_version} >> $install_log 2>&1
+#npm install ep_countable@${ep_countable_version} >> $install_log 2>&1
 # Framapad - Delete pads which were never edited
 npm install ep_delete_empty_pads@${ep_delete_empty_pads_version} >> $install_log 2>&1
 # Framapad - Apply colors to fonts
