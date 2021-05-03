@@ -1,6 +1,21 @@
 Changelog
 =========
 
+## [1.8.13~ynh1]() - 2021-03-23
+
+#### Changed
+* [Upgrade to 1.8.13](https://github.com/YunoHost-Apps/etherpad_mypads_ynh/commit/9684b59824b18ea781efb8a26df5d7c3d51a8264)
+* [Upgrade NodeJS to 14](https://github.com/YunoHost-Apps/etherpad_mypads_ynh/commit/5d3ce9996e3f4d0812b000467e5ae2d9ee5416e0)
+* [Update to MyPads 1.7.20]()
+* [Upgrade plugins to upstream](https://github.com/YunoHost-Apps/etherpad_mypads_ynh/commit/943ec31536dabe4f2146253f3e478598cdafe4bf)
+* [Set YunoHost requirements to 4.1.7](https://github.com/YunoHost-Apps/etherpad_mypads_ynh/commit/5d3ce9996e3f4d0812b000467e5ae2d9ee5416e0)
+
+#### Added
+* [ep_countable plugin (working again)](https://github.com/YunoHost-Apps/etherpad_mypads_ynh/commit/5d3ce9996e3f4d0812b000467e5ae2d9ee5416e0)
+
+#### Disabled
+* [ep_page_view plugin (now part of the core)](https://github.com/YunoHost-Apps/etherpad_mypads_ynh/commit/def10182c0d7e7aa8a9123e3606203fbd37a20ea)
+
 ## [1.8.4~ynh3](https://github.com/YunoHost-Apps/etherpad_mypads_ynh/pull/133) - 2021-04-23
 
 #### Changed

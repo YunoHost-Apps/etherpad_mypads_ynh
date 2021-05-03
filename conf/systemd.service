@@ -6,10 +6,19 @@ After=syslog.target network.target
 Type=simple
 User=__APP__
 Group=__APP__
-Environment="PATH=__ENV_PATH__"
+WorkingDirectory=__FINALPATH__
 Environment=NODE_ENV=production
-ExecStart=__FINALPATH__/bin/safeRun.sh /var/log/__APP__/etherpad.log
+Environment="__YNH_NODE_LOAD_PATH__"
+ExecStart=__FINALPATH__/src/bin/run.sh
+StandardOutput=append:/var/log/__APP__/etherpad.log
+StandardError=inherit
 Restart=always
+
+#PrivateDevices=true
+#ProtectControlGroups=true
+#ProtectHome=true
+#ProtectKernelTunables=true
+#ProtectSystem=full
 
 [Install]
 WantedBy=multi-user.target

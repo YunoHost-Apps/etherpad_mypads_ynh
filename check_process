@@ -19,10 +19,8 @@
         main.pad_configuration.pad_config_alwaysshowchat=1|0
         main.pad_configuration.pad_config_show_markdown=1|0
         main.pad_configuration.pad_config_automatic_logout=0|1
-        main.pad_configuration.pad_config_skinname=noskin|colibris|noskin
         main.mypads_configuration.mypads=0|1
         main.mypads_configuration.useldap=0|1
-        main.is_public.is_public=1|0
         main.overwrite_files.overwrite_settings=0|1
         main.overwrite_files.overwrite_credentials=0|1
         main.overwrite_files.overwrite_nginx=0|1
@@ -36,7 +34,7 @@
 		setup_public=1
 		upgrade=1
 		backup_restore=1
-		multi_instance=1
+		multi_instance=0
 		change_url=1
         actions=1
         config_panel=1
