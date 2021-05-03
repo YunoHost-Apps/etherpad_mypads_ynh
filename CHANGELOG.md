@@ -1,6 +1,12 @@
 Changelog
 =========
 
+## [1.8.4~ynh3](https://github.com/YunoHost-Apps/etherpad_mypads_ynh/pull/133) - 2021-04-23
+
+#### Changed
+* [Remove page_view plugin (part of the core now)](https://github.com/YunoHost-Apps/etherpad_mypads_ynh/pull/133/commits/def10182c0d7e7aa8a9123e3606203fbd37a20ea)
+* [New permissions](https://github.com/YunoHost-Apps/etherpad_mypads_ynh/pull/133/commits/943ec31536dabe4f2146253f3e478598cdafe4bf)
+
 ## [1.8.4~ynh1](https://github.com/YunoHost-Apps/etherpad_mypads_ynh/pull/105) - 2020-08-09
 
 #### Changed

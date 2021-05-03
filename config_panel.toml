@@ -42,11 +42,6 @@ name = "Etherpad configuration"
         type = "boolean"
         default = false
 
-        [main.pad_configuration.pad_config_pageview]
-        ask = "Page view?"
-        type = "boolean"
-        default = false
-
         [main.pad_configuration.pad_config_automatic_logout]
         ask = "Automatic logout"
         type = "boolean"

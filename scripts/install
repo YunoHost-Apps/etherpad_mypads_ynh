@@ -65,7 +65,6 @@ ynh_script_progression --message="Storing installation settings..." --weight=3
 ynh_app_setting_set --app=$app --key=domain --value=$domain
 ynh_app_setting_set --app=$app --key=path --value=$path_url
 ynh_app_setting_set --app=$app --key=admin --value=$admin
-ynh_app_setting_set --app=$app --key=is_public --value=$is_public
 ynh_print_OFF; ynh_app_setting_set --app=$app --key=password --value=$password; ynh_print_ON
 ynh_app_setting_set --app=$app --key=language --value=$language
 ynh_app_setting_set --app=$app --key=export --value=$export
@@ -233,7 +232,7 @@ ynh_add_systemd_config
 # ADVERTISE SERVICE IN ADMIN PANEL
 #=================================================
 
-yunohost service add $app --log "/var/log/$app/etherpad.log"
+yunohost service add $app --description="Collaborative editor" --log="/var/log/$app/etherpad.log"
 
 #=================================================
 # INSTALL FRAMAPAD'S PLUGINS
@@ -263,8 +262,6 @@ if [ $mypads -eq 1 ]; then
 	# Framapad - Groups and private pads for etherpad
 	npm install ep_mypads@${mypads_version} >> $install_log 2>&1
 fi
-# Framapad - Add support to do 'page view', with a toggle on/off option in Settings, also Page Breaks with Control Enter
-npm install ep_page_view@${ep_page_view_version} >> $install_log 2>&1
 # Framapad - Add support to do 'Spell checking'
 npm install ep_spellcheck@${ep_spellcheck_version} >> $install_log 2>&1
 # Framapad - Add support for Subscript and Superscript
@@ -292,7 +289,7 @@ then
 	# Find the /div just after the field to open a pad
 	mod_line=$(grep -nA5 "index.createOpenPad" $final_path/src/templates/index.html | grep "</div>" | cut -d '-' -f 1)
 	# In order to add a link to mypads plugin.
-	sed -i "$mod_line s@div>@&\n\t<center><br><font size="5"><a href="./mypads/">Mypads</a></font></center>@" $final_path/src/templates/index.html
+	sed -i "$mod_line s@div>@&\n\t<center><br><font size="5"><a href="./mypads/">MyPads</a></font></center>@" $final_path/src/templates/index.html
 fi
 
 #=================================================
@@ -306,14 +303,14 @@ ynh_add_fail2ban_config --logpath="/var/log/nginx/$domain-access.log" --failrege
 #=================================================
 # SETUP SSOWAT
 #=================================================
-ynh_script_progression --message="Configuring SSOwat..."
+ynh_script_progression --message="Configuring permissions..." --weight=2
 
 if [ $is_public -eq 1 ]; then
-	ynh_app_setting_set --app=$app --key=skipped_uris --value="/"
-else
-	# etherpad admin page doesn't support SSO...
-	ynh_app_setting_set --app=$app --key=skipped_uris --value="/admin"
+	ynh_permission_update --permission="main" --add="visitors"	
 fi
+
+# Etherpad admin page doesn't support SSO...
+ynh_permission_create --permission="admin" --url="/admin" --allowed=$admin
 
 #=================================================
 # RELOAD NGINX
