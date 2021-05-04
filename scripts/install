@@ -6,9 +6,12 @@
 # IMPORT GENERIC HELPERS
 #=================================================
 
+if [ ${PACKAGE_CHECK_EXEC:-0} -eq 1 ]; then
+	sleep 60
+fi
+
 # Load common variables for all scripts.
 source _variables
-
 source _common.sh
 source /usr/share/yunohost/helpers
 
@@ -270,7 +273,7 @@ chown -R $app: $final_path/node_modules
 
 if [ $mypads -eq 1 ]
 then
-	# Add a link to etherpad to allow anonymous pads creation from Mypads.
+	# Add a link to Etherpad to allow anonymous pads creation from MyPads.
 	ynh_replace_string --match_string="^ *\"DESCRIPTION\": .*</ul>" --replace_string="&<a href=../>Pads anonymes</a>" --target_file=$final_path/node_modules/ep_mypads/static/l10n/fr.json
 	ynh_replace_string --match_string="^ *\"DESCRIPTION\": .*</ul>" --replace_string="&<a href=../>Anonymous pads</a>" --target_file=$final_path/node_modules/ep_mypads/static/l10n/en.json
 	# And a link to etherpad admin from Mypads.
@@ -288,7 +291,7 @@ fi
 #=================================================
 ynh_script_progression --message="Configuring Fail2Ban..." --weight=13
 
-# Create a dedicated fail2ban config
+# Create a dedicated Fail2Ban config
 ynh_add_fail2ban_config --logpath="/var/log/nginx/$domain-access.log" --failregex="<HOST> .* .POST /mypads/api/auth/login HTTP/1.1. 400" --max_retry=5
 
 #=================================================

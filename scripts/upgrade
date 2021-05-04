@@ -412,7 +412,7 @@ yunohost service add $app --description="Collaborative editor" --log="/var/log/$
 #=================================================
 ynh_script_progression --message="Reconfiguring Fail2Ban..." --weight=8
 
-# Create a dedicated fail2ban config
+# Create a dedicated Fail2Ban config
 ynh_add_fail2ban_config --logpath="/var/log/nginx/$domain-access.log" --failregex="<HOST> .* .POST /mypads/api/auth/login HTTP/1.1. 400" --max_retry=5
 
 #=================================================
