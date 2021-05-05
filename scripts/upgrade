@@ -285,35 +285,35 @@ ynh_script_progression --message="Installing Etherpad plugins..." --weight=90
 
 pushd "$final_path"
 # Add Left/Center/Right/Justify to lines of text in a pad
-npm install ep_align@${ep_align_version} >> $install_log 2>&1
+ynh_npm install ep_align@${ep_align_version} >> $install_log 2>&1
 # Framapad - Adds author names to span titles
-npm install ep_author_hover@${ep_author_hover_version} >> $install_log 2>&1
+ynh_npm install ep_author_hover@${ep_author_hover_version} >> $install_log 2>&1
 # Automatically disconnects user after some period of time (Prevent server overload)
-npm install ep_automatic_logut@${ep_automatic_logut_version} >> $install_log 2>&1
+ynh_npm install ep_automatic_logut@${ep_automatic_logut_version} >> $install_log 2>&1
 # Framapad - Adds comments on sidebar and link it to the text.
-npm install ep_comments_page@${ep_comments_page_version} >> $install_log 2>&1
+ynh_npm install ep_comments_page@${ep_comments_page_version} >> $install_log 2>&1
 # Framapad - Displays paragraphs, sentences, words and characters counts.
-npm install ep_countable@${ep_countable_version} >> $install_log 2>&1
+ynh_npm install ep_countable@${ep_countable_version} >> $install_log 2>&1
 # Framapad - Delete pads which were never edited
-npm install ep_delete_empty_pads@${ep_delete_empty_pads_version} >> $install_log 2>&1
+ynh_npm install ep_delete_empty_pads@${ep_delete_empty_pads_version} >> $install_log 2>&1
 # Framapad - Apply colors to fonts
-npm install ep_font_color@${ep_font_color_version} >> $install_log 2>&1
+ynh_npm install ep_font_color@${ep_font_color_version} >> $install_log 2>&1
 # Framapad - Adds heading support to Etherpad Lite.
-npm install ep_headings2@${ep_headings2_version} >> $install_log 2>&1
+ynh_npm install ep_headings2@${ep_headings2_version} >> $install_log 2>&1
 # Framapad - Edit and Export as Markdown in Etherpad
-npm install ep_markdown@${ep_markdown_version} >> $install_log 2>&1
+ynh_npm install ep_markdown@${ep_markdown_version} >> $install_log 2>&1
 if [ $mypads -eq 1 ]; then
   # Framapad - Groups and private pads for etherpad
-  npm install ep_mypads@${mypads_version} >> $install_log 2>&1
+  ynh_npm install ep_mypads@${mypads_version} >> $install_log 2>&1
 fi
 # Framapad - Add support to do 'Spell checking'
-npm install ep_spellcheck@${ep_spellcheck_version} >> $install_log 2>&1
+ynh_npm install ep_spellcheck@${ep_spellcheck_version} >> $install_log 2>&1
 # Framapad - Add support for Subscript and Superscript
-npm install ep_subscript_and_superscript@${ep_subscript_and_superscript_version} >> $install_log 2>&1
+ynh_npm install ep_subscript_and_superscript@${ep_subscript_and_superscript_version} >> $install_log 2>&1
 # Framapad - View a table of contents for your pad
-npm install ep_table_of_contents@${ep_table_of_contents_version} >> $install_log 2>&1
+ynh_npm install ep_table_of_contents@${ep_table_of_contents_version} >> $install_log 2>&1
 # Framapad - User Pad Contents font size can be set in settings, this does not effect other peoples views
-npm install ep_font_size@${ep_font_size_version} >> $install_log 2>&1
+ynh_npm install ep_font_size@${ep_font_size_version} >> $install_log 2>&1
 popd
 chown -R $app: $final_path/node_modules
 
@@ -412,7 +412,7 @@ yunohost service add $app --description="Collaborative editor" --log="/var/log/$
 #=================================================
 ynh_script_progression --message="Reconfiguring Fail2Ban..." --weight=8
 
-# Create a dedicated fail2ban config
+# Create a dedicated Fail2Ban config
 ynh_add_fail2ban_config --logpath="/var/log/nginx/$domain-access.log" --failregex="<HOST> .* .POST /mypads/api/auth/login HTTP/1.1. 400" --max_retry=5
 
 #=================================================
@@ -440,10 +440,11 @@ fi
 
 if [ "$upgrade_type" == "UPGRADE_APP" ] && [ $mypads -eq 1 ]
 then
-	# Find the /div just after the field to open a pad
-	mod_line=$(grep -nA5 "index.createOpenPad" $final_path/src/templates/index.html | grep "</div>" | cut -d '-' -f 1)
-	# In order to add a link to mypads plugin.
-	sed -i "$mod_line s@div>@&\n\t<center><br><font size="5"><a href="./mypads/">MyPads</a></font></center>@" $final_path/src/templates/index.html
+	# # Find the /div just after the field to open a pad
+	# mod_line=$(grep -nA5 "index.createOpenPad" $final_path/src/templates/index.html | grep "</div>" | cut -d '-' -f 1)
+	# # In order to add a link to mypads plugin.
+	# sed -i "$mod_line s@div>@&\n\t<center><br><font size="5"><a href="./mypads/">MyPads</a></font></center>@" $final_path/src/templates/index.html
+  sed -i '157i<center><br><font size="4"><a href="./mypads/" style="text-decoration: none">MyPads</a></font></center>' $final_path/src/templates/index.html
 fi
 
 #=================================================
