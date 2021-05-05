@@ -340,7 +340,7 @@ admin_panel="https://$(grep portal_domain /etc/ssowat/conf.json | cut -d'"' -f4)
 
 if [ $mypads -eq 1 ]
 then
-	Informations="You can access 2 different admin panels, for Etherpad by accessing https://$domain${path_url%/}/admin and for MyPads by accessing https://$domain${path_url%/}/mypads/?/admin."
+	Informations="You can access two different admin panels, for Etherpad by accessing https://$domain${path_url%/}/admin and for MyPads by accessing https://$domain${path_url%/}/mypads/?/admin."
 else
 	Informations="You can access the admin panel by accessing https://$domain${path_url%/}/admin."
 fi
@@ -348,10 +348,6 @@ fi
 ynh_print_OFF
 echo "$Informations
 You can also find a config file for Etherpad at this path /var/www/etherpad_mypads/settings.json.
-
-Your credentials for the admin panel are:
-- login		: $admin
-- password	: $password
 
 You can configure this app easily by using the experimental config-panel feature $admin_panel/config-panel.
 You can also find some specific actions for this app by using the experimental action feature $admin_panel/actions.

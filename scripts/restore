@@ -198,10 +198,6 @@ ynh_print_OFF
 echo "$Informations
 You can also find a config file for Etherpad at this path /var/www/etherpad_mypads/settings.json.
 
-Your credentials for the admin panel are:
-- login		: $admin
-- password	: $password
-
 If you are facing an issue or want to improve this app, please open a new issue in this project: https://github.com/YunoHost-Apps/etherpad_mypads_ynh" > mail_to_send
 
 ynh_send_readme_to_admin --app_message="mail_to_send" --recipients="$admin" --type=restore

@@ -97,7 +97,7 @@ ynh_remove_logrotate
 #=================================================
 ynh_script_progression --message="Removing Fail2Ban configuration..." --weight=7
 
-# Remove the dedicated fail2ban config
+# Remove the dedicated Fail2Ban config
 ynh_remove_fail2ban_config
 
 #=================================================
