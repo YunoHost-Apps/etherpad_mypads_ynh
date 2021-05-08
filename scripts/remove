@@ -50,7 +50,7 @@ if [ "$export" != "none" ]
 then
 	ynh_script_progression --message="Removing dependencies..." --weight=60
 	# Remove metapackage and its dependencies
-	ynh_remove_app_dependencies
+	ynh_exec_warn_less ynh_remove_app_dependencies
 fi
 
 #=================================================
@@ -97,7 +97,7 @@ ynh_remove_logrotate
 #=================================================
 ynh_script_progression --message="Removing Fail2Ban configuration..." --weight=7
 
-# Remove the dedicated fail2ban config
+# Remove the dedicated Fail2Ban config
 ynh_remove_fail2ban_config
 
 #=================================================
