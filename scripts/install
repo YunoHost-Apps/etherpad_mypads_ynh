@@ -307,6 +307,10 @@ fi
 # Etherpad admin page doesn't support SSO...
 ynh_permission_create --permission="admin" --url="/admin" --allowed=$admin
 
+if [ $mypads -eq 1 ]; then
+	ynh_permission_create --permission="admin" --url="/mypads/?/admin" --allowed=$admin
+fi
+
 #=================================================
 # RELOAD NGINX
 #=================================================
