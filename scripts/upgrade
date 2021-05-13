@@ -137,7 +137,7 @@ if ! ynh_permission_exists --permission="admin"; then
   # Create the required permissions
   ynh_permission_create --permission="admin" --url="/admin" --allowed=$admin
   if [ $mypads -eq 1 ]; then
-    ynh_permission_create --permission="admin" --url="/mypads/?/admin" --allowed=$admin
+    ynh_permission_create --permission="mypads_admin" --url="/mypads/?/admin" --allowed=$admin
   fi
 fi
 
