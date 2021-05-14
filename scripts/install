@@ -238,8 +238,6 @@ pushd "$final_path"
 ynh_npm install ep_align@${ep_align_version} >> $install_log 2>&1
 # Framapad - Adds author names to span titles
 ynh_npm install ep_author_hover@${ep_author_hover_version} >> $install_log 2>&1
-# Automatically disconnects user after some period of time (Prevent server overload)
-ynh_npm install ep_automatic_logut@${ep_automatic_logut_version} >> $install_log 2>&1
 # Framapad - Adds comments on sidebar and link it to the text.
 ynh_npm install ep_comments_page@${ep_comments_page_version} >> $install_log 2>&1
 # Framapad - Displays paragraphs, sentences, words and characters counts.

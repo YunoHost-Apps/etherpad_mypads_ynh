@@ -54,7 +54,6 @@ You can also find a configuration file for Etherpad at this path `/var/www/ether
 
   * [ep_align](https://www.npmjs.com/package/ep_align) - *Add Left/Center/Right/Justify to lines of text in a pad*
   * [ep_author_hover](https://www.npmjs.com/package/ep_author_hover) - *Adds author names to span titles*
-  * [ep_automatic_logut](https://www.npmjs.com/package/ep_automatic_logut) - *Automatically disconnects user after some period of time (Prevent server overload)*
   * [ep_comments_page](https://www.npmjs.com/package/ep_comments_page) - *Adds comments on sidebar and link it to the text.*
   * [ep_countable](https://www.npmjs.com/package/ep_countable) - *Adds paragraphs, words and characters count*
   * [ep_delete_empty_pads](https://www.npmjs.com/package/ep_delete_empty_pads) - *Delete pads which were never edited*
