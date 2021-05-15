@@ -18,7 +18,6 @@
         main.pad_configuration.pad_config_chatandusers=1|0
         main.pad_configuration.pad_config_alwaysshowchat=1|0
         main.pad_configuration.pad_config_show_markdown=1|0
-        main.pad_configuration.pad_config_automatic_logout=0|1
         main.mypads_configuration.mypads=0|1
         main.mypads_configuration.useldap=0|1
         main.overwrite_files.overwrite_settings=0|1

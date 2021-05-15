@@ -204,9 +204,6 @@
   },
 
   // Plugins config
-		// ep_automatic_logut
-		"automatic_logut_mins_show" : true,	// Show logout time selector
-		"automatic_logut_url" : "../../",	// Redirection URL address
 
 		// ep_markdown
 		"ep_markdown_default": false,	// Setting as default

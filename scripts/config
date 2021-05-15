@@ -8,7 +8,6 @@
 
 # Load common variables for all scripts.
 source _variables
-
 source _common.sh
 source /usr/share/yunohost/helpers
 
@@ -67,17 +66,6 @@ pad_config_alwaysshowchat="${YNH_CONFIG_MAIN_PAD_CONFIGURATION_PAD_CONFIG_ALWAYS
 old_pad_config_show_markdown="$(get_config_value ep_markdown_default)"
 pad_config_show_markdown="${YNH_CONFIG_MAIN_PAD_CONFIGURATION_PAD_CONFIG_SHOW_MARKDOWN:-$old_pad_config_show_markdown}"
 
-# Enable/disable ep_automatic_logut
-if grep -q "//.*\"automatic_logut_" $config_file
-then
-    # Disable
-	old_pad_config_automatic_logout=0
-else
-    # Enable
-	old_pad_config_automatic_logout=1
-fi
-pad_config_automatic_logout="${YNH_CONFIG_MAIN_PAD_CONFIGURATION_PAD_CONFIG_AUTOMATIC_LOGOUT:-$old_pad_config_automatic_logout}"
-
 # MyPads
 if [ -d $final_path/node_modules/ep_mypads ]
 then
@@ -131,7 +119,6 @@ show_config() {
 	ynh_return "YNH_CONFIG_MAIN_PAD_CONFIGURATION_PAD_CONFIG_CHATANDUSERS=$pad_config_chatandusers"
 	ynh_return "YNH_CONFIG_MAIN_PAD_CONFIGURATION_PAD_CONFIG_ALWAYSSHOWCHAT=$pad_config_alwaysshowchat"
 	ynh_return "YNH_CONFIG_MAIN_PAD_CONFIGURATION_PAD_CONFIG_SHOW_MARKDOWN=$pad_config_show_markdown"
-	ynh_return "YNH_CONFIG_MAIN_PAD_CONFIGURATION_PAD_CONFIG_AUTOMATIC_LOGOUT=$pad_config_automatic_logout"
 	ynh_return "YNH_CONFIG_MAIN_MYPADS_CONFIGURATION_MYPADS=$mypads"
 	ynh_return "YNH_CONFIG_MAIN_MYPADS_CONFIGURATION_USELDAP=$useldap"
 	ynh_return "YNH_CONFIG_MAIN_OVERWRITE_FILES_OVERWRITE_SETTINGS=$overwrite_settings"
@@ -192,25 +179,6 @@ apply_config() {
 		ynh_app_setting_set --app=$app --key=pad_config_show_markdown --value="$pad_config_show_markdown"
 		restart_etherpad=1
 	fi
-
-    # Plugin option ep_automatic_logut
-    if [ "$pad_config_automatic_logout" != "$old_pad_config_automatic_logout" ]
-    then
-        ynh_use_nodejs
-        #pushd "$final_path/src"
-        #ynh_secure_remove --file="$final_path/src/package-lock.json" #added to fix saveError ENOENT: no such file or directory
-        if [ "$pad_config_automatic_logout" = "0" ]
-        then
-            ynh_replace_string --match_string="^\(.*\"automatic_logut.*$\)" --replace_string="\/\/\1" --target_file="$config_file"
-            ynh_exec_as $app env "$ynh_node_load_PATH" npm uninstall ep_automatic_logut
-        else
-            ynh_replace_string --match_string="^\/\/\(.*\"automatic_logut.*$\)" --replace_string="\1" --target_file="$config_file"
-            ynh_exec_as $app env "$ynh_node_load_PATH" npm install ep_automatic_logut@${ep_automatic_logut_version}
-        fi
-        popd
-        chown -R $app: $final_path/node_modules
-        restart_etherpad=1
-    fi
 
 	# Export
 	if [ "$export" != "$old_export" ]
