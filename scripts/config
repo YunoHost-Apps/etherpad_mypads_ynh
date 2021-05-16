@@ -219,9 +219,9 @@ apply_config() {
 		#ynh_secure_remove --file="$final_path/src/package-lock.json" #added to fix saveError ENOENT: no such file or directory
 		if [ "$mypads" = "1" ]
 		then
-			ynh_exec_as $app env "$ynh_node_load_PATH" npm install ep_mypads@${mypads_version}
+			ynh_exec_as $app env "$ynh_node_load_PATH" ynh_npm install ep_mypads@${mypads_version}
 		else
-			ynh_exec_as $app env "$ynh_node_load_PATH" npm uninstall ep_mypads
+			ynh_exec_as $app env "$ynh_node_load_PATH" ynh_npm uninstall ep_mypads
 		fi
 		popd
 		chown -R $app: $final_path/node_modules
