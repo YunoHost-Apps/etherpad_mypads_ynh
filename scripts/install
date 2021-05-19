@@ -299,7 +299,7 @@ if [ $is_public -eq 1 ]; then
 	ynh_permission_update --permission="main" --add="visitors"	
 fi
 
-# Etherpad admin page doesn't support SSO...
+# Only the admin can access the admin panel of the app (if the app has an admin panel)
 ynh_permission_create --permission="admin" --url="/admin" --allowed=$admin
 
 #=================================================
