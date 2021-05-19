@@ -221,7 +221,7 @@ fi
 #=================================================
 ynh_script_progression --message="Upgrading NGINX web server configuration..."
 
-# Overwrite the nginx configuration only if it's allowed
+# Overwrite the NGINX configuration only if it's allowed
 if [ $overwrite_nginx -eq 1 ]
 then
 	ynh_add_nginx_config
@@ -288,8 +288,6 @@ pushd "$final_path"
 ynh_npm install ep_align@${ep_align_version} >> $install_log 2>&1
 # Framapad - Adds author names to span titles
 ynh_npm install ep_author_hover@${ep_author_hover_version} >> $install_log 2>&1
-# Automatically disconnects user after some period of time (Prevent server overload)
-ynh_npm install ep_automatic_logut@${ep_automatic_logut_version} >> $install_log 2>&1
 # Framapad - Adds comments on sidebar and link it to the text.
 ynh_npm install ep_comments_page@${ep_comments_page_version} >> $install_log 2>&1
 # Framapad - Displays paragraphs, sentences, words and characters counts.
@@ -394,7 +392,7 @@ fi
 # SECURING FILES AND DIRECTORIES
 #=================================================
 
-# Set files ownership to etherpad
+# Set files ownership to Etherpad
 chown -R $app: $final_path
 chmod o-rwx $final_path
 # Restrict access to credentials.json
@@ -440,10 +438,7 @@ fi
 
 if [ "$upgrade_type" == "UPGRADE_APP" ] && [ $mypads -eq 1 ]
 then
-	# # Find the /div just after the field to open a pad
-	# mod_line=$(grep -nA5 "index.createOpenPad" $final_path/src/templates/index.html | grep "</div>" | cut -d '-' -f 1)
-	# # In order to add a link to mypads plugin.
-	# sed -i "$mod_line s@div>@&\n\t<center><br><font size="5"><a href="./mypads/">MyPads</a></font></center>@" $final_path/src/templates/index.html
+	# Find the /div just after the field to open a pad in order to add a link to mypads plugin.
   sed -i '157i<center><br><font size="4"><a href="./mypads/" style="text-decoration: none; color: #555">MyPads</a></font></center>' $final_path/src/templates/index.html
 fi
 
@@ -473,7 +468,7 @@ ynh_maintenance_mode_OFF
 # SEND A README FOR THE ADMIN
 #=================================================
 
-# Get main domain and buid the url of the admin panel of the app.
+# Get main domain and buid the URL of the admin panel of the app.
 admin_panel="https://$(grep portal_domain /etc/ssowat/conf.json | cut -d'"' -f4)/yunohost/admin/#/apps/$app"
 
 # Build the changelog

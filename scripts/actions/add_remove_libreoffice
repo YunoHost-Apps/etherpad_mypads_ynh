@@ -30,17 +30,17 @@ app=$YNH_APP_INSTANCE_NAME
 # CHECK IF AN ACTION HAS TO BE DONE
 #=================================================
 
-# Check the dependencies of the meta packages of etherpad_mypads with apt-cache
+# Check the dependencies of the meta packages of Etherpad MyPads with apt-cache
 if apt-cache depends ${app//_/-}-ynh-deps | grep --quiet libreoffice-writer
 then
-	# libreoffice is already a dependence of etherpad_mypads.
-	# libreoffice should be removed.
+	# LibreOffice is already a dependence of Etherpad myPads.
+	# LibreOffice should be removed.
 	libreoffice=0
 	action1=removed
 	action2=Removing
 else
-	# libreoffice isn't a dependence of etherpad_mypads.
-	# libreoffice should be installed.
+	# LibreOffice isn't a dependence of Etherpad MyPads.
+	# LibreOffice should be installed.
 	libreoffice=1
 	action1=installed
 	action2=Installing
@@ -50,11 +50,11 @@ ynh_print_info --message="LibreOffice will be $action1."
 
 if apt-cache depends ${app//_/-}-ynh-deps | grep --quiet abiword
 then
-	# abiword is already a dependence of etherpad_mypads.
+	# Abiword is already a dependence of Etherpad MyPads.
 	# Keep it
 	abiword=1
 else
-	# abiword isn't a dependence of etherpad_mypads.
+	# Abiword isn't a dependence of Etherpad MyPads.
 	# Do not add it
 	abiword=0
 fi
@@ -73,7 +73,7 @@ source scripts/_variables
 dependencies=""
 if [ $libreoffice -eq 1 ]
 then
-	# Add LibreOffice dependencies if libreoffice has to be installed
+	# Add LibreOffice dependencies if LibreOffice has to be installed
 	dependencies="$dependencies $libreoffice_app_dependencies"
 fi
 if [ $abiword -eq 1 ]

@@ -41,11 +41,6 @@ name = "Etherpad configuration"
         ask = "Show markdown syntax?"
         type = "boolean"
         default = false
-
-        [main.pad_configuration.pad_config_automatic_logout]
-        ask = "Automatic logout"
-        type = "boolean"
-        default = true
         
 
     [main.mypads_configuration]

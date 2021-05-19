@@ -139,7 +139,7 @@ ynh_setup_source --dest_dir="$final_path"
 #=================================================
 ynh_script_progression --message="Configuring NGINX web server..." --weight=2
 
-# Create a dedicated nginx config
+# Create a dedicated NGINX config
 ynh_add_nginx_config
 
 #=================================================
@@ -180,15 +180,15 @@ cp ../conf/settings.json "$final_path/settings.json"
 ynh_replace_string --match_string="__PORT__" --replace_string="$port" --target_file="$final_path/settings.json"
 if [ "$export" = "abiword" ]
 then
-	# Get abiword binary path
+	# Get Abiword binary path
 	abiword_path=`which abiword`
-	# Set the path of abiword into etherpad config
+	# Set the path of abiword into Etherpad config
 	ynh_replace_string --match_string="\"abiword\" : null" --replace_string="\"abiword\" : \"$abiword_path\"" --target_file="$final_path/settings.json"
 elif [ "$export" = "libreoffice" ]
 then
 	# Get soffice binary path
 	soffice_path=`which soffice`
-	# Set the path of soffice into etherpad config
+	# Set the path of soffice into Etherpad config
 	ynh_replace_string --match_string="\"soffice\" : null" --replace_string="\"soffice\" : \"$soffice_path\"" --target_file="$final_path/settings.json"
 fi
 ynh_replace_string --match_string="__LANGUAGE__" --replace_string="$language" --target_file="$final_path/settings.json"
@@ -238,8 +238,6 @@ pushd "$final_path"
 ynh_npm install ep_align@${ep_align_version} >> $install_log 2>&1
 # Framapad - Adds author names to span titles
 ynh_npm install ep_author_hover@${ep_author_hover_version} >> $install_log 2>&1
-# Automatically disconnects user after some period of time (Prevent server overload)
-ynh_npm install ep_automatic_logut@${ep_automatic_logut_version} >> $install_log 2>&1
 # Framapad - Adds comments on sidebar and link it to the text.
 ynh_npm install ep_comments_page@${ep_comments_page_version} >> $install_log 2>&1
 # Framapad - Displays paragraphs, sentences, words and characters counts.
@@ -253,7 +251,7 @@ ynh_npm install ep_headings2@${ep_headings2_version} >> $install_log 2>&1
 # Framapad - Edit and Export as Markdown in Etherpad
 ynh_npm install ep_markdown@${ep_markdown_version} >> $install_log 2>&1
 if [ $mypads -eq 1 ]; then
-	# Framapad - Groups and private pads for etherpad
+	# Framapad - Groups and private pads for Etherpad
 	ynh_npm install ep_mypads@${mypads_version} >> $install_log 2>&1
 fi
 # Framapad - Add support to do 'Spell checking'
@@ -280,10 +278,7 @@ then
 	ynh_replace_string --match_string="^ *\"FOOTER\": .*2.0" --replace_string="& | <a href='../admin'>Etherpad admin</a>" --target_file=$final_path/node_modules/ep_mypads/static/l10n/en.json
 	ynh_replace_string --match_string="^ *\"FOOTER\": .*2.0" --replace_string="& | <a href='../admin'>Etherpad admin</a>" --target_file=$final_path/node_modules/ep_mypads/static/l10n/fr.json
 
-	## Find the /div just after the field to open a pad
-	#mod_line=$(grep -nA5 "index.createOpenPad" $final_path/src/templates/index.html | grep "</div>" | cut -d '-' -f 1)
-	## In order to add a link to MyPads plugin.
-	#sed -i "$mod_line s@div>@&\n\t<center><br><font size="5"><a href="./mypads/">MyPads</a></font></center>@" $final_path/src/templates/index.html
+	# Find the /div just after the field to open a pad in order to add a link to MyPads plugin.
 	sed -i '157i<center><br><font size="4"><a href="./mypads/" style="text-decoration: none; color: #555">MyPads</a></font></center>' $final_path/src/templates/index.html
 fi
 
@@ -335,7 +330,7 @@ fi
 # SEND A README FOR THE ADMIN
 #=================================================
 
-# Get main domain and buid the url of the admin panel of the app.
+# Get main domain and buid the URL of the admin panel of the app.
 admin_panel="https://$(grep portal_domain /etc/ssowat/conf.json | cut -d'"' -f4)/yunohost/admin/#/apps/$app"
 
 if [ $mypads -eq 1 ]

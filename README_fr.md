@@ -53,7 +53,6 @@ Vous pouvez accéder à deux panneaux d'administration différents, pour Etherpa
 
   * [ep_align](https://www.npmjs.com/package/ep_align) - *Ajoute Gauche/Centre/Droite/Justifier à des lignes de texte dans un pad*
   * [ep_author_hover](https://www.npmjs.com/package/ep_author_hover) - *Ajoute des noms d'auteurs*
-  * [ep_automatic_logut](https://www.npmjs.com/package/ep_automatic_logut) - *Déconnecte automatiquement l'utilisateur après une certaine période de temps (Prévient la surcharge du serveur)*
   * [ep_comments_page](https://www.npmjs.com/package/ep_comments_page) - *Ajoute des commentaires sur la sidebar et le lie au texte.*
   * [ep_countable](https://www.npmjs.com/package/ep_countable) - *Ajoute l'afficher le nombre de paragraphes, de mots et de caractères*
   * [ep_delete_empty_pads](https://www.npmjs.com/package/ep_delete_empty_pads) - *Supprimer les pads qui n'ont jamais été édités*

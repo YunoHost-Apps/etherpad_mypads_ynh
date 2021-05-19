@@ -81,7 +81,7 @@ ynh_secure_remove --file="/var/www/$app"
 #=================================================
 ynh_script_progression --message="Removing NGINX web server configuration..." --weight=2
 
-# Remove the dedicated nginx config
+# Remove the dedicated NGINX config
 ynh_remove_nginx_config
 
 #=================================================
