@@ -8,6 +8,14 @@
 	},
 	"version": "1.8.13~ynh2",
 	"url": "https://framapad.org",
+	"upstream": {
+        "license": "Apache-2.0",
+        "website": "http://etherpad.org",
+        "demo": "https://video.etherpad.com",
+        "admindoc": "http://etherpad.org/doc/v1.8.13",
+        "userdoc": "https://yunohost.org/en/app_etherpad_mypads",
+        "code": "https://github.com/ether/etherpad-lite"
+    },
 	"license": "Apache-2.0",
 	"maintainer": {
 		"name": "",
