@@ -1,12 +1,12 @@
 # Etherpad MyPads pour YunoHost
 
-[![Niveau d'intégration](https://dash.yunohost.org/integration/etherpad_mypads.svg)](https://dash.yunohost.org/appci/app/etherpad_mypads) ![](https://ci-apps.yunohost.org/ci/badges/etherpad_mypads.status.svg)  ![](https://ci-apps.yunohost.org/ci/badges/etherpad_mypads.maintain.svg)
-[![Installer etherpad_mypads avec YunoHost](https://install-app.yunohost.org/install-with-yunohost.svg)](https://install-app.yunohost.org/?app=etherpad_mypads)
+[![Niveau d'intégration](https://dash.yunohost.org/integration/etherpad_mypads.svg)](https://dash.yunohost.org/appci/app/etherpad_mypads) ![](https://ci-apps.yunohost.org/ci/badges/etherpad_mypads.status.svg) ![](https://ci-apps.yunohost.org/ci/badges/etherpad_mypads.maintain.svg)  
+[![Installer Etherpad MyPads avec YunoHost](https://install-app.yunohost.org/install-with-yunohost.svg)](https://install-app.yunohost.org/?app=etherpad_mypads)
 
 *[Read this readme in english.](./README.md)*
 *[Lire ce readme en français.](./README_fr.md)*
 
-> *This package allows you to install etherpad_mypads quickly and simply on a YunoHost server.
+> *This package allows you to install Etherpad MyPads quickly and simply on a YunoHost server.
 If you don't have YunoHost, please consult [the guide](https://yunohost.org/#/install) to learn how to install it.*
 
 ## Vue d'ensemble
@@ -15,10 +15,11 @@ If you don't have YunoHost, please consult [the guide](https://yunohost.org/#/in
 
 **Version incluse:** 1.8.13~ynh2
 
-**Démo:** https://video.etherpad.com
+**Démo :** https://video.etherpad.com
 
+## Captures d'écran
 
-
+![](./doc/screenshots/etherpad_demo.gif)
 
 ## Avertissements / informations importantes
 
@@ -55,15 +56,13 @@ Vous pouvez accéder à deux panneaux d'administration différents, pour Etherpa
   * [ep_subscript_and_superscript](https://www.npmjs.com/package/ep_subscript_and_superscript) - *Ajouter la prise en charge de Subscript et Superscript*.
   * [ep_table_of_contents](https://www.npmjs.com/package/ep_table_of_contents) - *Voir une table des matières pour votre pad*
 
-
-
 ## Documentations et ressources
 
-* Site official de l'app : http://etherpad.org
-* Documentation officielle utilisateur: https://yunohost.org/en/app_etherpad_mypads
-* Documentation officielle de l'admin: http://etherpad.org/doc/v1.8.13
-* Dépôt de code officiel de l'app:  https://github.com/ether/etherpad-lite
-* Documentation YunoHost pour cette app: https://yunohost.org/app_etherpad_mypads
+* Site officiel de l'app : http://etherpad.org
+* Documentation officielle utilisateur : https://yunohost.org/en/app_etherpad_mypads
+* Documentation officielle de l'admin : http://etherpad.org/doc/v1.8.13
+* Dépôt de code officiel de l'app :  https://github.com/ether/etherpad-lite
+* Documentation YunoHost pour cette app : https://yunohost.org/app_etherpad_mypads
 * Signaler un bug: https://github.com/YunoHost-Apps/etherpad_mypads_ynh/issues
 
 ## Informations pour les développeurs
