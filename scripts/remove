@@ -17,6 +17,7 @@ ynh_script_progression --message="Loading installation settings..." --weight=3
 app=$YNH_APP_INSTANCE_NAME
 
 domain=$(ynh_app_setting_get --app=$app --key=domain)
+final_path=$(ynh_app_setting_get --app=$app --key=final_path)
 port=$(ynh_app_setting_get --app=$app --key=port)
 db_name=$(ynh_app_setting_get --app=$app --key=db_name)
 export=$(ynh_app_setting_get --app=$app --key=export)
@@ -74,7 +75,7 @@ ynh_mysql_remove_db --db_user=$db_name --db_name=$db_name
 ynh_script_progression --message="Removing Etherpad main directory..."
 
 # Remove the app directory securely
-ynh_secure_remove --file="/var/www/$app"
+ynh_secure_remove --file="$final_path"
 
 #=================================================
 # REMOVE NGINX CONFIGURATION
@@ -88,6 +89,8 @@ ynh_remove_nginx_config
 # REMOVE LOGROTATE CONFIGURATION
 #=================================================
 ynh_script_progression --message="Removing logrotate configuration..."
+
+ynh_secure_remove --file="/var/log/$app"
 
 # Remove the app-specific logrotate config
 ynh_remove_logrotate
