@@ -6,7 +6,6 @@ Changelog
 #### Disabled
 * [ep_automatic_logut plugin](https://github.com/YunoHost-Apps/etherpad_mypads_ynh/pull/140/files)
 
-
 ## [1.8.13~ynh1]() - 2021-03-23
 
 #### Changed

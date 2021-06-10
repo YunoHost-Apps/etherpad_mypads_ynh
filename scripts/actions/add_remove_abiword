@@ -67,9 +67,6 @@ fi
 
 ynh_script_progression --message="$action2 AbiWord..." --weight=3
 
-# Load common variables, and especially Abiword dependencies.
-source scripts/_variables
-
 dependencies=""
 if [ $abiword -eq 1 ]
 then
