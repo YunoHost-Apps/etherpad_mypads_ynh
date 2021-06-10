@@ -203,16 +203,17 @@ fi
 ynh_store_file_checksum --file="$final_path/settings.json"
 
 ynh_add_config --template="../conf/credentials.json" --destination="$final_path/credentials.json"
+# Restrict access to credentials.json
+chmod 600 $final_path/credentials.json
 
 #=================================================
 # SECURING FILES AND DIRECTORIES
 #=================================================
 
 # Set files ownership to etherpad
-chown -R $app:$app $final_path
+chmod 750 "$final_path"
 chmod o-rwx $final_path
-# Restrict access to credentials.json
-chmod 600 $final_path/credentials.json
+chown -R $app: $final_path
 
 #=================================================
 # SETUP SYSTEMD
@@ -220,7 +221,7 @@ chmod 600 $final_path/credentials.json
 ynh_script_progression --message="Configuring a systemd service..." --weight=4
 
 # Create a dedicated systemd config
-ynh_add_systemd_config --others_var="ynh_node_load_PATH"
+ynh_add_systemd_config
 
 #=================================================
 # ADVERTISE SERVICE IN ADMIN PANEL

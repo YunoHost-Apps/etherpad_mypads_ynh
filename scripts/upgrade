@@ -394,8 +394,9 @@ fi
 #=================================================
 
 # Set files ownership to Etherpad
-chown -R $app: $final_path
+chmod 750 "$final_path"
 chmod o-rwx $final_path
+chown -R $app: $final_path
 # Restrict access to credentials.json
 chmod 600 "$final_path/credentials.json"
 chown $app -R /var/log/$app/etherpad.log
@@ -430,7 +431,7 @@ ynh_script_progression --message="Upgrading systemd configuration..." --weight=2
 # Overwrite the systemd configuration only if it's allowed
 if [ $overwrite_systemd -eq 1 ]
 then
-	ynh_add_systemd_config --others_var="ynh_node_load_PATH"
+	ynh_add_systemd_config
 fi
 
 #=================================================
