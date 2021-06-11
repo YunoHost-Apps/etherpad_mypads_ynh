@@ -30,7 +30,7 @@ ep_headings2_version=0.2.29
 ep_markdown_version=0.1.32
 ep_page_view_version=0.5.24
 ep_spellcheck_version=0.0.27
-ep_subscript_and_superscript_version=0.2.27
+ep_subscript_and_superscript_version=0.2.28
 ep_table_of_contents_version=0.3.20
 ep_font_size_version=0.4.23
 
