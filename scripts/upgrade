@@ -104,25 +104,25 @@ fi
 # If overwrite_settings doesn't exist, create it
 if [ -z "$overwrite_settings" ]; then
 	overwrite_settings=1
-	ynh_app_setting_set $app overwrite_settings $overwrite_settings
+	ynh_app_setting_set --app=$app --key=overwrite_settings --value=$overwrite_settings
 fi
 
 # If overwrite_credentials doesn't exist, create it
 if [ -z "$overwrite_credentials" ]; then
 	overwrite_credentials=1
-	ynh_app_setting_set $app overwrite_credentials $overwrite_credentials
+	ynh_app_setting_set --app=$app --key=overwrite_credentials --value=$overwrite_credentials
 fi
 
 # If overwrite_nginx doesn't exist, create it
 if [ -z "$overwrite_nginx" ]; then
 	overwrite_nginx=1
-	ynh_app_setting_set $app overwrite_nginx $overwrite_nginx
+	ynh_app_setting_set --app=$app --key=overwrite_nginx --value=$overwrite_nginx
 fi
 
 # If overwrite_systemd doesn't exist, create it
 if [ -z "$overwrite_systemd" ]; then
 	overwrite_systemd=1
-	ynh_app_setting_set $app overwrite_systemd $overwrite_systemd
+	ynh_app_setting_set --app=$app --key=overwrite_systemd --value=$overwrite_systemd
 fi
 
 # Cleaning legacy permissions
