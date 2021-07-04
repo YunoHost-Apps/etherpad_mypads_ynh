@@ -32,7 +32,7 @@ ep_page_view_version=0.5.24
 ep_spellcheck_version=0.0.28
 ep_subscript_and_superscript_version=0.2.30
 ep_table_of_contents_version=0.3.22
-ep_font_size_version=0.4.23
+ep_font_size_version=0.4.25
 
 #=================================================
 # PERSONAL HELPERS
