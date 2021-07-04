@@ -266,6 +266,9 @@ popd
 
 chown -R $app: $final_path/node_modules
 
+# Remove package-lock.json otherwise plugins installation and upgrade fails miserablywith 502 error
+ynh_secure_remove --file="$final_path/package-lock.json"
+
 #=================================================
 # SOME HACKS
 #=================================================
