@@ -6,7 +6,7 @@
 # IMPORT GENERIC HELPERS
 #=================================================
 
-# Load common variables for all scripts.
+# Keep this path for calling _common.sh inside the execution's context of backup and restore scripts
 source ../settings/scripts/_common.sh
 source /usr/share/yunohost/helpers
 
@@ -15,7 +15,7 @@ source /usr/share/yunohost/helpers
 #=================================================
 
 ynh_clean_setup () {
-# Clean installation remainings that are not handled by the remove script.
+	# Clean installation remainings that are not handled by the remove script.
 	ynh_clean_check_starting
 }
 # Exit if an error occurs during the execution of the script
@@ -55,7 +55,7 @@ ynh_script_progression --message="Activating maintenance mode..." --weight=2
 ynh_maintenance_mode_ON
 
 #=================================================
-# STANDARD RESTORE STEPS
+# STANDARD RESTORATION STEPS
 #=================================================
 # RESTORE THE NGINX CONFIGURATION
 #=================================================
