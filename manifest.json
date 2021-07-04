@@ -6,7 +6,7 @@
 		"en": "Online editor providing collaborative editing in real-time.",
 		"fr": "Éditeur en ligne fournissant l'édition collaborative en temps réel."
 	},
-	"version": "1.8.13~ynh2",
+	"version": "1.8.14~ynh1",
 	"url": "https://framapad.org",
 	"upstream": {
         "license": "Apache-2.0",

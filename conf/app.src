@@ -1,5 +1,5 @@
-SOURCE_URL=https://github.com/ether/etherpad-lite/archive/1.8.13.tar.gz
-SOURCE_SUM=c83052daf3b0af8aa3c19a8308e21fcbcfecca99aeb3e8047383875f855443f1
+SOURCE_URL=https://github.com/ether/etherpad-lite/archive/1.8.14.tar.gz
+SOURCE_SUM=5404035675fb5ee9349d42927895bb3933590823612ebe31ca4cc523afdac49e
 SOURCE_SUM_PRG=sha256sum
 ARCH_FORMAT=tar.gz
 SOURCE_IN_SUBDIR=true
