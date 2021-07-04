@@ -11,7 +11,7 @@ Si vous n'avez pas YunoHost, regardez [ici](https://yunohost.org/#/install) pour
 
 ## Vue d'ensemble
 
-Éditeur en ligne fournissant l'édition collaborative en temps réel.
+Éditeur en ligne fournissant l'édition collaborative en temps réel
 
 **Version incluse :** 1.8.14~ynh1
 
@@ -60,7 +60,7 @@ Vous pouvez accéder à deux panneaux d'administration différents, pour Etherpa
 
 * Site officiel de l'app : http://etherpad.org
 * Documentation officielle utilisateur : https://yunohost.org/en/app_etherpad_mypads
-* Documentation officielle de l'admin : http://etherpad.org/doc/v1.8.13
+* Documentation officielle de l'admin : http://etherpad.org/doc/v1.8.14
 * Dépôt de code officiel de l'app : https://github.com/ether/etherpad-lite
 * Documentation YunoHost pour cette app : https://yunohost.org/app_etherpad_mypads
 * Signaler un bug : https://github.com/YunoHost-Apps/etherpad_mypads_ynh/issues

@@ -15,7 +15,7 @@ If you don't have YunoHost, please consult [the guide](https://yunohost.org/#/in
 
 ## Overview
 
-Online editor providing collaborative editing in real-time.
+Online editor providing collaborative editing in real-time
 
 **Shipped version:** 1.8.14~ynh1
 
@@ -63,7 +63,7 @@ You can also find a configuration file for Etherpad at this path `/var/www/ether
 
 * Official app website: http://etherpad.org
 * Official user documentation: https://yunohost.org/en/app_etherpad_mypads
-* Official admin documentation: http://etherpad.org/doc/v1.8.13
+* Official admin documentation: http://etherpad.org/doc/v1.8.14
 * Upstream app code repository: https://github.com/ether/etherpad-lite
 * YunoHost documentation for this app: https://yunohost.org/app_etherpad_mypads
 * Report a bug: https://github.com/YunoHost-Apps/etherpad_mypads_ynh/issues
