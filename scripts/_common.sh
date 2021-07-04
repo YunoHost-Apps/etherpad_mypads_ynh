@@ -1,6 +1,40 @@
 #!/bin/bash
 
 #=================================================
+# COMMON VARIABLES
+#=================================================
+
+#!/bin/bash
+
+# Dependencies for AbiWord
+abiword_app_depencencies="abiword"
+
+# Dependencies for LibreOffice
+libreoffice_app_dependencies="unoconv libreoffice-writer"
+
+# NodeJS version
+nodejs_version=14
+
+# MyPads version
+# This variable is mostly used to force an upgrade of the package in case of new versions of MyPads.
+mypads_version=1.7.21
+
+# Plugin versions
+ep_align_version=0.3.34
+ep_author_hover_version=0.3.19
+ep_comments_page_version=0.1.60
+ep_countable_version=0.0.11
+ep_delete_empty_pads_version=0.0.7
+ep_font_color_version=0.0.43
+ep_headings2_version=0.2.30
+ep_markdown_version=0.1.36
+ep_page_view_version=0.5.24
+ep_spellcheck_version=0.0.28
+ep_subscript_and_superscript_version=0.2.30
+ep_table_of_contents_version=0.3.20
+ep_font_size_version=0.4.23
+
+#=================================================
 # PERSONAL HELPERS
 #=================================================
 
@@ -368,19 +402,4 @@ ynh_app_changelog () {
     then
         echo "No significative changes from the changelog..." > "${final_changelog}_lite"
     fi
-}
-
-#=================================================
-
-# Execute a command as another user
-# usage: ynh_exec_as USER COMMAND [ARG ...]
-ynh_exec_as() {
-  local USER=$1
-  shift 1
-
-  if [[ $USER = $(whoami) ]]; then
-    eval "$@"
-  else
-    sudo -u "$USER" "$@"
-  fi
 }

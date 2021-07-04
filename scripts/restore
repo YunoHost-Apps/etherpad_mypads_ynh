@@ -7,8 +7,6 @@
 #=================================================
 
 # Load common variables for all scripts.
-source ../settings/scripts/_variables
-
 source ../settings/scripts/_common.sh
 source /usr/share/yunohost/helpers
 
@@ -135,8 +133,9 @@ ynh_exec_warn_less npm cache clean --force
 #=================================================
 
 # Restore permissions on app files
-chown -R $app: $final_path
-chmod o-rwx $final_path
+chmod 750 "$final_path"
+chmod o-rwx "$final_path"
+chown -R $app: "$final_path"
 
 #=================================================
 # ADVERTISE SERVICE IN ADMIN PANEL
