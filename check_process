@@ -1,11 +1,11 @@
 ;; Test complet avec LibreOffice et MyPads
 	; Manifest
-		domain="domain.tld"	(DOMAIN)
-		path="/path"	(PATH)
-		admin="john"	(USER)
+		domain="domain.tld"
+		path="/path"
+		admin="john"
 		password="password"
 		language="en"
-		is_public=1	(PUBLIC|public=1|private=0)
+		is_public=1
 		export="libreoffice"
 		mypads=1
 		useldap=1
@@ -39,12 +39,12 @@
         config_panel=0
 ;; Test sans MyPads
 	; Manifest
-		domain="domain.tld"	(DOMAIN)
-		path="/path"	(PATH)
-		admin="john"	(USER)
+		domain="domain.tld"
+		path="/path"
+		admin="john"
 		password="password"
 		language="en"
-		is_public=1	(PUBLIC|public=1|private=0)
+		is_public=1
 		export="libreoffice"
 		mypads=0
 		useldap=0
@@ -55,12 +55,12 @@
 		backup_restore=1
 ;; Test Abiword
 	; Manifest
-		domain="domain.tld"	(DOMAIN)
-		path="/"	(PATH)
-		admin="john"	(USER)
+		domain="domain.tld"
+		path="/"
+		admin="john"
 		password="password"
 		language="en"
-		is_public=1	(PUBLIC|public=1|private=0)
+		is_public=1
 		export="abiword"
 		mypads=1
 		useldap=0
@@ -69,12 +69,12 @@
 		upgrade=1	from_commit=978e77403a6d8e9512ec1f5203e9834e945c2d8c
 ;; Test sans export
 	; Manifest
-		domain="domain.tld"	(DOMAIN)
-		path="/path"	(PATH)
-		admin="john"	(USER)
+		domain="domain.tld"
+		path="/path"
+		admin="john"
 		password="password"
 		language="en"
-		is_public=1	(PUBLIC|public=1|private=0)
+		is_public=1
 		export="none"
 		mypads=1
 		useldap=0

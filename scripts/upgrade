@@ -7,7 +7,6 @@
 #=================================================
 
 # Load common variables for all scripts.
-source _variables
 source _common.sh
 source /usr/share/yunohost/helpers
 
@@ -105,25 +104,25 @@ fi
 # If overwrite_settings doesn't exist, create it
 if [ -z "$overwrite_settings" ]; then
 	overwrite_settings=1
-	ynh_app_setting_set $app overwrite_settings $overwrite_settings
+	ynh_app_setting_set --app=$app --key=overwrite_settings --value=$overwrite_settings
 fi
 
 # If overwrite_credentials doesn't exist, create it
 if [ -z "$overwrite_credentials" ]; then
 	overwrite_credentials=1
-	ynh_app_setting_set $app overwrite_credentials $overwrite_credentials
+	ynh_app_setting_set --app=$app --key=overwrite_credentials --value=$overwrite_credentials
 fi
 
 # If overwrite_nginx doesn't exist, create it
 if [ -z "$overwrite_nginx" ]; then
 	overwrite_nginx=1
-	ynh_app_setting_set $app overwrite_nginx $overwrite_nginx
+	ynh_app_setting_set --app=$app --key=overwrite_nginx --value=$overwrite_nginx
 fi
 
 # If overwrite_systemd doesn't exist, create it
 if [ -z "$overwrite_systemd" ]; then
 	overwrite_systemd=1
-	ynh_app_setting_set $app overwrite_systemd $overwrite_systemd
+	ynh_app_setting_set --app=$app --key=overwrite_systemd --value=$overwrite_systemd
 fi
 
 # Cleaning legacy permissions
@@ -284,36 +283,40 @@ popd
 ynh_script_progression --message="Installing Etherpad plugins..." --weight=90
 
 pushd "$final_path"
-# Add Left/Center/Right/Justify to lines of text in a pad
-ynh_npm install ep_align@${ep_align_version} >> $install_log 2>&1
-# Framapad - Adds author names to span titles
-ynh_npm install ep_author_hover@${ep_author_hover_version} >> $install_log 2>&1
-# Framapad - Adds comments on sidebar and link it to the text.
-ynh_npm install ep_comments_page@${ep_comments_page_version} >> $install_log 2>&1
-# Framapad - Displays paragraphs, sentences, words and characters counts.
-ynh_npm install ep_countable@${ep_countable_version} >> $install_log 2>&1
-# Framapad - Delete pads which were never edited
-ynh_npm install ep_delete_empty_pads@${ep_delete_empty_pads_version} >> $install_log 2>&1
-# Framapad - Apply colors to fonts
-ynh_npm install ep_font_color@${ep_font_color_version} >> $install_log 2>&1
-# Framapad - Adds heading support to Etherpad Lite.
-ynh_npm install ep_headings2@${ep_headings2_version} >> $install_log 2>&1
-# Framapad - Edit and Export as Markdown in Etherpad
-ynh_npm install ep_markdown@${ep_markdown_version} >> $install_log 2>&1
-if [ $mypads -eq 1 ]; then
-  # Framapad - Groups and private pads for etherpad
-  ynh_npm install ep_mypads@${mypads_version} >> $install_log 2>&1
-fi
-# Framapad - Add support to do 'Spell checking'
-ynh_npm install ep_spellcheck@${ep_spellcheck_version} >> $install_log 2>&1
-# Framapad - Add support for Subscript and Superscript
-ynh_npm install ep_subscript_and_superscript@${ep_subscript_and_superscript_version} >> $install_log 2>&1
-# Framapad - View a table of contents for your pad
-ynh_npm install ep_table_of_contents@${ep_table_of_contents_version} >> $install_log 2>&1
-# Framapad - User Pad Contents font size can be set in settings, this does not effect other peoples views
-ynh_npm install ep_font_size@${ep_font_size_version} >> $install_log 2>&1
+    # Add Left/Center/Right/Justify to lines of text in a pad
+    ynh_npm install ep_align@${ep_align_version} >> $install_log 2>&1
+    # Framapad - Adds author names to span titles
+    ynh_npm install ep_author_hover@${ep_author_hover_version} >> $install_log 2>&1
+    # Framapad - Adds comments on sidebar and link it to the text.
+    ynh_npm install ep_comments_page@${ep_comments_page_version} >> $install_log 2>&1
+    # Framapad - Displays paragraphs, sentences, words and characters counts.
+    ynh_npm install ep_countable@${ep_countable_version} >> $install_log 2>&1
+    # Framapad - Delete pads which were never edited
+    ynh_npm install ep_delete_empty_pads@${ep_delete_empty_pads_version} >> $install_log 2>&1
+    # Framapad - Apply colors to fonts
+    ynh_npm install ep_font_color@${ep_font_color_version} >> $install_log 2>&1
+    # Framapad - Adds heading support to Etherpad Lite.
+    ynh_npm install ep_headings2@${ep_headings2_version} >> $install_log 2>&1
+    # Framapad - Edit and Export as Markdown in Etherpad
+    ynh_npm install ep_markdown@${ep_markdown_version} >> $install_log 2>&1
+    if [ $mypads -eq 1 ]; then
+      # Framapad - Groups and private pads for etherpad
+      ynh_npm install ep_mypads@${mypads_version} >> $install_log 2>&1
+    fi
+    # Framapad - Add support to do 'Spell checking'
+    ynh_npm install ep_spellcheck@${ep_spellcheck_version} >> $install_log 2>&1
+    # Framapad - Add support for Subscript and Superscript
+    ynh_npm install ep_subscript_and_superscript@${ep_subscript_and_superscript_version} >> $install_log 2>&1
+    # Framapad - View a table of contents for your pad
+    ynh_npm install ep_table_of_contents@${ep_table_of_contents_version} >> $install_log 2>&1
+    # Framapad - User Pad Contents font size can be set in settings, this does not effect other peoples views
+    ynh_npm install ep_font_size@${ep_font_size_version} >> $install_log 2>&1
 popd
+
 chown -R $app: $final_path/node_modules
+
+# Remove package-lock.json otherwise plugins installation and upgrade fails miserablywith 502 error
+ynh_secure_remove --file="$final_path/package-lock.json"
 
 #=================================================
 # SPECIFIC UPGRADE
@@ -393,8 +396,9 @@ fi
 #=================================================
 
 # Set files ownership to Etherpad
-chown -R $app: $final_path
-chmod o-rwx $final_path
+chmod 750 "$final_path"
+chmod o-rwx "$final_path"
+chown -R $app: "$final_path"
 # Restrict access to credentials.json
 chmod 600 "$final_path/credentials.json"
 chown $app -R /var/log/$app/etherpad.log
@@ -429,7 +433,7 @@ ynh_script_progression --message="Upgrading systemd configuration..." --weight=2
 # Overwrite the systemd configuration only if it's allowed
 if [ $overwrite_systemd -eq 1 ]
 then
-	ynh_add_systemd_config --others_var="ynh_node_load_PATH"
+	ynh_add_systemd_config
 fi
 
 #=================================================
