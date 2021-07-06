@@ -6,7 +6,7 @@ Changelog
 #### Changed
 * [Upgrade to 1.8.14](https://github.com/YunoHost-Apps/etherpad_mypads_ynh/commit/452b42c106f9e67f84165e1f62ba7cc516240351)
 * [Update to MyPads 1.7.21](https://github.com/YunoHost-Apps/etherpad_mypads_ynh/commit/678da97ecac67491028cdeba1493ba11650b992b)
-* [Update helpers](https://github.com/YunoHost-Apps/etherpad_mypads_ynh/commit/3873098c04a798684c1eddd0c86465bec7b28237)
+* [Upgrade plugins to upstream](https://github.com/YunoHost-Apps/etherpad_mypads_ynh/commit/34d5d0a002c3ca74c8151d365efaaba0e6fb96b2)
 
 ## [1.8.13~ynh2]() - 2021-05-14
 
