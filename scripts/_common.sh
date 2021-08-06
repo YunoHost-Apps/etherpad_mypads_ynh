@@ -17,7 +17,7 @@ nodejs_version=14
 
 # MyPads version
 # This variable is mostly used to force an upgrade of the package in case of new versions of MyPads.
-mypads_version=1.7.21
+mypads_version=1.7.22
 
 # Plugin versions
 ep_align_version=0.3.36
