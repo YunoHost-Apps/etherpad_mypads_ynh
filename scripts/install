@@ -32,7 +32,7 @@ ynh_abort_if_errors
 domain=$YNH_APP_ARG_DOMAIN
 path_url=$YNH_APP_ARG_PATH
 admin=$YNH_APP_ARG_ADMIN
-ynh_print_OFF; password=$YNH_APP_ARG_PASSWORD; ynh_print_ON
+password=$YNH_APP_ARG_PASSWORD
 language=$YNH_APP_ARG_LANGUAGE
 is_public=$YNH_APP_ARG_IS_PUBLIC
 export=$YNH_APP_ARG_EXPORT
@@ -67,7 +67,7 @@ ynh_script_progression --message="Storing installation settings..." --weight=3
 ynh_app_setting_set --app=$app --key=domain --value=$domain
 ynh_app_setting_set --app=$app --key=path --value=$path_url
 ynh_app_setting_set --app=$app --key=admin --value=$admin
-ynh_print_OFF; ynh_app_setting_set --app=$app --key=password --value=$password; ynh_print_ON
+ynh_app_setting_set --app=$app --key=password --value=$password
 ynh_app_setting_set --app=$app --key=language --value=$language
 ynh_app_setting_set --app=$app --key=export --value=$export
 ynh_app_setting_set --app=$app --key=mypads --value=$mypads

@@ -35,7 +35,7 @@ db_name=$(ynh_app_setting_get --app=$app --key=db_name)
 export=$(ynh_app_setting_get --app=$app --key=export)
 mypads=$(ynh_app_setting_get --app=$app --key=mypads)
 admin=$(ynh_app_setting_get --app=$app --key=admin)
-ynh_print_OFF; password=$(ynh_app_setting_get --app=$app --key=password); ynh_print_ON
+password=$(ynh_app_setting_get --app=$app --key=password)
 
 #=================================================
 # CHECK IF THE APP CAN BE RESTORED
