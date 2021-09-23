@@ -6,9 +6,10 @@
 # IMPORT GENERIC HELPERS
 #=================================================
 
-# Load common variables for all scripts.
 source _common.sh
 source /usr/share/yunohost/helpers
+
+ynh_abort_if_errors
 
 #=================================================
 # RETRIEVE ARGUMENTS
@@ -268,8 +269,6 @@ apply_config() {
 
 #=================================================
 # GENERIC FINALIZATION
-#=================================================
-# SELECT THE ACTION FOLLOWING THE GIVEN ARGUMENT
 #=================================================
 
 ynh_app_config_run $1
