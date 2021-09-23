@@ -82,22 +82,3 @@ name = "Etherpad configuration"
         type = "boolean"
         default = true
         help = "If the file is overwritten, a backup will be created."
-
-
-[bind]
-name = "Bind panel"
-
-    [bind.settings]
-    name = "Bind to settings"
-
-        [bind.settings.arg1]
-        ask = "Save app settings arg1"
-        type = "string"
-
-    [bind.variable]
-    name = "Bind to key/value in files"
-
-        [bind.variable.arg3]
-        ask = "I can haz value for arg3 in test.json ?"
-        type = "string"
-        bind = ":__FINALPATH__/settings.json"
