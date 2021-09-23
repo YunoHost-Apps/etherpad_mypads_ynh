@@ -136,7 +136,7 @@ show_config() {
 # MODIFY THE CONFIGURATION
 #=================================================
 
-ynh_app_config_apply() {
+apply_config() {
 
     #=================================================
     # MODIFY ETHERPAD CONFIG
