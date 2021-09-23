@@ -7,7 +7,6 @@
 #=================================================
 
 # Load common variables for all scripts.
-source _variables
 source _common.sh
 source /usr/share/yunohost/helpers
 
@@ -273,7 +272,4 @@ apply_config() {
 # SELECT THE ACTION FOLLOWING THE GIVEN ARGUMENT
 #=================================================
 
-case $1 in
-  show) show_config;;
-  apply) apply_config;;
-esac
+ynh_app_config_run $1
