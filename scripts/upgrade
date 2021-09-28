@@ -135,6 +135,10 @@ fi
 if ! ynh_permission_exists --permission="admin"; then
   # Create the required permissions
   ynh_permission_create --permission="admin" --url="/admin" --allowed=$admin
+else
+  # Make sure the admin panel is not exposed to the SSO's authentication headers
+  # AFAIK there is no helper to check if that flag is up or not, so let's force it.
+  ynh_permission_url --permission="admin" --auth_header=false
 fi
 
 #=================================================
