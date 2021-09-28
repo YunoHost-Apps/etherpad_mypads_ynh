@@ -4,8 +4,6 @@
 # COMMON VARIABLES
 #=================================================
 
-#!/bin/bash
-
 # Dependencies for AbiWord
 abiword_app_depencencies="abiword"
 
