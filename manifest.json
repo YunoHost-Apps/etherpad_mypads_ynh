@@ -13,7 +13,6 @@
         "website": "http://etherpad.org",
         "demo": "https://video.etherpad.com",
         "admindoc": "http://etherpad.org/doc/v1.8.14",
-        "userdoc": "https://yunohost.org/en/app_etherpad_mypads",
         "code": "https://github.com/ether/etherpad-lite"
     },
 	"license": "Apache-2.0",
