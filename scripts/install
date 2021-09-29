@@ -32,7 +32,7 @@ ynh_abort_if_errors
 domain=$YNH_APP_ARG_DOMAIN
 path_url=$YNH_APP_ARG_PATH
 admin=$YNH_APP_ARG_ADMIN
-ynh_print_OFF; password=$YNH_APP_ARG_PASSWORD; ynh_print_ON
+password=$YNH_APP_ARG_PASSWORD
 language=$YNH_APP_ARG_LANGUAGE
 is_public=$YNH_APP_ARG_IS_PUBLIC
 export=$YNH_APP_ARG_EXPORT
@@ -46,12 +46,10 @@ app=$YNH_APP_INSTANCE_NAME
 #=================================================
 ynh_script_progression --message="Validating installation parameters..."
 
-ynh_print_OFF
 if [ "${#password}" -lt 8 ] || [ "${#password}" -gt 30 ]
 then
 	ynh_die --message="The password must be between 8 and 30 characters."
 fi
-ynh_print_ON
 
 final_path=/var/www/$app
 test ! -e "$final_path" || ynh_die --message="This path already contains a folder"
@@ -67,7 +65,7 @@ ynh_script_progression --message="Storing installation settings..." --weight=3
 ynh_app_setting_set --app=$app --key=domain --value=$domain
 ynh_app_setting_set --app=$app --key=path --value=$path_url
 ynh_app_setting_set --app=$app --key=admin --value=$admin
-ynh_print_OFF; ynh_app_setting_set --app=$app --key=password --value=$password; ynh_print_ON
+ynh_app_setting_set --app=$app --key=password --value=$password
 ynh_app_setting_set --app=$app --key=language --value=$language
 ynh_app_setting_set --app=$app --key=export --value=$export
 ynh_app_setting_set --app=$app --key=mypads --value=$mypads
@@ -344,7 +342,6 @@ else
 	Informations="You can access the admin panel by accessing https://$domain${path_url%/}/admin."
 fi
 
-ynh_print_OFF
 echo "$Informations
 You can also find a config file for Etherpad at this path /var/www/etherpad_mypads/settings.json.
 
@@ -354,7 +351,6 @@ You can also find some specific actions for this app by using the experimental a
 If you are facing an issue or want to improve this app, please open a new issue in this project: https://github.com/YunoHost-Apps/etherpad_mypads_ynh" > mail_to_send
 
 ynh_send_readme_to_admin --app_message="mail_to_send" --recipients="$admin" --type=install
-ynh_print_ON
 
 #=================================================
 # END OF SCRIPT

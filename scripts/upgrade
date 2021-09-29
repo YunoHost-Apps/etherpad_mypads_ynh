@@ -27,7 +27,7 @@ export=$(ynh_app_setting_get --app=$app --key=export)
 db_name=$(ynh_app_setting_get --app=$app --key=db_name)
 db_user=$db_name
 db_pwd=$(ynh_app_setting_get --app=$app --key=mysqlpwd)
-ynh_print_OFF; password=$(ynh_app_setting_get --app=$app --key=password); ynh_print_ON
+password=$(ynh_app_setting_get --app=$app --key=password)
 mypads=$(ynh_app_setting_get --app=$app --key=mypads)
 useldap=$(ynh_app_setting_get --app=$app --key=useldap)
 overwrite_settings=$(ynh_app_setting_get --app=$app --key=overwrite_settings)

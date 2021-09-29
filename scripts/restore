@@ -35,7 +35,7 @@ db_name=$(ynh_app_setting_get --app=$app --key=db_name)
 export=$(ynh_app_setting_get --app=$app --key=export)
 mypads=$(ynh_app_setting_get --app=$app --key=mypads)
 admin=$(ynh_app_setting_get --app=$app --key=admin)
-ynh_print_OFF; password=$(ynh_app_setting_get --app=$app --key=password); ynh_print_ON
+password=$(ynh_app_setting_get --app=$app --key=password)
 
 #=================================================
 # CHECK IF THE APP CAN BE RESTORED
@@ -191,14 +191,12 @@ else
 	Informations="You can access to the admin panel, by accessing https://$domain${path_url%/}/admin."
 fi
 
-ynh_print_OFF
 echo "$Informations
 You can also find a config file for Etherpad at this path /var/www/etherpad_mypads/settings.json.
 
 If you are facing an issue or want to improve this app, please open a new issue in this project: https://github.com/YunoHost-Apps/etherpad_mypads_ynh" > mail_to_send
 
 ynh_send_readme_to_admin --app_message="mail_to_send" --recipients="$admin" --type=restore
-ynh_print_ON
 
 #=================================================
 # END OF SCRIPT
