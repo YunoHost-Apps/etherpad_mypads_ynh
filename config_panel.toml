@@ -20,26 +20,31 @@ name = "Etherpad configuration"
         ask = "Hide authorship colors?"
         type = "boolean"
         default = false
+        bind = "name:/var/www/__APP__/settings.json"
 
         [main.pad_configuration.pad_config_showlinenumbers]
         ask = "Show line numbers?"
         type = "boolean"
         default = true
+        bind = "name:/var/www/__APP__/settings.json"
 
         [main.pad_configuration.pad_config_chatandusers]
         ask = "Show chat and users?"
         type = "boolean"
         default = false
+        bind = "name:/var/www/__APP__/settings.json"
 
         [main.pad_configuration.pad_config_alwaysshowchat]
         ask = "Always show chat?"
         type = "boolean"
         default = false
+        bind = "name:/var/www/__APP__/settings.json"
 
         [main.pad_configuration.pad_config_show_markdown]
         ask = "Show markdown syntax?"
         type = "boolean"
         default = false
+        bind = "name:/var/www/__APP__/settings.json"
         
 
     [main.mypads_configuration]
@@ -49,11 +54,13 @@ name = "Etherpad configuration"
         ask = "Enable MyPads plugin?"
         type = "boolean"
         default = true
+        bind = "name:/var/www/__APP__/settings.json"
 
         [main.mypads_configuration.useldap]
         ask = "Use LDAP with MyPads?"
         type = "boolean"
         default = true
+        bind = "name:/var/www/__APP__/settings.json"
 
 
     [main.overwrite_files]
