@@ -1,6 +1,15 @@
 Changelog
 =========
 
+
+## [1.8.14~ynh2]() - 2021-10-01
+
+#### Changed
+* [Harden systemd]()
+* [Fix login to admin page]()
+* [Add autoupdate mecanism]()
+* [Code clean up]()
+
 ## [1.8.14~ynh1]() - 2021-06-04
 
 #### Changed
