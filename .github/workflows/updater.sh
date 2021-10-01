@@ -117,9 +117,6 @@ done
 #=================================================
 
 # Install moreutils, needed for sponge
-sudo apt-get install moreutils
-
-# Replace new version in manifest
 echo "$(jq -s --indent 4 ".[] | .version = \"$version~ynh1\"" manifest.json)" > manifest.json
 
 # No need to update the README, yunohost-bot takes care of it
