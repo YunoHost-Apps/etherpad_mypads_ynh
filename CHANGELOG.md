@@ -5,10 +5,10 @@ Changelog
 ## [1.8.14~ynh2]() - 2021-10-01
 
 #### Changed
-* [Harden systemd]()
-* [Fix login to admin page]()
-* [Add autoupdate mecanism]()
-* [Code clean up]()
+* [Harden systemd](https://github.com/YunoHost-Apps/etherpad_mypads_ynh/pull/149/commits/5900064ea950d98c0bf28e336a5e2d85012e5e52)
+* [Fix login to admin page](https://github.com/YunoHost-Apps/etherpad_mypads_ynh/pull/149/commits/3659fb84bcd52d16937a25998395e7889a731412)
+* [Add autoupdate mecanism](https://github.com/YunoHost-Apps/etherpad_mypads_ynh/pull/149/commits/b53b5830e5c3521db00fe2f4c8b8c1d953e5664a)
+* [Code clean up](https://github.com/YunoHost-Apps/etherpad_mypads_ynh/pull/149/commits/e4168cde0a8611a09ff5bfea6059bdc98a36af38)
 
 ## [1.8.14~ynh1]() - 2021-06-04
 
