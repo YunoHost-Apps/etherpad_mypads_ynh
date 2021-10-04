@@ -17,7 +17,7 @@ If you don't have YunoHost, please consult [the guide](https://yunohost.org/#/in
 
 Online editor providing collaborative editing in real-time
 
-**Shipped version:** 1.8.14~ynh1
+**Shipped version:** 1.8.14~ynh2
 
 **Demo:** https://video.etherpad.com
 

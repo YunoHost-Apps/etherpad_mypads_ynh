@@ -13,7 +13,7 @@ Si vous n'avez pas YunoHost, regardez [ici](https://yunohost.org/#/install) pour
 
 Éditeur en ligne fournissant l'édition collaborative en temps réel
 
-**Version incluse :** 1.8.14~ynh1
+**Version incluse :** 1.8.14~ynh2
 
 **Démo :** https://video.etherpad.com
 
