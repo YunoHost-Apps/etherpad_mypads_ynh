@@ -18,7 +18,7 @@ nodejs_version=14
 mypads_version=1.7.22
 
 # Plugin versions
-ep_align_version=0.3.40
+ep_align_version=0.3.41
 ep_author_hover_version=0.3.26
 ep_comments_page_version=0.1.71
 ep_countable_version=0.0.11
