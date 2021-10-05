@@ -6,6 +6,10 @@
 # IMPORT GENERIC HELPERS
 #=================================================
 
+if [ ${PACKAGE_CHECK_EXEC:-0} -eq 1 ]; then
+	sleep 60
+fi
+
 source _common.sh
 source /usr/share/yunohost/helpers
 

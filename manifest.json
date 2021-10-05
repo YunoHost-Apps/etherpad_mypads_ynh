@@ -6,14 +6,13 @@
 		"en": "Online editor providing collaborative editing in real-time",
 		"fr": "Éditeur en ligne fournissant l'édition collaborative en temps réel"
 	},
-	"version": "1.8.14~ynh1",
+	"version": "1.8.14~ynh2",
 	"url": "http://etherpad.org",
 	"upstream": {
         "license": "Apache-2.0",
         "website": "http://etherpad.org",
         "demo": "https://video.etherpad.com",
         "admindoc": "http://etherpad.org/doc/v1.8.14",
-        "userdoc": "https://yunohost.org/en/app_etherpad_mypads",
         "code": "https://github.com/ether/etherpad-lite"
     },
 	"license": "Apache-2.0",
@@ -37,8 +36,7 @@
 		"install" : [
 			{
 				"name": "domain",
-				"type": "domain",
-				"example": "sub.domain.org"
+				"type": "domain"
 			},
 			{
 				"name": "path",
@@ -48,13 +46,11 @@
 			},
 			{
 				"name": "admin",
-				"type": "user",
-				"example": "john"
+				"type": "user"
 			},
 			{
 				"name": "password",
-				"type": "password",
-				"example": "Choose a password"
+				"type": "password"
 			},
 			{
 				"name": "language",
