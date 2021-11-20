@@ -1,6 +1,12 @@
 Changelog
 =========
 
+## [1.8.15~ynh1]() - 2021-11-20
+
+#### Changed
+* [Upgrade to 1.8.15](https://github.com/YunoHost-Apps/etherpad_mypads_ynh/pull/154/commits/d176478017e8524984657f302262516901cdc427)
+* [Upgrade plugins to upstream](https://github.com/YunoHost-Apps/etherpad_mypads_ynh/pull/154/commits/2f7e3e25ec9e7d7e48a8d14742a8cf081e56a8b4)
+* [Set YunoHost requirements to 4.3.0](https://github.com/YunoHost-Apps/etherpad_mypads_ynh/pull/154/commits/51a380c77711fdd70eb36a34a1af4a50e8b840a6)
 
 ## [1.8.14~ynh2]() - 2021-10-01
 
