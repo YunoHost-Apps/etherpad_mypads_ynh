@@ -52,6 +52,23 @@ ynh_systemd_action --action=restart --line_match="You can access your Etherpad i
 upgrade_type=$(ynh_check_app_version_changed)
 
 #=================================================
+# BACKUP BEFORE UPGRADE THEN ACTIVE TRAP
+#=================================================
+ynh_script_progression --message="Backing up the app before upgrading (may take a while)..." --weight=35
+
+# Backup the current version of the app
+ynh_backup_before_upgrade
+ynh_clean_setup () {
+# Clean installation remainings that are not handled by the remove script.
+  ynh_clean_check_starting
+
+  # Restore it if the upgrade fails
+  ynh_restore_upgradebackup
+}
+# Exit if an error occurs during the execution of the script
+ynh_abort_if_errors
+
+#=================================================
 # ENSURE DOWNWARD COMPATIBILITY
 #=================================================
 ynh_script_progression --message="Ensuring downward compatibility..." --weight=2
@@ -140,23 +157,6 @@ else
   # AFAIK there is no helper to check if that flag is up or not, so let's force it.
   ynh_permission_url --permission="admin" --auth_header=false
 fi
-
-#=================================================
-# BACKUP BEFORE UPGRADE THEN ACTIVE TRAP
-#=================================================
-ynh_script_progression --message="Backing up the app before upgrading (may take a while)..." --weight=35
-
-# Backup the current version of the app
-ynh_backup_before_upgrade
-ynh_clean_setup () {
-# Clean installation remainings that are not handled by the remove script.
-	ynh_clean_check_starting
-
-	# Restore it if the upgrade fails
-	ynh_restore_upgradebackup
-}
-# Exit if an error occurs during the execution of the script
-ynh_abort_if_errors
 
 #=================================================
 # ACTIVATE MAINTENANCE MODE
