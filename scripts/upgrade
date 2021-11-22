@@ -150,10 +150,10 @@ ynh_script_progression --message="Backing up the app before upgrading (may take 
 ynh_backup_before_upgrade
 ynh_clean_setup () {
 # Clean installation remainings that are not handled by the remove script.
-	ynh_clean_check_starting
+  ynh_clean_check_starting
 
-	# Restore it if the upgrade fails
-	ynh_restore_upgradebackup
+  # Restore it if the upgrade fails
+  ynh_restore_upgradebackup
 }
 # Exit if an error occurs during the execution of the script
 ynh_abort_if_errors
@@ -222,7 +222,7 @@ fi
 #=================================================
 # NGINX CONFIGURATION
 #=================================================
-ynh_script_progression --message="Upgrading NGINX web server configuration..."
+ynh_script_progression --message="Upgrading NGINX web server configuration..." --weight=2
 
 # Overwrite the NGINX configuration only if it's allowed
 if [ $overwrite_nginx -eq 1 ]
@@ -240,7 +240,7 @@ ynh_install_nodejs --nodejs_version=$nodejs_version
 #=================================================
 # HANDLE LOG FILES AND LOGROTATE
 #=================================================
-ynh_script_progression --message="Configuring log rotation..."
+ynh_script_progression --message="Configuring log rotation..." --weight=1
 
 # Create log directory
 install_log=/var/log/$app/installation.log
@@ -424,7 +424,7 @@ ynh_add_fail2ban_config --logpath="/var/log/nginx/$domain-access.log" --failrege
 #=================================================
 # SETUP LOGROTATE
 #=================================================
-ynh_script_progression --message="Upgrading logrotate configuration..."
+ynh_script_progression --message="Upgrading logrotate configuration..." --weight=2
 
 # Use logrotate to manage app-specific logfile(s)
 ynh_use_logrotate --non-append --specific_user=$app/$app
