@@ -1,5 +1,4 @@
 version = "1.0"
-name = "Etherpad configuration panel"
 
 [main]
 name = "Etherpad configuration"
