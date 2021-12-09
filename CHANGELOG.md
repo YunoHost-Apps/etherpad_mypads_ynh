@@ -1,6 +1,12 @@
 Changelog
 =========
 
+## [1.8.16~ynh1]() - 2021-12-09
+
+#### Changed
+* [Upgrade to 1.8.16](https://github.com/YunoHost-Apps/etherpad_mypads_ynh/pull/157/commits/e82f22685697428a0f24b15a9682dd075d0c5223)
+* [Upgrade ep_comments_page to 0.1.80](https://github.com/YunoHost-Apps/etherpad_mypads_ynh/pull/157/commits/0395fb13763a14ad6a85967809da7473f030f58c)
+
 ## [1.8.15~ynh1]() - 2021-11-20
 
 #### Changed
