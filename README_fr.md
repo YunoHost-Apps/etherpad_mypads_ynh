@@ -14,7 +14,7 @@ Si vous n'avez pas YunoHost, regardez [ici](https://yunohost.org/#/install) pour
 Etherpad est un éditeur collaboratif en temps réel évolutif pour des milliers d'utilisateurs simultanés en temps réel. Il fournit des capacités complètes d'exportation de données et s'exécute sur votre serveur, sous votre contrôle.
 
 
-**Version incluse :** 1.8.16~ynh1
+**Version incluse :** 1.8.16~ynh2
 
 **Démo :** https://video.etherpad.com
 
@@ -60,7 +60,7 @@ Vous pouvez accéder à deux panneaux d'administration différents, pour Etherpa
 ## Documentations et ressources
 
 * Site officiel de l'app : http://etherpad.org
-* Documentation officielle de l'admin : http://etherpad.org/doc/v1.8.15
+* Documentation officielle de l'admin : http://etherpad.org/doc/v1.8.16
 * Dépôt de code officiel de l'app : https://github.com/ether/etherpad-lite
 * Documentation YunoHost pour cette app : https://yunohost.org/app_etherpad_mypads
 * Signaler un bug : https://github.com/YunoHost-Apps/etherpad_mypads_ynh/issues
