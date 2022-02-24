@@ -5,6 +5,7 @@ Changelog
 
 #### Changed
 * [Upgrade to 1.8.17](https://github.com/YunoHost-Apps/etherpad_mypads_ynh/pull/160/commits/4c6951773bc4cf7955bc1b7407973cacc7db9302)
+* [Upgrade to NodeJS 16](https://github.com/YunoHost-Apps/etherpad_mypads_ynh/pull/163/commits/d6fd209ce8b3b671e77a65053ad4f4578597a840)
 * [Upgrade plugins to upstream](https://github.com/YunoHost-Apps/etherpad_mypads_ynh/pull/160/commits/5a4944af34fb09c1e915bd43edc0de5ac8bf6538)
 
 
