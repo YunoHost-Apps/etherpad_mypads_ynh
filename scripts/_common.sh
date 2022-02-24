@@ -19,8 +19,8 @@ mypads_version=1.7.22
 
 # Plugin versions
 ep_align_version=0.3.45
-ep_author_hover_version=0.3.29
-ep_comments_page_version=0.1.91
+ep_author_hover_version=0.3.31
+ep_comments_page_version=0.1.92
 ep_countable_version=0.0.11
 ep_delete_empty_pads_version=0.0.7
 ep_font_color_version=0.0.56
