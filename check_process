@@ -66,7 +66,7 @@
 		useldap=0
 	; Checks
 		setup_root=1
-		upgrade=1	from_commit=978e77403a6d8e9512ec1f5203e9834e945c2d8c
+		upgrade=1	from_commit=b7815983353a5409d473618f21107b4c621b9858
 ;; Test sans export
 	; Manifest
 		domain="domain.tld"
@@ -84,6 +84,6 @@
 Email=
 Notification=change
 ;;; Upgrade options
-	; commit=978e77403a6d8e9512ec1f5203e9834e945c2d8c
-		name= #113
+	; commit=b7815983353a5409d473618f21107b4c621b9858
+		name= #159
 		manifest_arg=domain=DOMAIN&path=PATH&admin=USER&password=password&language=en&is_public=1&abiword=0&
