@@ -32,7 +32,7 @@ ynh_abort_if_errors
 domain=$YNH_APP_ARG_DOMAIN
 path_url=$YNH_APP_ARG_PATH
 admin=$YNH_APP_ARG_ADMIN
-password=$YNH_APP_ARG_PASSWORD
+password="$YNH_APP_ARG_PASSWORD"
 language=$YNH_APP_ARG_LANGUAGE
 is_public=$YNH_APP_ARG_IS_PUBLIC
 export=$YNH_APP_ARG_EXPORT
@@ -65,7 +65,7 @@ ynh_script_progression --message="Storing installation settings..." --weight=3
 ynh_app_setting_set --app=$app --key=domain --value=$domain
 ynh_app_setting_set --app=$app --key=path --value=$path_url
 ynh_app_setting_set --app=$app --key=admin --value=$admin
-ynh_app_setting_set --app=$app --key=password --value=$password
+ynh_app_setting_set --app=$app --key=password --value="$password"
 ynh_app_setting_set --app=$app --key=language --value=$language
 ynh_app_setting_set --app=$app --key=export --value=$export
 ynh_app_setting_set --app=$app --key=mypads --value=$mypads
@@ -344,9 +344,6 @@ fi
 
 echo "$Informations
 You can also find a config file for Etherpad at this path /var/www/etherpad_mypads/settings.json.
-
-You can configure this app easily by using the experimental config-panel feature $admin_panel/config-panel.
-You can also find some specific actions for this app by using the experimental action feature $admin_panel/actions.
 
 If you are facing an issue or want to improve this app, please open a new issue in this project: https://github.com/YunoHost-Apps/etherpad_mypads_ynh" > mail_to_send
 

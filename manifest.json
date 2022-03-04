@@ -6,13 +6,13 @@
         "en": "Online editor providing collaborative editing in real-time",
         "fr": "Éditeur en ligne fournissant l'édition collaborative en temps réel"
     },
-    "version": "1.8.16~ynh2",
+    "version": "1.8.17~ynh1",
     "url": "http://etherpad.org",
     "upstream": {
         "license": "Apache-2.0",
         "website": "http://etherpad.org",
         "demo": "https://video.etherpad.com",
-        "admindoc": "http://etherpad.org/doc/v1.8.16",
+        "admindoc": "http://etherpad.org/doc/v1.8.17",
         "code": "https://github.com/ether/etherpad-lite"
     },
     "license": "Apache-2.0",
