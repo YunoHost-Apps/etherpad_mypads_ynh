@@ -18,18 +18,18 @@ nodejs_version=14
 mypads_version=1.7.22
 
 # Plugin versions
-ep_align_version=0.3.49
-ep_author_hover_version=0.3.35
-ep_comments_page_version=0.1.98
-ep_countable_version=0.0.11
-ep_delete_empty_pads_version=0.0.8
-ep_font_color_version=0.0.60
+ep_align_version=0.3.50
+ep_author_hover_version=0.3.36
+ep_comments_page_version=1.0.2
+ep_countable_version=0.0.13
+ep_delete_empty_pads_version=0.0.9
+ep_font_color_version=0.0.61
 ep_headings2_version=0.2.42
-ep_markdown_version=0.1.49
-ep_spellcheck_version=0.0.42
-ep_subscript_and_superscript_version=0.2.43
-ep_table_of_contents_version=0.3.39
-ep_font_size_version=0.4.41
+ep_markdown_version=0.1.50
+ep_spellcheck_version=0.0.43
+ep_subscript_and_superscript_version=0.2.45
+ep_table_of_contents_version=0.3.40
+ep_font_size_version=0.4.42
 
 #=================================================
 # PERSONAL HELPERS
