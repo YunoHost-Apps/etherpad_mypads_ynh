@@ -164,6 +164,7 @@ ynh_script_progression --message="Installing Etherpad..." --weight=90
 chown -R $app: $final_path
 pushd $final_path
  	ynh_use_nodejs
+ 	npm install -g npm@8.9.0
  	ynh_exec_as $app env "$ynh_node_load_PATH" bin/installDeps.sh
 popd
 
