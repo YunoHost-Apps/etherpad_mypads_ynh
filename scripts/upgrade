@@ -1,12 +1,11 @@
 #!/bin/bash
 
 #=================================================
-# GENERIC STARTING
+# GENERIC START
 #=================================================
 # IMPORT GENERIC HELPERS
 #=================================================
 
-# Load common variables for all scripts.
 source _common.sh
 source /usr/share/yunohost/helpers
 
@@ -19,8 +18,8 @@ app=$YNH_APP_INSTANCE_NAME
 
 domain=$(ynh_app_setting_get --app=$app --key=domain)
 path_url=$(ynh_app_setting_get --app=$app --key=path)
-admin=$(ynh_app_setting_get --app=$app --key=admin)
 language=$(ynh_app_setting_get --app=$app --key=language)
+admin=$(ynh_app_setting_get --app=$app --key=admin)
 final_path=$(ynh_app_setting_get --app=$app --key=final_path)
 port=$(ynh_app_setting_get --app=$app --key=port)
 export=$(ynh_app_setting_get --app=$app --key=export)
@@ -45,11 +44,43 @@ pad_config_show_markdown=$(ynh_app_setting_get --app=$app --key=pad_config_show_
 #=================================================
 # CHECK VERSION
 #=================================================
+nh_script_progression --message="Checking version..."
 
 # Wait for etherpad to be fully started
 ynh_systemd_action --action=restart --line_match="You can access your Etherpad instance at" --log_path="/var/log/$app/etherpad.log" --timeout="120"
 
 upgrade_type=$(ynh_check_app_version_changed)
+
+#=================================================
+# BACKUP BEFORE UPGRADE THEN ACTIVE TRAP
+#=================================================
+ynh_script_progression --message="Backing up the app before upgrading (may take a while)..." --weight=35
+
+# Backup the current version of the app
+ynh_backup_before_upgrade
+ynh_clean_setup () {
+	ynh_clean_check_starting
+	# Restore it if the upgrade fails
+	ynh_restore_upgradebackup
+}
+# Exit if an error occurs during the execution of the script
+ynh_abort_if_errors
+
+#=================================================
+# ACTIVATE MAINTENANCE MODE
+#=================================================
+ynh_script_progression --message="Activating maintenance mode..." --weight=2
+
+ynh_maintenance_mode_ON
+
+#=================================================
+# STANDARD UPGRADE STEPS
+#=================================================
+# STOP SYSTEMD SERVICE
+#=================================================
+ynh_script_progression --message="Stopping a systemd service..." --weight=3
+
+ynh_systemd_action --service_name=$app --action="stop"
 
 #=================================================
 # ENSURE DOWNWARD COMPATIBILITY
@@ -127,50 +158,19 @@ fi
 
 # Cleaning legacy permissions
 if ynh_legacy_permissions_exists; then
-  ynh_legacy_permissions_delete_all
+	ynh_legacy_permissions_delete_all
 
-  ynh_app_setting_delete --app=$app --key=is_public
+	ynh_app_setting_delete --app=$app --key=is_public
 fi
 
 if ! ynh_permission_exists --permission="admin"; then
-  # Create the required permissions
-  ynh_permission_create --permission="admin" --url="/admin" --allowed=$admin
+	# Create the required permissions
+	ynh_permission_create --permission="admin" --url="/admin" --allowed=$admin
 else
-  # Make sure the admin panel is not exposed to the SSO's authentication headers
-  # AFAIK there is no helper to check if that flag is up or not, so let's force it.
-  ynh_permission_url --permission="admin" --auth_header=false
+	# Make sure the admin panel is not exposed to the SSO's authentication headers
+	# AFAIK there is no helper to check if that flag is up or not, so let's force it.
+	ynh_permission_url --permission="admin" --auth_header=false
 fi
-
-#=================================================
-# BACKUP BEFORE UPGRADE THEN ACTIVE TRAP
-#=================================================
-ynh_script_progression --message="Backing up the app before upgrading (may take a while)..." --weight=35
-
-# Backup the current version of the app
-ynh_backup_before_upgrade
-ynh_clean_setup () {
-# Clean installation remainings that are not handled by the remove script.
-  ynh_clean_check_starting
-
-  # Restore it if the upgrade fails
-  ynh_restore_upgradebackup
-}
-# Exit if an error occurs during the execution of the script
-ynh_abort_if_errors
-
-#=================================================
-# ACTIVATE MAINTENANCE MODE
-#=================================================
-ynh_script_progression --message="Activating maintenance mode..." --weight=2
-
-ynh_maintenance_mode_ON
-
-#=================================================
-# STOP ETHERPAD
-#=================================================
-ynh_script_progression --message="Stopping Etherpad service..." --weight=3
-
-ynh_systemd_action --action=stop
 
 #=================================================
 # CREATE DEDICATED USER
@@ -178,10 +178,8 @@ ynh_systemd_action --action=stop
 ynh_script_progression --message="Making sure dedicated system user exists..."
 
 # Create a dedicated user (if not existing)
-ynh_system_user_create --username=$app --home_dir=$final_path
+ynh_system_user_create --username=$app --home_dir="$final_path"
 
-#=================================================
-# STANDARD UPGRADE STEPS
 #=================================================
 # DOWNLOAD, CHECK AND UNPACK SOURCE
 #=================================================
@@ -190,34 +188,13 @@ if [ "$upgrade_type" == "UPGRADE_APP" ]
 then
 	ynh_script_progression --message="Upgrading source files..." --weight=4
 
-  # # Create a temporary directory
-  # tmpdir="$(mktemp -d)"
-  # # Backup the config file in the temp dir
-  # cp -a "$final_path/settings.json" "$tmpdir/settings.json"
-
-  ynh_secure_remove --file="$final_path"
-
 	# Download, check integrity, uncompress and patch the source from app.src
-	ynh_setup_source --dest_dir="$final_path"
-
-  #   # Copy the admin saved settings from tmp directory to final config path 
-  # cp -a "$tmpdir/settings.json" "$final_path/settings.json" 
-
-  # # Remove the tmp directory securely
-  # ynh_secure_remove --file="$tmpdir"
-
+	ynh_setup_source --dest_dir="$final_path" --keep="settings.json credentials.json"
 fi
 
-#=================================================
-# UPGRADE DEPENDENCIES
-#=================================================
-ynh_script_progression --message="Upgrading dependencies..." --weight=5
-
-if [ "$export" = "abiword" ]; then
-	ynh_exec_warn_less ynh_install_app_dependencies $abiword_app_depencencies
-elif [ "$export" = "libreoffice" ]; then
-	ynh_exec_warn_less ynh_install_app_dependencies $libreoffice_app_dependencies
-fi
+chmod 750 "$final_path"
+chmod -R o-rwx "$final_path"
+chown -R $app:$app "$final_path"
 
 #=================================================
 # NGINX CONFIGURATION
@@ -231,12 +208,20 @@ then
 fi
 
 #=================================================
-# UPGRADE NODEJS
+# UPGRADE DEPENDENCIES
 #=================================================
-ynh_script_progression --message="Upgrading NodeJS..." --weight=4
+ynh_script_progression --message="Upgrading dependencies..." --weight=5
+
+if [ "$export" = "abiword" ]; then
+	ynh_exec_warn_less ynh_install_app_dependencies $abiword_app_depencencies
+elif [ "$export" = "libreoffice" ]; then
+	ynh_exec_warn_less ynh_install_app_dependencies $libreoffice_app_dependencies
+fi
 
 ynh_install_nodejs --nodejs_version=$nodejs_version
 
+#=================================================
+# SPECIFIC UPGRADE
 #=================================================
 # HANDLE LOG FILES AND LOGROTATE
 #=================================================
@@ -252,33 +237,9 @@ chown $app -R /var/log/$app
 #=================================================
 ynh_script_progression --message="Upgrading Etherpad..." --weight=60
 
-# Then update the additionnal modules
-chown -R $app: $final_path
-
 pushd $final_path
   ynh_use_nodejs
   ynh_exec_as $app env "$ynh_node_load_PATH" src/bin/installDeps.sh
-# ynh_exec_warn_less npm cache clean --force
-# ynh_exec_warn_less ynh_exec_as $app env "$ynh_node_load_PATH" npm cache clean --force
-# while read node_module
-# do
-#     # Ignore ep_etherpad-lite, this part is updated before in this script.
-#     if [ "$node_module" = "ep_etherpad-lite" ]; then
-#         continue
-#     fi
-#     echo "Update $node_module"
-#     # Build the name of the variable with the version.
-#     module_version=${node_module}_version
-#     # Get the content of the variable (from the file _variables)
-#     module_version=${!module_version:-}
-#     # If the module has no version stored in a variable into the file, keep it empty.
-#     # That way, the upgrade will not be specific to a version.
-#     ## Otherwise, add @ before the version number to force the upgrade to this version.
-#     if [ -n "${module_version}" ]; then
-#         module_version=@${module_version}
-#     fi
-#     ynh_exec_warn_less ynh_exec_as $app env "$ynh_node_load_PATH" npm install --upgrade ${node_module}${module_version} || true
-# done <<< "$(ls -1 "$final_path/node_modules" | grep "^ep_")"
 popd
 
 #=================================================
@@ -322,8 +283,6 @@ chown -R $app: $final_path/node_modules
 # Remove package-lock.json otherwise plugins installation and upgrade fails miserablywith 502 error
 ynh_secure_remove --file="$final_path/package-lock.json"
 
-#=================================================
-# SPECIFIC UPGRADE
 #=================================================
 # CONFIGURE ETHERPAD
 #=================================================
@@ -408,39 +367,6 @@ chmod 600 "$final_path/credentials.json"
 chown $app -R /var/log/$app/etherpad.log
 
 #=================================================
-# ADVERTISE SERVICE IN ADMIN PANEL
-#=================================================
-
-yunohost service add $app --description="Collaborative editor" --log="/var/log/$app/etherpad.log"
-
-#=================================================
-# UPGRADE FAIL2BAN
-#=================================================
-ynh_script_progression --message="Reconfiguring Fail2Ban..." --weight=8
-
-# Create a dedicated Fail2Ban config
-ynh_add_fail2ban_config --logpath="/var/log/nginx/$domain-access.log" --failregex="<HOST> .* .POST /mypads/api/auth/login HTTP/1.1. 400" --max_retry=5
-
-#=================================================
-# SETUP LOGROTATE
-#=================================================
-ynh_script_progression --message="Upgrading logrotate configuration..." --weight=2
-
-# Use logrotate to manage app-specific logfile(s)
-ynh_use_logrotate --non-append --specific_user=$app/$app
-
-#=================================================
-# SETUP SYSTEMD
-#=================================================
-ynh_script_progression --message="Upgrading systemd configuration..." --weight=2
-
-# Overwrite the systemd configuration only if it's allowed
-if [ $overwrite_systemd -eq 1 ]
-then
-	ynh_add_systemd_config
-fi
-
-#=================================================
 # SOME HACKS
 #=================================================
 
@@ -451,19 +377,54 @@ then
 fi
 
 #=================================================
+# SETUP SYSTEMD
+#=================================================
+ynh_script_progression --message="Upgrading systemd configuration..." --weight=2
+
+# Create a dedicated systemd config
+if [ $overwrite_systemd -eq 1 ]
+then
+	ynh_add_systemd_config
+fi
+
+#=================================================
+# GENERIC FINALIZATION
+#=================================================
+# SETUP LOGROTATE
+#=================================================
+ynh_script_progression --message="Upgrading logrotate configuration..." --weight=2
+
+# Use logrotate to manage app-specific logfile(s)
+ynh_use_logrotate --non-append --specific_user=$app/$app
+
+#=================================================
+# INTEGRATE SERVICE IN YUNOHOST
+#=================================================
+ynh_script_progression --message="Integrating service in YunoHost..."
+
+yunohost service add $app --description="Collaborative editor" --log="/var/log/$app/etherpad.log"
+
+#=================================================
+# START SYSTEMD SERVICE
+#=================================================
+ynh_script_progression --message="Starting a systemd service..." --weight=9
+
+ynh_systemd_action --service_name=$app --action=restart --line_match="You can access your Etherpad instance at" --log_path="/var/log/$app/etherpad.log" --timeout="120"
+
+#=================================================
+# UPGRADE FAIL2BAN
+#=================================================
+ynh_script_progression --message="Reconfiguring Fail2Ban..." --weight=8
+
+# Create a dedicated Fail2Ban config
+ynh_add_fail2ban_config --logpath="/var/log/nginx/$domain-access.log" --failregex="<HOST> .* .POST /mypads/api/auth/login HTTP/1.1. 400" --max_retry=5
+
+#=================================================
 # RELOAD NGINX
 #=================================================
 ynh_script_progression --message="Reloading NGINX web server..."
 
-ynh_systemd_action --action=reload --service_name=nginx
-
-#=================================================
-# CHECK ETHERPAD STARTING
-#=================================================
-ynh_script_progression --message="Restarting Etherpad..." --weight=9
-
-# Wait for etherpad to be fully started
-ynh_systemd_action --action=restart --line_match="You can access your Etherpad instance at" --log_path="/var/log/$app/etherpad.log" --timeout="120"
+ynh_systemd_action --service_name=nginx --action=reload
 
 #=================================================
 # DEACTIVE MAINTENANCE MODE

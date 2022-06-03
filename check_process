@@ -2,10 +2,10 @@
 	; Manifest
 		domain="domain.tld"
 		path="/path"
+		is_public=1
+		language="en"
 		admin="john"
 		password="password"
-		language="en"
-		is_public=1
 		export="libreoffice"
 		mypads=1
 		useldap=1
@@ -32,8 +32,11 @@
 		setup_private=1
 		setup_public=1
 		upgrade=1
+		# 1.8.17~ynh1
+		upgrade=1	from_commit=44f73d6d49c4ece92648f0374cf02ec4e9e3fb5f
 		backup_restore=1
 		multi_instance=1
+		port_already_use=0
 		change_url=1
         actions=0
         config_panel=0
