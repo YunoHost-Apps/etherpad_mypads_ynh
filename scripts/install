@@ -112,7 +112,7 @@ ynh_script_progression --message="Creating a MySQL database..."
 db_name=$(ynh_sanitize_dbid --db_name=$app)
 db_user=$db_name
 ynh_app_setting_set --app=$app --key=db_name --value=$db_name
-ynh_mysql_setup_db --db_user=$db_name --db_name=$db_name
+ynh_mysql_setup_db --db_user=$db_user --db_name=$db_name
 
 #=================================================
 # CREATE DEDICATED USER
@@ -162,9 +162,10 @@ ynh_use_logrotate --specific_user=$app/$app
 ynh_script_progression --message="Installing Etherpad..." --weight=90
 
 chown -R $app: $final_path
+
 pushd $final_path
  	ynh_use_nodejs
- 	npm install -g npm@8.9.0
+ 	npm install npm@latest --location=global
  	ynh_exec_as $app env "$ynh_node_load_PATH" bin/installDeps.sh
 popd
 
