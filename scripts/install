@@ -96,6 +96,7 @@ elif [ "$export" = "libreoffice" ]; then
 fi
 
 ynh_install_nodejs --nodejs_version=$nodejs_version
+ynh_use_nodejs
 
 #=================================================
 # CREATE DEDICATED USER
@@ -151,16 +152,6 @@ touch $install_log
 chown $app -R /var/log/$app
 
 #=================================================
-# INSTALL ETHERPAD
-#=================================================
-ynh_script_progression --message="Installing Etherpad..." --weight=90
-
-pushd $final_path
- 	ynh_use_nodejs
- 	ynh_exec_as $app env "$ynh_node_load_PATH" bin/installDeps.sh
-popd
-
-#=================================================
 # ADD A CONFIGURATION
 #=================================================
 ynh_script_progression --message="Adding a configuration file..." --weight=6
@@ -196,10 +187,6 @@ ynh_add_config --template="../conf/credentials.json" --destination="$final_path/
 # Restrict access to credentials.json
 chmod 600 $final_path/credentials.json
 
-chmod 750 "$final_path"
-chmod o-rwx "$final_path"
-chown -R $app: "$final_path"
-
 #=================================================
 # SETUP SYSTEMD
 #=================================================
@@ -209,45 +196,49 @@ ynh_script_progression --message="Configuring a systemd service..." --weight=4
 ynh_add_systemd_config
 
 #=================================================
-# INSTALL FRAMAPAD'S PLUGINS
+# INSTALL ETHERPAD'S PLUGINS
 #=================================================
 ynh_script_progression --message="Installing Etherpad plugins..." --weight=90
 
 pushd "$final_path"
 	# Add Left/Center/Right/Justify to lines of text in a pad
-	ynh_npm install ep_align@${ep_align_version} >> $install_log 2>&1
+	ynh_exec_warn_less ynh_exec_as $app env $ynh_node_load_PATH $ynh_npm install --no-save ep_align@${ep_align_version}
 	# Framapad - Adds author names to span titles
-	ynh_npm install ep_author_hover@${ep_author_hover_version} >> $install_log 2>&1
+	ynh_exec_warn_less ynh_exec_as $app env $ynh_node_load_PATH $ynh_npm install --no-save ep_author_hover@${ep_author_hover_version}
 	# Framapad - Adds comments on sidebar and link it to the text.
-	ynh_npm install ep_comments_page@${ep_comments_page_version} >> $install_log 2>&1
+	ynh_exec_warn_less ynh_exec_as $app env $ynh_node_load_PATH $ynh_npm install --no-save ep_comments_page@${ep_comments_page_version}
 	# Framapad - Displays paragraphs, sentences, words and characters counts.
-	ynh_npm install ep_countable@${ep_countable_version} >> $install_log 2>&1
+	ynh_exec_warn_less ynh_exec_as $app env $ynh_node_load_PATH $ynh_npm install --no-save ep_countable@${ep_countable_version}
 	# Framapad - Delete pads which were never edited
-	ynh_npm install ep_delete_empty_pads@${ep_delete_empty_pads_version} >> $install_log 2>&1
+	ynh_exec_warn_less ynh_exec_as $app env $ynh_node_load_PATH $ynh_npm install --no-save ep_delete_empty_pads@${ep_delete_empty_pads_version}
 	# Framapad - Apply colors to fonts
-	ynh_npm install ep_font_color@${ep_font_color_version} >> $install_log 2>&1
+	ynh_exec_warn_less ynh_exec_as $app env $ynh_node_load_PATH $ynh_npm install --no-save ep_font_color@${ep_font_color_version}
 	# Framapad - Adds heading support to Etherpad Lite.
-	ynh_npm install ep_headings2@${ep_headings2_version} >> $install_log 2>&1
+	ynh_exec_warn_less ynh_exec_as $app env $ynh_node_load_PATH $ynh_npm install --no-save ep_headings2@${ep_headings2_version}
 	# Framapad - Edit and Export as Markdown in Etherpad
-	ynh_npm install ep_markdown@${ep_markdown_version} >> $install_log 2>&1
+	ynh_exec_warn_less ynh_exec_as $app env $ynh_node_load_PATH $ynh_npm install --no-save ep_markdown@${ep_markdown_version}
 	if [ $mypads -eq 1 ]; then
 		# Framapad - Groups and private pads for Etherpad
-		ynh_npm install ep_mypads@${mypads_version} >> $install_log 2>&1
+		ynh_exec_warn_less ynh_exec_as $app env $ynh_node_load_PATH $ynh_npm install --no-save ep_mypads@${mypads_version}
 	fi
 	# Framapad - Add support to do 'Spell checking'
-	ynh_npm install ep_spellcheck@${ep_spellcheck_version} >> $install_log 2>&1
+	ynh_exec_warn_less ynh_exec_as $app env $ynh_node_load_PATH $ynh_npm install --no-save ep_spellcheck@${ep_spellcheck_version}
 	# Framapad - Add support for Subscript and Superscript
-	ynh_npm install ep_subscript_and_superscript@${ep_subscript_and_superscript_version} >> $install_log 2>&1
+	ynh_exec_warn_less ynh_exec_as $app env $ynh_node_load_PATH $ynh_npm install --no-save ep_subscript_and_superscript@${ep_subscript_and_superscript_version}
 	# Framapad - View a table of contents for your pad
-	ynh_npm install ep_table_of_contents@${ep_table_of_contents_version} >> $install_log 2>&1
+	ynh_exec_warn_less ynh_exec_as $app env $ynh_node_load_PATH $ynh_npm install --no-save ep_table_of_contents@${ep_table_of_contents_version}
 	# Framapad - User Pad Contents font size can be set in settings, this does not effect other peoples views
-	ynh_npm install ep_font_size@${ep_font_size_version} >> $install_log 2>&1
+	ynh_exec_warn_less ynh_exec_as $app env $ynh_node_load_PATH $ynh_npm install --no-save ep_font_size@${ep_font_size_version}
 popd
 
-chown -R $app: $final_path/node_modules
+#=================================================
+# INSTALL ETHERPAD
+#=================================================
+ynh_script_progression --message="Installing Etherpad..." --weight=90
 
-# Remove package-lock.json otherwise plugins installation and upgrade fails miserablywith 502 error
-ynh_secure_remove --file="$final_path/package-lock.json"
+pushd $final_path
+ 	ynh_exec_warn_less ynh_exec_as $app env $ynh_node_load_PATH bin/installDeps.sh
+popd
 
 #=================================================
 # SOME HACKS
@@ -255,6 +246,8 @@ ynh_secure_remove --file="$final_path/package-lock.json"
 
 if [ $mypads -eq 1 ]
 then
+	ynh_script_progression --message="Some hacks..."
+
 	# Add a link to Etherpad to allow anonymous pads creation from MyPads.
 	ynh_replace_string --match_string="^ *\"DESCRIPTION\": .*</ul>" --replace_string="&<a href=../>Pads anonymes</a>" --target_file=$final_path/node_modules/ep_mypads/static/l10n/fr.json
 	ynh_replace_string --match_string="^ *\"DESCRIPTION\": .*</ul>" --replace_string="&<a href=../>Anonymous pads</a>" --target_file=$final_path/node_modules/ep_mypads/static/l10n/en.json
@@ -294,7 +287,7 @@ ynh_systemd_action --service_name=$app --action=restart --line_match="You can ac
 if [ $mypads -eq 1 ]
 then
 	ynh_replace_string --match_string="__LANGUAGE__" --replace_string="$language" --target_file="../conf/lang_mypads.sql"
-	mysql -u $db_name -p $db_pwd $db_name < "../conf/lang_mypads.sql"
+	ynh_mysql_connect_as --user=$db_user --password=$db_pwd --database=$db_name < "../conf/lang_mypads.sql"
 
 	# Wait for etherpad to be fully started
 	ynh_systemd_action --action=restart --line_match="You can access your Etherpad instance at" --log_path="/var/log/$app/etherpad.log" --timeout="120"
