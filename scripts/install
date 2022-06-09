@@ -148,8 +148,6 @@ ynh_script_progression --message="Configuring log rotation..."
 # Create log directory
 mkdir -p /var/log/$app
 touch /var/log/$app/etherpad.log
-install_log=/var/log/$app/installation.log
-touch $install_log
 chown $app -R /var/log/$app
 
 #=================================================
@@ -185,8 +183,12 @@ fi
 ynh_store_file_checksum --file="$final_path/settings.json"
 
 ynh_add_config --template="../conf/credentials.json" --destination="$final_path/credentials.json"
-# Restrict access to credentials.json
-chmod 600 $final_path/credentials.json
+
+chmod 600 "$final_path/settings.json"
+chown $app:$app "$final_path/settings.json"
+
+chmod 600 "$final_path/credentials.json"
+chown $app:$app "$final_path/credentials.json"
 
 #=================================================
 # SETUP SYSTEMD

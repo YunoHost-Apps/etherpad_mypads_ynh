@@ -44,7 +44,7 @@ pad_config_show_markdown=$(ynh_app_setting_get --app=$app --key=pad_config_show_
 #=================================================
 # CHECK VERSION
 #=================================================
-nh_script_progression --message="Checking version..."
+ynh_script_progression --message="Checking version..."
 
 # Wait for etherpad to be fully started
 ynh_systemd_action --action=restart --line_match="You can access your Etherpad instance at" --log_path="/var/log/$app/etherpad.log" --timeout="120"
@@ -197,17 +197,6 @@ chmod -R o-rwx "$final_path"
 chown -R $app:$app "$final_path"
 
 #=================================================
-# NGINX CONFIGURATION
-#=================================================
-ynh_script_progression --message="Upgrading NGINX web server configuration..." --weight=2
-
-# Overwrite the NGINX configuration only if it's allowed
-if [ $overwrite_nginx -eq 1 ]
-then
-	ynh_add_nginx_config
-fi
-
-#=================================================
 # UPGRADE DEPENDENCIES
 #=================================================
 ynh_script_progression --message="Upgrading dependencies..." --weight=5
@@ -222,6 +211,17 @@ ynh_install_nodejs --nodejs_version=$nodejs_version
 ynh_use_nodejs
 
 #=================================================
+# NGINX CONFIGURATION
+#=================================================
+ynh_script_progression --message="Upgrading NGINX web server configuration..." --weight=2
+
+# Overwrite the NGINX configuration only if it's allowed
+if [ $overwrite_nginx -eq 1 ]
+then
+	ynh_add_nginx_config
+fi
+
+#=================================================
 # SPECIFIC UPGRADE
 #=================================================
 # HANDLE LOG FILES AND LOGROTATE
@@ -229,8 +229,6 @@ ynh_use_nodejs
 ynh_script_progression --message="Configuring log rotation..." --weight=1
 
 # Create log directory
-install_log=/var/log/$app/installation.log
-touch $install_log
 chown $app -R /var/log/$app
 
 #=================================================
@@ -304,7 +302,11 @@ then
   fi
 fi
 
+chmod 600 "$final_path/settings.json"
+chown $app:$app "$final_path/settings.json"
+
 chmod 600 "$final_path/credentials.json"
+chown $app:$app "$final_path/credentials.json"
 
 #=================================================
 # SETUP SYSTEMD
