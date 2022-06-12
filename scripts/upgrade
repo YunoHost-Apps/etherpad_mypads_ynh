@@ -29,6 +29,7 @@ db_pwd=$(ynh_app_setting_get --app=$app --key=mysqlpwd)
 password=$(ynh_app_setting_get --app=$app --key=password)
 mypads=$(ynh_app_setting_get --app=$app --key=mypads)
 useldap=$(ynh_app_setting_get --app=$app --key=useldap)
+abiword=$(ynh_app_setting_get --app=$app --key=abiword)
 overwrite_settings=$(ynh_app_setting_get --app=$app --key=overwrite_settings)
 overwrite_credentials=$(ynh_app_setting_get --app=$app --key=overwrite_credentials)
 overwrite_nginx=$(ynh_app_setting_get --app=$app --key=overwrite_nginx)
@@ -237,69 +238,69 @@ chown $app -R /var/log/$app
 
 if [ "$upgrade_type" == "UPGRADE_APP" ]
 then
-  ynh_script_progression --message="Reconfiguring Etherpad..." --weight=3
+	ynh_script_progression --message="Reconfiguring Etherpad..." --weight=3
 
-  # Overwrite the settings config file only if it's allowed
-  if [ $overwrite_settings -eq 1 ]
-  then
-    # Verify the checksum of a file, stored by `ynh_store_file_checksum` in the install script.
-    ynh_backup_if_checksum_is_different --file="$final_path/settings.json"
-    cp ../conf/settings.json "$final_path/settings.json"
-    ynh_replace_string --match_string="__PORT__" --replace_string="$port" --target_file="$final_path/settings.json"
+	# Overwrite the settings config file only if it's allowed
+	if [ $overwrite_settings -eq 1 ]
+	then
+		# Verify the checksum of a file, stored by `ynh_store_file_checksum` in the install script.
+		ynh_backup_if_checksum_is_different --file="$final_path/settings.json"
+		cp ../conf/settings.json "$final_path/settings.json"
+		ynh_replace_string --match_string="__PORT__" --replace_string="$port" --target_file="$final_path/settings.json"
 
-    if [ "$export" = "abiword" ]
-    then
-      # Get abiword binary path
-      abiword_path=`which abiword`
-      # Set the path of Abiword into Etherpad config
-      ynh_replace_string --match_string="\"abiword\" : null" --replace_string="\"abiword\" : \"$abiword_path\"" --target_file="$final_path/settings.json"
-    elif [ "$export" = "libreoffice" ]
-    then
-      # Get soffice binary path
-      soffice_path=`which soffice`
-      # Set the path of soffice into Etherpad config
-      ynh_replace_string --match_string="\"soffice\" : null" --replace_string="\"soffice\" : \"$soffice_path\"" --target_file="$final_path/settings.json"
-    fi
+		if [ "$export" = "abiword" ]
+		then
+			# Get abiword binary path
+			abiword_path=`which abiword`
+			# Set the path of Abiword into Etherpad config
+			ynh_replace_string --match_string="\"abiword\" : null" --replace_string="\"abiword\" : \"$abiword_path\"" --target_file="$final_path/settings.json"
+		elif [ "$export" = "libreoffice" ]
+		then
+			# Get soffice binary path
+			soffice_path=`which soffice`
+			# Set the path of soffice into Etherpad config
+			ynh_replace_string --match_string="\"soffice\" : null" --replace_string="\"soffice\" : \"$soffice_path\"" --target_file="$final_path/settings.json"
+		fi
 
-    if test -z "$language"; then
-      # If upgrading from a version which doesn't support translations, set language to English by default
-      language=en
-      ynh_app_setting_set --app=$app --key=language --value=$language
-    fi
-    ynh_replace_string --match_string="__LANGUAGE__" --replace_string="$language" --target_file="$final_path/settings.json"
+		if test -z "$language"; then
+			# If upgrading from a version which doesn't support translations, set language to English by default
+			language=en
+			ynh_app_setting_set --app=$app --key=language --value=$language
+		fi
+		ynh_replace_string --match_string="__LANGUAGE__" --replace_string="$language" --target_file="$final_path/settings.json"
 
-    # Use LDAP for MyPads
-    if [ $mypads -eq 1 ] && [ $useldap -eq 1 ]
-    then
-      ynh_replace_string --match_string="//noldap" --replace_string="" --target_file="$final_path/settings.json"
-    fi
+		# Use LDAP for MyPads
+		if [ $mypads -eq 1 ] && [ $useldap -eq 1 ]
+		then
+			ynh_replace_string --match_string="//noldap" --replace_string="" --target_file="$final_path/settings.json"
+		fi
 
-    # Optional parameters from config-panel feature
-    if [ -n "$pad_config_nocolors" ]; then
-      ynh_replace_string --match_string="\(\"noColors\" *: \).*," --replace_string="\1$pad_config_nocolors," --target_file="$final_path/settings.json"
-    fi
-    if [ -n "$pad_config_showlinenumbers" ]; then
-      ynh_replace_string --match_string="\(\"showLineNumbers\" *: \).*," --replace_string="\1$pad_config_showlinenumbers," --target_file="$final_path/settings.json"
-    fi
-    if [ -n "$pad_config_chatandusers" ]; then
-      ynh_replace_string --match_string="\(\"chatAndUsers\" *: \).*," --replace_string="\1$pad_config_chatandusers," --target_file="$final_path/settings.json"
-    fi
-    if [ -n "$pad_config_alwaysshowchat" ]; then
-      ynh_replace_string --match_string="\(\"alwaysShowChat\" *: \).*," --replace_string="\1$pad_config_alwaysshowchat," --target_file="$final_path/settings.json"
-    fi
-    if [ -n "$pad_config_show_markdown" ]; then
-      ynh_replace_string --match_string="\(\"ep_markdown_default\" *: \).*," --replace_string="\1$pad_config_show_markdown," --target_file="$final_path/settings.json"
-    fi
+		# Optional parameters from config-panel feature
+		if [ -n "$pad_config_nocolors" ]; then
+			ynh_replace_string --match_string="\(\"noColors\" *: \).*," --replace_string="\1$pad_config_nocolors," --target_file="$final_path/settings.json"
+		fi
+		if [ -n "$pad_config_showlinenumbers" ]; then
+			ynh_replace_string --match_string="\(\"showLineNumbers\" *: \).*," --replace_string="\1$pad_config_showlinenumbers," --target_file="$final_path/settings.json"
+		fi
+		if [ -n "$pad_config_chatandusers" ]; then
+			ynh_replace_string --match_string="\(\"chatAndUsers\" *: \).*," --replace_string="\1$pad_config_chatandusers," --target_file="$final_path/settings.json"
+		fi
+		if [ -n "$pad_config_alwaysshowchat" ]; then
+			ynh_replace_string --match_string="\(\"alwaysShowChat\" *: \).*," --replace_string="\1$pad_config_alwaysshowchat," --target_file="$final_path/settings.json"
+		fi
+		if [ -n "$pad_config_show_markdown" ]; then
+			ynh_replace_string --match_string="\(\"ep_markdown_default\" *: \).*," --replace_string="\1$pad_config_show_markdown," --target_file="$final_path/settings.json"
+		fi
 
-    # Recalculate and store the checksum of the file for the next upgrade.
-    ynh_store_file_checksum --file="$final_path/settings.json"
-  fi
+		# Recalculate and store the checksum of the file for the next upgrade.
+		ynh_store_file_checksum --file="$final_path/settings.json"
+	fi
 
-  # Overwrite the credentials config file only if it's allowed
-  if [ $overwrite_credentials -eq 1 ]
-  then
-    ynh_add_config --template="../conf/credentials.json" --destination="$final_path/credentials.json"
-  fi
+	# Overwrite the credentials config file only if it's allowed
+	if [ $overwrite_credentials -eq 1 ]
+	then
+		ynh_add_config --template="../conf/credentials.json" --destination="$final_path/credentials.json"
+	fi
 fi
 
 chmod 600 "$final_path/settings.json"
@@ -316,7 +317,7 @@ ynh_script_progression --message="Upgrading systemd configuration..." --weight=2
 # Create a dedicated systemd config
 if [ $overwrite_systemd -eq 1 ]
 then
-  ynh_add_systemd_config
+	ynh_add_systemd_config
 fi
 
 #=================================================
@@ -325,34 +326,34 @@ fi
 ynh_script_progression --message="Installing Etherpad plugins..." --weight=90
 
 pushd "$final_path"
-  # Add Left/Center/Right/Justify to lines of text in a pad
-  ynh_exec_warn_less ynh_exec_as $app env $ynh_node_load_PATH $ynh_npm install --no-save ep_align@${ep_align_version}
-  # Framapad - Adds author names to span titles
-  ynh_exec_warn_less ynh_exec_as $app env $ynh_node_load_PATH $ynh_npm install --no-save ep_author_hover@${ep_author_hover_version}
-  # Framapad - Adds comments on sidebar and link it to the text.
-  ynh_exec_warn_less ynh_exec_as $app env $ynh_node_load_PATH $ynh_npm install --no-save ep_comments_page@${ep_comments_page_version}
-  # Framapad - Displays paragraphs, sentences, words and characters counts.
-  ynh_exec_warn_less ynh_exec_as $app env $ynh_node_load_PATH $ynh_npm install --no-save ep_countable@${ep_countable_version}
-  # Framapad - Delete pads which were never edited
-  ynh_exec_warn_less ynh_exec_as $app env $ynh_node_load_PATH $ynh_npm install --no-save ep_delete_empty_pads@${ep_delete_empty_pads_version}
-  # Framapad - Apply colors to fonts
-  ynh_exec_warn_less ynh_exec_as $app env $ynh_node_load_PATH $ynh_npm install --no-save ep_font_color@${ep_font_color_version}
-  # Framapad - Adds heading support to Etherpad Lite.
-  ynh_exec_warn_less ynh_exec_as $app env $ynh_node_load_PATH $ynh_npm install --no-save ep_headings2@${ep_headings2_version}
-  # Framapad - Edit and Export as Markdown in Etherpad
-  ynh_exec_warn_less ynh_exec_as $app env $ynh_node_load_PATH $ynh_npm install --no-save ep_markdown@${ep_markdown_version}
-  if [ $mypads -eq 1 ]; then
-    # Framapad - Groups and private pads for Etherpad
-    ynh_exec_warn_less ynh_exec_as $app env $ynh_node_load_PATH $ynh_npm install --no-save ep_mypads@${mypads_version}
-  fi
-  # Framapad - Add support to do 'Spell checking'
-  ynh_exec_warn_less ynh_exec_as $app env $ynh_node_load_PATH $ynh_npm install --no-save ep_spellcheck@${ep_spellcheck_version}
-  # Framapad - Add support for Subscript and Superscript
-  ynh_exec_warn_less ynh_exec_as $app env $ynh_node_load_PATH $ynh_npm install --no-save ep_subscript_and_superscript@${ep_subscript_and_superscript_version}
-  # Framapad - View a table of contents for your pad
-  ynh_exec_warn_less ynh_exec_as $app env $ynh_node_load_PATH $ynh_npm install --no-save ep_table_of_contents@${ep_table_of_contents_version}
-  # Framapad - User Pad Contents font size can be set in settings, this does not effect other peoples views
-  ynh_exec_warn_less ynh_exec_as $app env $ynh_node_load_PATH $ynh_npm install --no-save ep_font_size@${ep_font_size_version}
+	# Add Left/Center/Right/Justify to lines of text in a pad
+	ynh_exec_warn_less ynh_exec_as $app env $ynh_node_load_PATH $ynh_npm install --no-save ep_align@${ep_align_version}
+	# Framapad - Adds author names to span titles
+	ynh_exec_warn_less ynh_exec_as $app env $ynh_node_load_PATH $ynh_npm install --no-save ep_author_hover@${ep_author_hover_version}
+	# Framapad - Adds comments on sidebar and link it to the text.
+	ynh_exec_warn_less ynh_exec_as $app env $ynh_node_load_PATH $ynh_npm install --no-save ep_comments_page@${ep_comments_page_version}
+	# Framapad - Displays paragraphs, sentences, words and characters counts.
+	ynh_exec_warn_less ynh_exec_as $app env $ynh_node_load_PATH $ynh_npm install --no-save ep_countable@${ep_countable_version}
+	# Framapad - Delete pads which were never edited
+	ynh_exec_warn_less ynh_exec_as $app env $ynh_node_load_PATH $ynh_npm install --no-save ep_delete_empty_pads@${ep_delete_empty_pads_version}
+	# Framapad - Apply colors to fonts
+	ynh_exec_warn_less ynh_exec_as $app env $ynh_node_load_PATH $ynh_npm install --no-save ep_font_color@${ep_font_color_version}
+	# Framapad - Adds heading support to Etherpad Lite.
+	ynh_exec_warn_less ynh_exec_as $app env $ynh_node_load_PATH $ynh_npm install --no-save ep_headings2@${ep_headings2_version}
+	# Framapad - Edit and Export as Markdown in Etherpad
+	ynh_exec_warn_less ynh_exec_as $app env $ynh_node_load_PATH $ynh_npm install --no-save ep_markdown@${ep_markdown_version}
+	if [ $mypads -eq 1 ]; then
+		# Framapad - Groups and private pads for Etherpad
+		ynh_exec_warn_less ynh_exec_as $app env $ynh_node_load_PATH $ynh_npm install --no-save ep_mypads@${mypads_version}
+	fi
+	# Framapad - Add support to do 'Spell checking'
+	ynh_exec_warn_less ynh_exec_as $app env $ynh_node_load_PATH $ynh_npm install --no-save ep_spellcheck@${ep_spellcheck_version}
+	# Framapad - Add support for Subscript and Superscript
+	ynh_exec_warn_less ynh_exec_as $app env $ynh_node_load_PATH $ynh_npm install --no-save ep_subscript_and_superscript@${ep_subscript_and_superscript_version}
+	# Framapad - View a table of contents for your pad
+	ynh_exec_warn_less ynh_exec_as $app env $ynh_node_load_PATH $ynh_npm install --no-save ep_table_of_contents@${ep_table_of_contents_version}
+	# Framapad - User Pad Contents font size can be set in settings, this does not effect other peoples views
+	ynh_exec_warn_less ynh_exec_as $app env $ynh_node_load_PATH $ynh_npm install --no-save ep_font_size@${ep_font_size_version}
 popd
 
 #=================================================
@@ -361,7 +362,7 @@ popd
 ynh_script_progression --message="Upgrading Etherpad..." --weight=60
 
 pushd $final_path
-  ynh_exec_warn_less ynh_exec_as $app env $ynh_node_load_PATH bin/installDeps.sh
+	ynh_exec_warn_less ynh_exec_as $app env $ynh_node_load_PATH bin/installDeps.sh
 popd
 
 #=================================================
@@ -370,8 +371,8 @@ popd
 
 if [ "$upgrade_type" == "UPGRADE_APP" ] && [ $mypads -eq 1 ]
 then
-  # Find the /div just after the field to open a pad in order to add a link to mypads plugin.
-  sed -i '157i<center><br><font size="4"><a href="./mypads/" style="text-decoration: none; color: #555">MyPads</a></font></center>' $final_path/src/templates/index.html
+	# Find the /div just after the field to open a pad in order to add a link to mypads plugin.
+	sed -i '157i<center><br><font size="4"><a href="./mypads/" style="text-decoration: none; color: #555">MyPads</a></font></center>' $final_path/src/templates/index.html
 fi
 
 #=================================================
@@ -433,9 +434,9 @@ admin_mail_html=$(ynh_app_setting_get $app admin_mail_html)
 admin_mail_html="${admin_mail_html:-0}"
 # If a html email is required. Apply html to the changelog.
 if [ "$admin_mail_html" -eq 1 ]; then
-    format=html
+		format=html
 else
-    format=plain
+		format=plain
 fi
 ynh_app_changelog --format=$format
 
