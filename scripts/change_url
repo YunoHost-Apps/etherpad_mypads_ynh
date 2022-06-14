@@ -30,7 +30,10 @@ app=$YNH_APP_INSTANCE_NAME
 #=================================================
 ynh_script_progression --message="Loading installation settings..." --weight=5
 
+# Needed for helper "ynh_add_nginx_config"
 final_path=$(ynh_app_setting_get --app=$app --key=final_path)
+
+# Add settings here as needed by your application
 mypads=$(ynh_app_setting_get --app=$app --key=mypads)
 port=$(ynh_app_setting_get --app=$app --key=port)
 
@@ -42,7 +45,6 @@ ynh_script_progression --message="Backing up the app before changing its URL (ma
 # Backup the current version of the app
 ynh_backup_before_upgrade
 ynh_clean_setup () {
-	# Clean installation remainings that are not handled by the remove script.
 	ynh_clean_check_starting
 	# Remove the new domain config file, the remove script won't do it as it doesn't know yet its location.
 	ynh_secure_remove --file="/etc/nginx/conf.d/$new_domain.d/$app.conf"
@@ -92,11 +94,9 @@ if [ $change_path -eq 1 ]
 then
 	# Make a backup of the original NGINX config file if modified
 	ynh_backup_if_checksum_is_different --file="$nginx_conf_path"
-
 	# Set global variables for NGINX helper
 	domain="$old_domain"
 	path_url="$new_path"
-
 	# Create a dedicated NGINX config
 	ynh_add_nginx_config
 fi
@@ -107,25 +107,26 @@ then
 	# Delete file checksum for the old conf file location
 	ynh_delete_file_checksum --file="$nginx_conf_path"
 	mv $nginx_conf_path /etc/nginx/conf.d/$new_domain.d/$app.conf
-
 	# Store file checksum for the new config file location
 	ynh_store_file_checksum --file="/etc/nginx/conf.d/$new_domain.d/$app.conf"
 fi
+
+#=================================================
+# GENERIC FINALISATION
+#=================================================
+# START SYSTEMD SERVICE
+#=================================================
+ynh_script_progression --message="Starting a systemd service..." --weight=10
+
+# Start a systemd service
+ynh_systemd_action --service_name=$app --action=restart --line_match="You can access your Etherpad instance at" --log_path="/var/log/$app/etherpad.log" --timeout="120"
 
 #=================================================
 # RELOAD NGINX
 #=================================================
 ynh_script_progression --message="Reloading NGINX web server..."
 
-ynh_systemd_action --action=reload --service_name=nginx
-
-#=================================================
-# CHECK ETHERPAD STARTING
-#=================================================
-ynh_script_progression --message="Restarting Etherpad..." --weight=10
-
-# Wait for etherpad to be fully started
-ynh_systemd_action --action=restart --line_match="You can access your Etherpad instance at" --log_path="/var/log/$app/etherpad.log" --timeout="120"
+ynh_systemd_action --service_name=nginx --action=reload
 
 #=================================================
 # DEACTIVE MAINTENANCE MODE

@@ -96,6 +96,7 @@ SOURCE_SUM=$checksum
 SOURCE_SUM_PRG=sha256sum
 SOURCE_FORMAT=$extension
 SOURCE_IN_SUBDIR=true
+SOURCE_FILENAME=
 EOT
 echo "... conf/$src.src updated"
 
@@ -116,7 +117,7 @@ done
 # GENERIC FINALIZATION
 #=================================================
 
-# Install moreutils, needed for sponge
+# Replace new version in manifest
 echo "$(jq -s --indent 4 ".[] | .version = \"$version~ynh1\"" manifest.json)" > manifest.json
 
 # No need to update the README, yunohost-bot takes care of it
