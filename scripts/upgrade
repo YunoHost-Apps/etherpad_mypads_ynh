@@ -366,7 +366,7 @@ pushd $final_path
 popd
 
 #=================================================
-# SOME HACKS
+# ADD MYPADS LINK
 #=================================================
 
 if [ "$upgrade_type" == "UPGRADE_APP" ] && [ $mypads -eq 1 ]
