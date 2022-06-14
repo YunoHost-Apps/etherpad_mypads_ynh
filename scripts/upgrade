@@ -371,7 +371,7 @@ popd
 
 if [ "$upgrade_type" == "UPGRADE_APP" ] && [ $mypads -eq 1 ]
 then
-	# Find the /div just after the field to open a pad in order to add a link to mypads plugin.
+	# Find the /div just after the field to open a pad in order to add a link to MyPads plugin.
 	sed -i '157i<center><br><font size="4"><a href="./mypads/" style="text-decoration: none; color: #555">MyPads</a></font></center>' $final_path/src/templates/index.html
 fi
 
