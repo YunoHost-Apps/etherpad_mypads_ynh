@@ -47,12 +47,13 @@
                 "default": "/pad"
             },
             {
-                "name": "admin",
-                "type": "user"
-            },
-            {
-                "name": "password",
-                "type": "password"
+                "name": "is_public",
+                "type": "boolean",
+                "help": {
+                    "en": "If your Etherpad instance is public, everyone will be able to create a pad or see an existing one.",
+                    "fr": "Si votre instance Etherpad est publique, tout le monde pourra créer un pad ou voir un pad existant."
+                },
+                "default": true
             },
             {
                 "name": "language",
@@ -76,13 +77,12 @@
                 "default": "en"
             },
             {
-                "name": "is_public",
-                "type": "boolean",
-                "help": {
-                    "en": "If your Etherpad instance is public, everyone will be able to create a pad or see an existing one.",
-                    "fr": "Si votre instance Etherpad est publique, tout le monde pourra créer un pad ou voir un pad existant."
-                },
-                "default": true
+                "name": "admin",
+                "type": "user"
+            },
+            {
+                "name": "password",
+                "type": "password"
             },
             {
                 "name": "export",
