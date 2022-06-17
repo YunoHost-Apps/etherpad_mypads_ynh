@@ -5,7 +5,7 @@ It shall NOT be edited by hand.
 
 # Etherpad MyPads for YunoHost
 
-[![Integration level](https://dash.yunohost.org/integration/etherpad_mypads.svg)](https://dash.yunohost.org/appci/app/etherpad_mypads) ![](https://ci-apps.yunohost.org/ci/badges/etherpad_mypads.status.svg) ![](https://ci-apps.yunohost.org/ci/badges/etherpad_mypads.maintain.svg)  
+[![Integration level](https://dash.yunohost.org/integration/etherpad_mypads.svg)](https://dash.yunohost.org/appci/app/etherpad_mypads) ![Working status](https://ci-apps.yunohost.org/ci/badges/etherpad_mypads.status.svg) ![Maintenance status](https://ci-apps.yunohost.org/ci/badges/etherpad_mypads.maintain.svg)  
 [![Install Etherpad MyPads with YunoHost](https://install-app.yunohost.org/install-with-yunohost.svg)](https://install-app.yunohost.org/?app=etherpad_mypads)
 
 *[Lire ce readme en français.](./README_fr.md)*
@@ -17,14 +17,25 @@ If you don't have YunoHost, please consult [the guide](https://yunohost.org/#/in
 
 Etherpad is a real-time collaborative editor scalable to thousands of simultaneous real time users. It provides full data export capabilities, and runs on your server, under your control.
 
+### Features
 
-**Shipped version:** 1.8.17~ynh1
+- Rich Editing - A full rich text WYSIWYG editor.
+- Minimalist editor - A minimalist editor that can be embedded within your tool.
+- Dark Mode - Theme settings to have Etherpad start in dark mode, ideal for using Etherpad at night or for long durations.
+- Images - Plugins to improve provide Image support within a pad.
+- Video Chat - Plugins to enable Video and Audio chat in a pad.
+- Collaboration++ - Plugins to improve the really-real time collaboration experience, suitable for busy pads.
+- Document Analysis - Plugins to improve author and document analysis during and post creation.
+- Scale - Etherpad running at scale with pad sharding which allows Etherpad to scale to ∞ number of Active Pads with up to 20,000 edits per second, per pad.
+
+
+**Shipped version:** 1.8.17~ynh2
 
 **Demo:** https://video.etherpad.com
 
 ## Screenshots
 
-![](./doc/screenshots/etherpad_demo.gif)
+![Screenshot of Etherpad MyPads](./doc/screenshots/etherpad_demo.gif)
 
 ## Disclaimers / important information
 
@@ -62,21 +73,22 @@ You can also find a configuration file for Etherpad at this path `/var/www/ether
 
 ## Documentation and resources
 
-* Official app website: http://etherpad.org
-* Official admin documentation: http://etherpad.org/doc/v1.8.17
-* Upstream app code repository: https://github.com/ether/etherpad-lite
-* YunoHost documentation for this app: https://yunohost.org/app_etherpad_mypads
-* Report a bug: https://github.com/YunoHost-Apps/etherpad_mypads_ynh/issues
+* Official app website: <http://etherpad.org>
+* Official admin documentation: <http://etherpad.org/doc/v1.8.17>
+* Upstream app code repository: <https://github.com/ether/etherpad-lite>
+* YunoHost documentation for this app: <https://yunohost.org/app_etherpad_mypads>
+* Report a bug: <https://github.com/YunoHost-Apps/etherpad_mypads_ynh/issues>
 
 ## Developer info
 
 Please send your pull request to the [testing branch](https://github.com/YunoHost-Apps/etherpad_mypads_ynh/tree/testing).
 
 To try the testing branch, please proceed like that.
-```
+
+``` bash
 sudo yunohost app install https://github.com/YunoHost-Apps/etherpad_mypads_ynh/tree/testing --debug
 or
 sudo yunohost app upgrade etherpad_mypads -u https://github.com/YunoHost-Apps/etherpad_mypads_ynh/tree/testing --debug
 ```
 
-**More info regarding app packaging:** https://yunohost.org/packaging_apps
+**More info regarding app packaging:** <https://yunohost.org/packaging_apps>

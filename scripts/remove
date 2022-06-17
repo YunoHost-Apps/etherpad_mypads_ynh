@@ -17,9 +17,10 @@ ynh_script_progression --message="Loading installation settings..." --weight=3
 app=$YNH_APP_INSTANCE_NAME
 
 domain=$(ynh_app_setting_get --app=$app --key=domain)
-final_path=$(ynh_app_setting_get --app=$app --key=final_path)
 port=$(ynh_app_setting_get --app=$app --key=port)
 db_name=$(ynh_app_setting_get --app=$app --key=db_name)
+db_user=$db_name
+final_path=$(ynh_app_setting_get --app=$app --key=final_path)
 export=$(ynh_app_setting_get --app=$app --key=export)
 
 #=================================================
@@ -28,7 +29,7 @@ export=$(ynh_app_setting_get --app=$app --key=export)
 # REMOVE SERVICE INTEGRATION IN YUNOHOST
 #=================================================
 
-# Remove the service from the  list of services known,  YunoHost (added from `yunohost service add`)
+# Remove the service from the list of services known by YunoHost (added from `yunohost service add`)
 if ynh_exec_warn_less yunohost service status $app >/dev/null
 then
 	ynh_script_progression --message="Removing $app service integration..." --weight=2
@@ -44,22 +45,12 @@ ynh_script_progression --message="Stopping and removing the systemd service..." 
 ynh_remove_systemd_config
 
 #=================================================
-# REMOVE DEPENDENCIES
+# REMOVE LOGROTATE CONFIGURATION
 #=================================================
+ynh_script_progression --message="Removing logrotate configuration..."
 
-if [ "$export" != "none" ]
-then
-	ynh_script_progression --message="Removing dependencies..." --weight=60
-	# Remove metapackage and its dependencies
-	ynh_exec_warn_less ynh_remove_app_dependencies
-fi
-
-#=================================================
-# REMOVE NODEJS
-#=================================================
-ynh_script_progression --message="Removing NodeJS version for Etherpad..." --weight=3
-
-ynh_remove_nodejs
+# Remove the app-specific logrotate config
+ynh_remove_logrotate
 
 #=================================================
 # REMOVE THE MYSQL DATABASE
@@ -67,12 +58,12 @@ ynh_remove_nodejs
 ynh_script_progression --message="Removing the MySQL database..." --weight=2
 
 # Remove a database if it exists, along with the associated user
-ynh_mysql_remove_db --db_user=$db_name --db_name=$db_name
+ynh_mysql_remove_db --db_user=$db_user --db_name=$db_name
 
 #=================================================
 # REMOVE APP MAIN DIR
 #=================================================
-ynh_script_progression --message="Removing the app main directory..."
+ynh_script_progression --message="Removing app main directory..."
 
 # Remove the app directory securely
 ynh_secure_remove --file="$final_path"
@@ -86,14 +77,17 @@ ynh_script_progression --message="Removing NGINX web server configuration..." --
 ynh_remove_nginx_config
 
 #=================================================
-# REMOVE LOGROTATE CONFIGURATION
+# REMOVE DEPENDENCIES
 #=================================================
-ynh_script_progression --message="Removing logrotate configuration..."
+ynh_script_progression --message="Removing dependencies..."
 
-ynh_secure_remove --file="/var/log/$app"
+if [ "$export" != "none" ]
+then
+	# Remove metapackage and its dependencies
+	ynh_exec_warn_less ynh_remove_app_dependencies
+fi
 
-# Remove the app-specific logrotate config
-ynh_remove_logrotate
+ynh_remove_nodejs
 
 #=================================================
 # REMOVE FAIL2BAN CONFIGURATION
@@ -102,6 +96,16 @@ ynh_script_progression --message="Removing Fail2Ban configuration..." --weight=7
 
 # Remove the dedicated Fail2Ban config
 ynh_remove_fail2ban_config
+
+#=================================================
+# SPECIFIC REMOVE
+#=================================================
+# REMOVE VARIOUS FILES
+#=================================================
+ynh_script_progression --message="Removing various files..."
+
+# Remove the log files
+ynh_secure_remove --file="/var/log/$app"
 
 #=================================================
 # GENERIC FINALIZATION

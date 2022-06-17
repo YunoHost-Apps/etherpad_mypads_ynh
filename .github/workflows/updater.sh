@@ -10,7 +10,7 @@
 # automatic actions when a new upstream release is detected.
 
 # Remove this exit command when you are ready to run this Action
-exit 1
+#exit 1
 
 #=================================================
 # FETCHING LATEST RELEASE AND ITS ASSETS
@@ -63,7 +63,7 @@ echo "Handling asset at $asset_url"
 # Here we base the source file name upon a unique keyword in the assets url (admin vs. update)
 # Leave $src empty to ignore the asset
 case $asset_url in
-  *".tar.gz"*)
+  *".tar.gz")
     src="app"
     ;;
 esac
@@ -96,6 +96,7 @@ SOURCE_SUM=$checksum
 SOURCE_SUM_PRG=sha256sum
 SOURCE_FORMAT=$extension
 SOURCE_IN_SUBDIR=true
+SOURCE_FILENAME=
 EOT
 echo "... conf/$src.src updated"
 
@@ -116,7 +117,7 @@ done
 # GENERIC FINALIZATION
 #=================================================
 
-# Install moreutils, needed for sponge
+# Replace new version in manifest
 echo "$(jq -s --indent 4 ".[] | .version = \"$version~ynh1\"" manifest.json)" > manifest.json
 
 # No need to update the README, yunohost-bot takes care of it
