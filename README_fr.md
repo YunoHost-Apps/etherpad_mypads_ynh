@@ -18,7 +18,7 @@ Si vous n'avez pas YunoHost, regardez [ici](https://yunohost.org/#/install) pour
 Etherpad est un éditeur collaboratif en temps réel évolutif pour des milliers d'utilisateurs simultanés en temps réel. Il fournit des capacités complètes d'exportation de données et s'exécute sur votre serveur, sous votre contrôle.
 
 
-**Version incluse :** 1.8.17~ynh1
+**Version incluse :** 1.8.17~ynh2
 
 **Démo :** https://video.etherpad.com
 
