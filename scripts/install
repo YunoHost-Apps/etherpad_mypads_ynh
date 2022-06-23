@@ -270,7 +270,7 @@ fi
 ynh_script_progression --message="Configuring log rotation..."
 
 # Use logrotate to manage application logfile(s)
-ynh_use_logrotate
+ynh_use_logrotate --specific_user=$app/$app
 
 #=================================================
 # INTEGRATE SERVICE IN YUNOHOST
