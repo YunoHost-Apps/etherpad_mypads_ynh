@@ -6,7 +6,7 @@
         "en": "Online editor providing collaborative editing in real-time",
         "fr": "Éditeur en ligne fournissant l'édition collaborative en temps réel"
     },
-    "version": "1.8.17~ynh2",
+    "version": "1.8.17~ynh3",
     "url": "http://etherpad.org",
     "upstream": {
         "license": "Apache-2.0",
