@@ -5,25 +5,10 @@
 		is_public=1
 		language="en"
 		admin="john"
-		password="password"
+		password="1Strong-Password"
 		export="libreoffice"
 		mypads=1
 		useldap=1
-    ; Actions
-        is_public=0|1
-    ; Config_panel
-        main.export.export=none|abiword|libreoffice
-        main.pad_configuration.pad_config_nocolors=1|0
-        main.pad_configuration.pad_config_showlinenumbers=0|1
-        main.pad_configuration.pad_config_chatandusers=1|0
-        main.pad_configuration.pad_config_alwaysshowchat=1|0
-        main.pad_configuration.pad_config_show_markdown=1|0
-        main.mypads_configuration.mypads=0|1
-        main.mypads_configuration.useldap=0|1
-        main.overwrite_files.overwrite_settings=0|1
-        main.overwrite_files.overwrite_credentials=0|1
-        main.overwrite_files.overwrite_nginx=0|1
-        main.overwrite_files.overwrite_systemd=0|1
 	; Checks
 		pkg_linter=1
 		setup_sub_dir=1
@@ -36,16 +21,13 @@
 		upgrade=1	from_commit=4d613658f120a05537f11f6814cc28e09d74a3c8
 		backup_restore=1
 		multi_instance=1
-		port_already_use=0
 		change_url=1
-        actions=0
-        config_panel=0
 ;; Test sans MyPads
 	; Manifest
 		domain="domain.tld"
 		path="/path"
 		admin="john"
-		password="password"
+		password="1Strong-Password"
 		language="en"
 		is_public=1
 		export="libreoffice"
@@ -59,9 +41,9 @@
 ;; Test Abiword
 	; Manifest
 		domain="domain.tld"
-		path="/"
+		path="/path"
 		admin="john"
-		password="password"
+		password="1Strong-Password"
 		language="en"
 		is_public=1
 		export="abiword"
@@ -69,13 +51,14 @@
 		useldap=0
 	; Checks
 		setup_root=1
+		# 1.8.17~ynh1
 		upgrade=1	from_commit=4d613658f120a05537f11f6814cc28e09d74a3c8
 ;; Test sans export
 	; Manifest
 		domain="domain.tld"
 		path="/path"
 		admin="john"
-		password="password"
+		password="1Strong-Password"
 		language="en"
 		is_public=1
 		export="none"
