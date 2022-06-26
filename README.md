@@ -29,7 +29,7 @@ Etherpad is a real-time collaborative editor scalable to thousands of simultaneo
 - Scale - Etherpad running at scale with pad sharding which allows Etherpad to scale to ∞ number of Active Pads with up to 20,000 edits per second, per pad.
 
 
-**Shipped version:** 1.8.17~ynh3
+**Shipped version:** 1.8.18~ynh1
 
 **Demo:** https://video.etherpad.com
 
@@ -74,7 +74,7 @@ You can also find a configuration file for Etherpad at this path `/var/www/ether
 ## Documentation and resources
 
 * Official app website: <http://etherpad.org>
-* Official admin documentation: <http://etherpad.org/doc/v1.8.17>
+* Official admin documentation: <http://etherpad.org/doc/v1.8.18>
 * Upstream app code repository: <https://github.com/ether/etherpad-lite>
 * YunoHost documentation for this app: <https://yunohost.org/app_etherpad_mypads>
 * Report a bug: <https://github.com/YunoHost-Apps/etherpad_mypads_ynh/issues>
