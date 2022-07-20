@@ -173,6 +173,10 @@ else
 	ynh_permission_url --permission="admin" --auth_header=false
 fi
 
+# Support full Unicode in MySQL databases
+ynh_mysql_connect_as --user=$db_user --password="$db_pwd" --database=$db_name \
+    <<< "ALTER DATABASE $db_name CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;"
+
 #=================================================
 # CREATE DEDICATED USER
 #=================================================
@@ -308,10 +312,6 @@ chown $app:$app "$final_path/settings.json"
 
 chmod 600 "$final_path/credentials.json"
 chown $app:$app "$final_path/credentials.json"
-
-# Support full Unicode in MySQL databases
-ynh_mysql_connect_as --user=$db_user --password="$db_pwd" --database=$db_name \
-    <<< "ALTER DATABASE $db_name CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;"
 
 #=================================================
 # SETUP SYSTEMD
