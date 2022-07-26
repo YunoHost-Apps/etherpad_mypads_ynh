@@ -29,7 +29,7 @@ Etherpad is a real-time collaborative editor scalable to thousands of simultaneo
 - Scale - Etherpad running at scale with pad sharding which allows Etherpad to scale to ∞ number of Active Pads with up to 20,000 edits per second, per pad.
 
 
-**Shipped version:** 1.8.18~ynh1
+**Shipped version:** 1.8.18~ynh2
 
 **Demo:** https://video.etherpad.com
 
