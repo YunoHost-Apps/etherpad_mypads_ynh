@@ -31,6 +31,7 @@ Etherpad is a real-time collaborative editor scalable to thousands of simultaneo
 
 **Shipped version:** 1.8.18~ynh2
 
+
 **Demo:** https://video.etherpad.com
 
 ## Screenshots
