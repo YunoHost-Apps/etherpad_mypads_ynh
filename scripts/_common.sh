@@ -22,7 +22,7 @@ ep_align_version=0.3.53
 ep_author_hover_version=0.3.37
 ep_comments_page_version=1.0.5
 ep_countable_version=0.0.13
-ep_delete_empty_pads_version=0.0.9
+ep_delete_empty_pads_version=0.0.10
 ep_font_color_version=0.0.63
 ep_headings2_version=0.2.44
 ep_markdown_version=0.1.50
@@ -33,10 +33,6 @@ ep_font_size_version=0.4.44
 
 #=================================================
 # PERSONAL HELPERS
-#=================================================
-
-#=================================================
-# FUTUR OFFICIAL HELPERS
 #=================================================
 
 #=================================================
@@ -400,3 +396,7 @@ ynh_app_changelog () {
         echo "No significative changes from the changelog..." > "${final_changelog}_lite"
     fi
 }
+
+#=================================================
+# FUTURE OFFICIAL HELPERS
+#=================================================

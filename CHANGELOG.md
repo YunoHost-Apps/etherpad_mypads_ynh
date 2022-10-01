@@ -1,6 +1,18 @@
 Changelog
 =========
 
+## [1.8.18~ynh2]() - 2022-07-26
+
+#### Fixed
+* [Fix unicode support](https://github.com/YunoHost-Apps/etherpad_mypads_ynh/pull/174/commits/f9afcc4447fc2ec97355622645023a56551e3d4b)
+
+
+## [1.8.18~ynh1]() - 2022-07-18
+
+#### Changed
+* [Upgrade to 1.8.18](https://github.com/YunoHost-Apps/etherpad_mypads_ynh/pull/171)
+
+
 ## [1.8.17~ynh1]() - 2022-02-24
 
 #### Changed
