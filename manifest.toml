@@ -85,7 +85,7 @@ ram.runtime = "50M"
     [resources.permissions]
     main.url = "/"
 
-    admin.url = "/admin*"
+    admin.url = "/admin"
     admin.auth_header = false
     api.show_tile = false
     admin.allowed = ["admins"]
