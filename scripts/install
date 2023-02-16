@@ -47,7 +47,7 @@ ynh_app_setting_set --app=$app --key=overwrite_systemd --value="1"
 #=================================================
 # INSTALL DEPENDENCIES
 #=================================================
-#REMOVEME? ynh_script_progression --message="Installing dependencies..." --weight=120
+ynh_script_progression --message="Installing dependencies..." --weight=120
 
 if [ "$export" = "abiword" ]; then
 	ynh_exec_warn_less ynh_install_app_dependencies $abiword_app_depencencies
