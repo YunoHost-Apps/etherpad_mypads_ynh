@@ -35,8 +35,8 @@ ram.runtime = "50M"
     default = "/pad"
 
     [install.init_main_permission]
-    help.en = "If your Etherpad instance is public, everyone will be able to create a pad or see an existing one."
-    help.fr = "Si votre instance Etherpad est publique, tout le monde pourra créer un pad ou voir un pad existant."
+    help.en = "If your Etherpad instance is set to Visitors, everyone will be able to create a pad or see an existing one."
+    help.fr = "Si votre instance Etherpad est définie sur Visiteurs, tout le monde pourra créer un pad ou en voir un existant."
     type = "group"
     default = "visitors"
 
