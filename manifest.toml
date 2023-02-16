@@ -1,0 +1,93 @@
+packaging_format = 2
+
+id = "etherpad_mypads"
+name = "Etherpad MyPads"
+description.en = "Online editor providing collaborative editing in real-time"
+description.fr = "Éditeur en ligne fournissant l'édition collaborative en temps réel"
+
+version = "1.8.18~ynh2"
+
+maintainers = []
+
+[upstream]
+license = "Apache-2.0"
+website = "http://etherpad.org"
+demo = "https://video.etherpad.com"
+admindoc = "http://etherpad.org/doc/v1.8.18"
+code = "https://github.com/ether/etherpad-lite"
+cpe = "???" # FIXME: optional but recommended if relevant, this is meant to contain the Common Platform Enumeration, which is sort of a standard id for applications defined by the NIST. In particular, Yunohost may use this is in the future to easily track CVE (=security reports) related to apps. The CPE may be obtained by searching here: https://nvd.nist.gov/products/cpe/search. For example, for Nextcloud, the CPE is 'cpe:2.3:a:nextcloud:nextcloud' (no need to include the version number)
+fund = "???" # FIXME: optional but recommended (or remove if irrelevant / not applicable). This is meant to be an URL where people can financially support this app, especially when its development is based on volunteers and/or financed by its community. YunoHost may later advertise it in the webadmin.
+
+[integration]
+yunohost = ">= 4.3.0"
+architectures = "all" # FIXME: can be replaced by a list of supported archs using the dpkg --print-architecture nomenclature (amd64/i386/armhf/arm64), for example: ["amd64", "i386"]
+multi_instance = true
+ldap = "?" # FIXME: replace with true, false, or "not_relevant". Not to confuse with the "sso" key : the "ldap" key corresponds to wether or not a user *can* login on the app using its YunoHost credentials.
+sso = "?" # FIXME: replace with true, false, or "not_relevant". Not to confuse with the "ldap" key : the "sso" key corresponds to wether or not a user is *automatically logged-in* on the app when logged-in on the YunoHost portal.
+disk = "50M" # FIXME: replace with an **estimate** minimum disk requirement. e.g. 20M, 400M, 1G, ...
+ram.build = "50M" # FIXME: replace with an **estimate** minimum ram requirement. e.g. 50M, 400M, 1G, ...
+ram.runtime = "50M" # FIXME: replace with an **estimate** minimum ram requirement. e.g. 50M, 400M, 1G, ...
+
+[install]
+    [install.domain]
+    # this is a generic question - ask strings are automatically handled by Yunohost's core
+    type = "domain"
+
+    [install.path]
+    # this is a generic question - ask strings are automatically handled by Yunohost's core
+    type = "path"
+    default = "/pad"
+
+    [install.init_main_permission]
+    help.en = "If your Etherpad instance is public, everyone will be able to create a pad or see an existing one."
+    help.fr = "Si votre instance Etherpad est publique, tout le monde pourra créer un pad ou voir un pad existant."
+    type = "group"
+    default = "visitors"
+
+    [install.language]
+    ask.en = "Choose your language"
+    ask.fr = "Choisissez la langue"
+    type = "string"
+    choices = ["ca", "de", "en", "es", "fr", "gl", "hu", "it", "nl", "pt"]
+    default = "en"
+
+    [install.admin]
+    # this is a generic question - ask strings are automatically handled by Yunohost's core
+    type = "user"
+
+    [install.password]
+    # this is a generic question - ask strings are automatically handled by Yunohost's core
+    type = "password"
+
+    [install.export]
+    ask.en = "Use AbiWord (~260 Mo) or LibreOffice (~400 Mo) (more stable) to expand export possibilities (PDF, doc)?"
+    ask.fr = "Utiliser AbiWord (~260 Mo) ou LibreOffice (~400 Mo) (plus stable) pour étendre les possibilités d'export (PDF, doc) ?"
+    type = "string"
+    choices = ["none", "abiword", "libreoffice"]
+    default = "none"
+
+    [install.mypads]
+    ask.en = "Do you want to install MyPads plugin?"
+    ask.fr = "Voulez-vous installer le plugin MyPads ?"
+    help.en = "<a href=https://git.framasoft.org/framasoft/ep_mypads target=_blank>MyPads plugin</a>"
+    type = "boolean"
+    default = true
+
+    [install.useldap]
+    ask.en = "Do you want to use LDAP with MyPads?"
+    ask.fr = "Voulez-vous utiliser LDAP avec MyPads ?"
+    help.en = "Using LDAP won't let you add new user aside from YunoHost users."
+    help.fr = "Utiliser LDAP ne vous permettra pas d'ajouter un nouvel utilisateur en dehors des utilisateurs de YunoHost."
+    type = "boolean"
+    default = true
+
+[resources]
+    [resources.system_user]
+
+    [resources.install_dir]
+
+    [resources.permissions]
+    main.url = "/"
+
+    [resources.database]
+    type = "mysql"
