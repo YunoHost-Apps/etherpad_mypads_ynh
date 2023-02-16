@@ -252,27 +252,6 @@ ynh_script_progression --message="Configuring Fail2Ban..." --weight=13
 ynh_add_fail2ban_config --logpath="/var/log/nginx/$domain-access.log" --failregex="<HOST> .* .POST /mypads/api/auth/login HTTP/1.1. 400" --max_retry=5
 
 #=================================================
-# SEND A README FOR THE ADMIN
-#=================================================
-
-# Get main domain and buid the URL of the admin panel of the app.
-admin_panel="https://$(grep portal_domain /etc/ssowat/conf.json | cut -d'"' -f4)/yunohost/admin/#/apps/$app"
-
-if [ $mypads -eq 1 ]
-then
-	Informations="You can access two different admin panels, for Etherpad by accessing https://$domain${path%/}/admin and for MyPads by accessing https://$domain${path%/}/mypads/?/admin."
-else
-	Informations="You can access the admin panel by accessing https://$domain${path%/}/admin."
-fi
-
-echo "$Informations
-You can also find a config file for Etherpad at this path /var/www/etherpad_mypads/settings.json.
-
-If you are facing an issue or want to improve this app, please open a new issue in this project: https://github.com/YunoHost-Apps/etherpad_mypads_ynh" > mail_to_send
-
-ynh_send_readme_to_admin --app_message="mail_to_send" --recipients="$admin" --type=install
-
-#=================================================
 # END OF SCRIPT
 #=================================================
 
