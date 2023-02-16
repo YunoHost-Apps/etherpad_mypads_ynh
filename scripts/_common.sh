@@ -8,7 +8,7 @@
 abiword_app_depencencies="abiword"
 
 # Dependencies for LibreOffice
-#REMOVEME? libreoffice_app_dependencies="unoconv libreoffice-writer"
+libreoffice_app_dependencies="unoconv libreoffice-writer"
 
 # NodeJS version
 nodejs_version=14

@@ -1,0 +1,35 @@
+test_format = 1.0
+
+[default]
+
+    # -------------------------------
+    # Default args to use for install
+    # -------------------------------
+    
+    args.export = "libreoffice"
+    args.mypads = 1
+    args.useldap = 1
+
+    # -------------------------------
+    # Commits to test upgrade from
+    # -------------------------------
+
+    test_upgrade_from.4d613658.name = "Upgrade from 1.8.17"
+
+
+# This is an additional test suite
+[sans_MyPads]
+    args.export = "libreoffice"
+    args.mypads = 0
+    args.useldap = 0
+
+
+[Abiword]
+    args.export = "abiword"
+    args.mypads = 1
+    args.useldap = 1
+
+[sans_export]
+    args.export = "none"
+    args.mypads = 1
+    args.useldap = 0

@@ -1,5 +1,5 @@
 [Unit]
-Description=Etherpad-lite, the collaborative editor.
+Description=Etherpad-lite: the collaborative editor.
 After=syslog.target network.target
 
 [Service]

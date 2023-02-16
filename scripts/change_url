@@ -30,9 +30,6 @@ app=$YNH_APP_INSTANCE_NAME
 #=================================================
 ynh_script_progression --message="Loading installation settings..." --weight=5
 
-# Needed for helper "ynh_add_nginx_config"
-final_path=$(ynh_app_setting_get --app=$app --key=final_path)
-
 # Add settings here as needed by your application
 mypads=$(ynh_app_setting_get --app=$app --key=mypads)
 port=$(ynh_app_setting_get --app=$app --key=port)

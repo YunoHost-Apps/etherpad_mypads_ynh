@@ -12,35 +12,24 @@ source /usr/share/yunohost/helpers
 #=================================================
 # LOAD SETTINGS
 #=================================================
-#REMOVEME? ynh_script_progression --message="Loading installation settings..." --weight=20
+ynh_script_progression --message="Loading installation settings..." --weight=20
 
-#REMOVEME? app=$YNH_APP_INSTANCE_NAME
-
-#REMOVEME? domain=$(ynh_app_setting_get --app=$app --key=domain)
-#REMOVEME? path=$(ynh_app_setting_get --app=$app --key=path)
-#REMOVEME? language=$(ynh_app_setting_get --app=$app --key=language)
-#REMOVEME? admin=$(ynh_app_setting_get --app=$app --key=admin)
-#REMOVEME? #REMOVEME? install_dir=$(ynh_app_setting_get --app=$app --key=install_dir)
-#REMOVEME? port=$(ynh_app_setting_get --app=$app --key=port)
-#REMOVEME? export=$(ynh_app_setting_get --app=$app --key=export)
-#REMOVEME? db_name=$(ynh_app_setting_get --app=$app --key=db_name)
-#REMOVEME? db_user=$db_name
-#REMOVEME? db_pwd=$(ynh_app_setting_get --app=$app --key=mysqlpwd)
-#REMOVEME? password=$(ynh_app_setting_get --app=$app --key=password)
-#REMOVEME? mypads=$(ynh_app_setting_get --app=$app --key=mypads)
-#REMOVEME? useldap=$(ynh_app_setting_get --app=$app --key=useldap)
-#REMOVEME? abiword=$(ynh_app_setting_get --app=$app --key=abiword)
-#REMOVEME? overwrite_settings=$(ynh_app_setting_get --app=$app --key=overwrite_settings)
-#REMOVEME? overwrite_credentials=$(ynh_app_setting_get --app=$app --key=overwrite_credentials)
-#REMOVEME? overwrite_nginx=$(ynh_app_setting_get --app=$app --key=overwrite_nginx)
-#REMOVEME? overwrite_systemd=$(ynh_app_setting_get --app=$app --key=overwrite_systemd)
+export=$(ynh_app_setting_get --app=$app --key=export)
+password=$(ynh_app_setting_get --app=$app --key=password)
+mypads=$(ynh_app_setting_get --app=$app --key=mypads)
+useldap=$(ynh_app_setting_get --app=$app --key=useldap)
+abiword=$(ynh_app_setting_get --app=$app --key=abiword)
+overwrite_settings=$(ynh_app_setting_get --app=$app --key=overwrite_settings)
+overwrite_credentials=$(ynh_app_setting_get --app=$app --key=overwrite_credentials)
+overwrite_nginx=$(ynh_app_setting_get --app=$app --key=overwrite_nginx)
+overwrite_systemd=$(ynh_app_setting_get --app=$app --key=overwrite_systemd)
 
 # Optional parameters from config-panel feature
-#REMOVEME? pad_config_nocolors=$(ynh_app_setting_get --app=$app --key=pad_config_nocolors)
-#REMOVEME? pad_config_showlinenumbers=$(ynh_app_setting_get --app=$app --key=pad_config_showlinenumbers)
-#REMOVEME? pad_config_chatandusers=$(ynh_app_setting_get --app=$app --key=pad_config_chatandusers)
-#REMOVEME? pad_config_alwaysshowchat=$(ynh_app_setting_get --app=$app --key=pad_config_alwaysshowchat)
-#REMOVEME? pad_config_show_markdown=$(ynh_app_setting_get --app=$app --key=pad_config_show_markdown)
+pad_config_nocolors=$(ynh_app_setting_get --app=$app --key=pad_config_nocolors)
+pad_config_showlinenumbers=$(ynh_app_setting_get --app=$app --key=pad_config_showlinenumbers)
+pad_config_chatandusers=$(ynh_app_setting_get --app=$app --key=pad_config_chatandusers)
+pad_config_alwaysshowchat=$(ynh_app_setting_get --app=$app --key=pad_config_alwaysshowchat)
+pad_config_show_markdown=$(ynh_app_setting_get --app=$app --key=pad_config_show_markdown)
 
 #=================================================
 # CHECK VERSION
@@ -51,20 +40,6 @@ ynh_script_progression --message="Checking version..." --weight=1
 ynh_systemd_action --action=restart --line_match="You can access your Etherpad instance at" --log_path="/var/log/$app/etherpad.log" --timeout="120"
 
 upgrade_type=$(ynh_check_app_version_changed)
-
-#=================================================
-# BACKUP BEFORE UPGRADE THEN ACTIVE TRAP
-#=================================================
-#REMOVEME? ynh_script_progression --message="Backing up the app before upgrading (may take a while)..." --weight=35
-
-# Backup the current version of the app
-#REMOVEME? ynh_backup_before_upgrade
-#REMOVEME? ynh_clean_setup () {
-	# Restore it if the upgrade fails
-#REMOVEME? 	ynh_restore_upgradebackup
-}
-# Exit if an error occurs during the execution of the script
-#REMOVEME? ynh_abort_if_errors
 
 #=================================================
 # ACTIVATE MAINTENANCE MODE
@@ -111,7 +86,7 @@ fi
 # If export setting doesn't exist
 if [ -z "$export" ]; then
 	export=none
-#REMOVEME? 	ynh_app_setting_set --app=$app --key=export --value=$export
+	ynh_app_setting_set --app=$app --key=export --value=$export
 fi
 
 # If mypads setting doesn't exist
@@ -129,7 +104,7 @@ fi
 # If path setting doesn't exist
 if [ -z "$path" ]; then
 	path="/"
-#REMOVEME? 	ynh_app_setting_set --app=$app --key=path --value=$path
+	ynh_app_setting_set --app=$app --key=path --value=$path
 fi
 
 # If overwrite_settings doesn't exist, create it
@@ -156,33 +131,9 @@ if [ -z "$overwrite_systemd" ]; then
 	ynh_app_setting_set --app=$app --key=overwrite_systemd --value=$overwrite_systemd
 fi
 
-# Cleaning legacy permissions
-#REMOVEME? if ynh_legacy_permissions_exists; then
-#REMOVEME? 	ynh_legacy_permissions_delete_all
-
-	ynh_app_setting_delete --app=$app --key=is_public
-fi
-
-#REMOVEME? if ! ynh_permission_exists --permission="admin"; then
-	# Create the required permissions
-#REMOVEME? 	ynh_permission_create --permission="admin" --url="/admin" --allowed=$admin
-else
-	# Make sure the admin panel is not exposed to the SSO's authentication headers
-	# AFAIK there is no helper to check if that flag is up or not, so let's force it.
-	ynh_permission_url --permission="admin" --auth_header=false
-fi
-
 # Support full Unicode in MySQL databases
 ynh_mysql_connect_as --user=$db_user --password="$db_pwd" --database=$db_name \
     <<< "ALTER DATABASE $db_name CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;"
-
-#=================================================
-# CREATE DEDICATED USER
-#=================================================
-#REMOVEME? ynh_script_progression --message="Making sure dedicated system user exists..." --weight=1
-
-# Create a dedicated user (if not existing)
-#REMOVEME? ynh_system_user_create --username=$app --home_dir="$install_dir"
 
 #=================================================
 # DOWNLOAD, CHECK AND UNPACK SOURCE
@@ -203,12 +154,12 @@ chown -R $app:$app "$install_dir"
 #=================================================
 # UPGRADE DEPENDENCIES
 #=================================================
-#REMOVEME? ynh_script_progression --message="Upgrading dependencies..." --weight=5
+ynh_script_progression --message="Upgrading dependencies..." --weight=5
 
 if [ "$export" = "abiword" ]; then
-#REMOVEME? 	ynh_exec_warn_less ynh_install_app_dependencies $abiword_app_depencencies
+	ynh_exec_warn_less ynh_install_app_dependencies $abiword_app_depencencies
 elif [ "$export" = "libreoffice" ]; then
-#REMOVEME? 	ynh_exec_warn_less ynh_install_app_dependencies $libreoffice_app_dependencies
+	ynh_exec_warn_less ynh_install_app_dependencies $libreoffice_app_dependencies
 fi
 
 ynh_install_nodejs --nodejs_version=$nodejs_version
@@ -409,13 +360,6 @@ ynh_script_progression --message="Reconfiguring Fail2Ban..." --weight=8
 
 # Create a dedicated Fail2Ban config
 ynh_add_fail2ban_config --logpath="/var/log/nginx/$domain-access.log" --failregex="<HOST> .* .POST /mypads/api/auth/login HTTP/1.1. 400" --max_retry=5
-
-#=================================================
-# RELOAD NGINX
-#=================================================
-#REMOVEME? ynh_script_progression --message="Reloading NGINX web server..." --weight=1
-
-#REMOVEME? ynh_systemd_action --service_name=nginx --action=reload
 
 #=================================================
 # DEACTIVE MAINTENANCE MODE
