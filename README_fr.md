@@ -26,7 +26,6 @@ Etherpad est un éditeur collaboratif en temps réel évolutif pour des milliers
 ## Captures d’écran
 
 ![Capture d’écran de Etherpad MyPads](./doc/screenshots/etherpad_demo.gif)
-![Capture d’écran de Etherpad MyPads](./doc/screenshots/POST_INSTALL.md)
 
 ## Documentations et ressources
 

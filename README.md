@@ -37,7 +37,6 @@ Etherpad is a real-time collaborative editor scalable to thousands of simultaneo
 ## Screenshots
 
 ![Screenshot of Etherpad MyPads](./doc/screenshots/etherpad_demo.gif)
-![Screenshot of Etherpad MyPads](./doc/screenshots/POST_INSTALL.md)
 
 ## Documentation and resources
 
