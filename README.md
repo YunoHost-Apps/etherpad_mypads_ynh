@@ -5,7 +5,8 @@ It shall NOT be edited by hand.
 
 # Etherpad MyPads for YunoHost
 
-[![Integration level](https://dash.yunohost.org/integration/etherpad_mypads.svg)](https://dash.yunohost.org/appci/app/etherpad_mypads) ![Working status](https://ci-apps.yunohost.org/ci/badges/etherpad_mypads.status.svg) ![Maintenance status](https://ci-apps.yunohost.org/ci/badges/etherpad_mypads.maintain.svg)  
+[![Integration level](https://dash.yunohost.org/integration/etherpad_mypads.svg)](https://dash.yunohost.org/appci/app/etherpad_mypads) ![Working status](https://ci-apps.yunohost.org/ci/badges/etherpad_mypads.status.svg) ![Maintenance status](https://ci-apps.yunohost.org/ci/badges/etherpad_mypads.maintain.svg)
+
 [![Install Etherpad MyPads with YunoHost](https://install-app.yunohost.org/install-with-yunohost.svg)](https://install-app.yunohost.org/?app=etherpad_mypads)
 
 *[Lire ce readme en français.](./README_fr.md)*
@@ -30,7 +31,6 @@ Etherpad is a real-time collaborative editor scalable to thousands of simultaneo
 
 
 **Shipped version:** 1.8.18~ynh2
-
 
 **Demo:** https://video.etherpad.com
 
