@@ -16,7 +16,6 @@ source /usr/share/yunohost/helpers
 #=================================================
 # ACTIVATE MAINTENANCE MODE
 #=================================================
-ynh_script_progression --message="Activating maintenance mode..." --weight=2
 
 ynh_maintenance_mode_ON
 
@@ -40,16 +39,8 @@ ynh_script_progression --message="Starting a systemd service..." --weight=10
 ynh_systemd_action --service_name=$app --action=restart --line_match="You can access your Etherpad instance at" --log_path="/var/log/$app/etherpad.log" --timeout="120"
 
 #=================================================
-# RELOAD NGINX
-#=================================================
-ynh_script_progression --message="Reloading NGINX web server..." --weight=1
-
-ynh_systemd_action --service_name=nginx --action=reload
-
-#=================================================
 # DEACTIVE MAINTENANCE MODE
 #=================================================
-ynh_script_progression --message="Disabling the maintenance mode..." --weight=5
 
 ynh_maintenance_mode_OFF
 
