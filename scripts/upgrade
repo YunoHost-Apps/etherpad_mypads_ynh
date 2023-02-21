@@ -156,12 +156,6 @@ chown -R $app:$app "$install_dir"
 #=================================================
 ynh_script_progression --message="Upgrading dependencies..." --weight=5
 
-if [ "$export" = "abiword" ]; then
-	ynh_exec_warn_less ynh_install_app_dependencies $abiword_app_depencencies
-elif [ "$export" = "libreoffice" ]; then
-	ynh_exec_warn_less ynh_install_app_dependencies $libreoffice_app_dependencies
-fi
-
 ynh_install_nodejs --nodejs_version=$nodejs_version
 ynh_use_nodejs
 

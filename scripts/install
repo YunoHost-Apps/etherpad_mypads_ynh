@@ -25,7 +25,7 @@ useldap=$YNH_APP_ARG_USELDAP
 #=================================================
 # CHECK IF THE APP CAN BE INSTALLED WITH THESE ARGS
 #=================================================
-#REMOVEME? ynh_script_progression --message="Validating installation parameters..." --weight=1
+ynh_script_progression --message="Validating installation parameters..." --weight=1
 
 if [ "${#password}" -lt 8 ] || [ "${#password}" -gt 30 ]
 then
@@ -48,12 +48,6 @@ ynh_app_setting_set --app=$app --key=overwrite_systemd --value="1"
 # INSTALL DEPENDENCIES
 #=================================================
 ynh_script_progression --message="Installing dependencies..." --weight=120
-
-if [ "$export" = "abiword" ]; then
-	ynh_exec_warn_less ynh_install_app_dependencies $abiword_app_depencencies
-elif [ "$export" = "libreoffice" ]; then
-	ynh_exec_warn_less ynh_install_app_dependencies $libreoffice_app_dependencies
-fi
 
 ynh_install_nodejs --nodejs_version=$nodejs_version
 ynh_use_nodejs

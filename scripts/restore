@@ -52,11 +52,6 @@ ynh_systemd_action --action=restart --service_name=fail2ban
 #=================================================
 ynh_script_progression --message="Reinstalling dependencies..." --weight=60
 
-if [ "$export" = "abiword" ]; then
-	ynh_exec_warn_less ynh_install_app_dependencies $abiword_app_depencencies
-elif [ "$export" = "libreoffice" ]; then
-	ynh_exec_warn_less ynh_install_app_dependencies $libreoffice_app_dependencies
-fi
 ynh_install_nodejs --nodejs_version=$nodejs_version
 ynh_use_nodejs
 
