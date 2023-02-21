@@ -95,6 +95,6 @@ ram.runtime = "50M"
 
     [resources.apt]
     packages_from_raw_bash = """
-          [[ "$export" == "libreoffice" ]] && ynh_exec_warn_less ynh_install_app_dependencies "unoconv libreoffice-writer"
-          [[ "$export" == "abiword" ]] && ynh_exec_warn_less ynh_install_app_dependencies "abiword"
+          [[ "$export" == "libreoffice" ]] && echo "unoconv libreoffice-writer"
+          [[ "$export" == "abiword" ]] && echo "abiword"
     """
