@@ -92,3 +92,9 @@ ram.runtime = "50M"
 
     [resources.database]
     type = "mysql"
+
+    [resources.apt]
+    packages_from_raw_bash = """
+          [[ "$export" == "libreoffice" ]] && ynh_exec_warn_less ynh_install_app_dependencies "unoconv libreoffice-writer"
+          [[ "$export" == "abiword" ]] && ynh_exec_warn_less ynh_install_app_dependencies "abiword"
+    """
