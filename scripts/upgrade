@@ -62,12 +62,6 @@ ynh_systemd_action --service_name=$app --action="stop"
 #=================================================
 ynh_script_progression --message="Ensuring downward compatibility..." --weight=2
 
-# If db_name doesn't exist, create it
-if [ -z "$db_name" ]; then
-	db_name=$(ynh_sanitize_dbid --db_name=$app)
-#REMOVEME? 	ynh_app_setting_set --app=$app --key=db_name --value=$db_name
-fi
-
 # If abiword setting doesn't exist
 if [ -z "$abiword" ]; then
 	abiword=0
@@ -79,7 +73,7 @@ if [ -n "$abiword" ]; then
 	if [ $abiword -eq 1 ]; then
 		export=abiword
 	fi
-#REMOVEME? 	ynh_app_setting_set --app=$app --key=export --value=$export
+	ynh_app_setting_set --app=$app --key=export --value=$export
 	ynh_app_setting_delete --app=$app --key=abiword
 fi
 
@@ -147,7 +141,6 @@ then
 	ynh_setup_source --dest_dir="$install_dir" --keep="settings.json credentials.json"
 fi
 
-chmod 750 "$install_dir"
 chmod -R o-rwx "$install_dir"
 chown -R $app:$app "$install_dir"
 
