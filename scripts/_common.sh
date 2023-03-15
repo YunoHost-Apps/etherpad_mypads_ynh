@@ -5,10 +5,10 @@
 #=================================================
 
 # Dependencies for AbiWord
-abiword_app_depencencies="abiword"
+#abiword_app_depencencies="abiword"
 
 # Dependencies for LibreOffice
-libreoffice_app_dependencies="unoconv libreoffice-writer"
+#libreoffice_app_dependencies="unoconv libreoffice-writer"
 
 # NodeJS version
 nodejs_version=14
