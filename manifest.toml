@@ -17,7 +17,7 @@ admindoc = "http://etherpad.org/doc/v1.8.18"
 code = "https://github.com/ether/etherpad-lite"
 
 [integration]
-yunohost = ">= 11.1.10"
+yunohost = ">= 11.1.15"
 architectures = "all"
 multi_instance = true
 ldap = false
@@ -76,6 +76,13 @@ ram.runtime = "50M"
     default = true
 
 [resources]
+
+    [resources.sources]
+
+        [resources.sources.main]
+        url = "https://github.com/ether/etherpad-lite/archive/1.8.18.tar.gz"
+        sha256 = "67ccc0bac94e146b26fbddcf8330e0f543a4ff82213c420a376644614a7ff2c4"
+
     [resources.system_user]
 
     [resources.install_dir]

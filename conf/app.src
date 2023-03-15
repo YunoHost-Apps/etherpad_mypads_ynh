@@ -1,7 +1,0 @@
-SOURCE_URL=https://github.com/ether/etherpad-lite/archive/1.8.18.tar.gz
-SOURCE_SUM=67ccc0bac94e146b26fbddcf8330e0f543a4ff82213c420a376644614a7ff2c4
-SOURCE_SUM_PRG=sha256sum
-SOURCE_FORMAT=tar.gz
-SOURCE_IN_SUBDIR=true
-SOURCE_FILENAME=
-SOURCE_EXTRACT=true
