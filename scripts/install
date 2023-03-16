@@ -18,27 +18,12 @@ source /usr/share/yunohost/helpers
 #=================================================
 
 password="$YNH_APP_ARG_PASSWORD"
-export=$YNH_APP_ARG_EXPORT
-mypads=$YNH_APP_ARG_MYPADS
-useldap=$YNH_APP_ARG_USELDAP
-
-#=================================================
-# CHECK IF THE APP CAN BE INSTALLED WITH THESE ARGS
-#=================================================
-ynh_script_progression --message="Validating installation parameters..." --weight=1
-
-if [ "${#password}" -lt 8 ] || [ "${#password}" -gt 30 ]
-then
-	ynh_die --message="The password must be between 8 and 30 characters."
-fi
 
 #=================================================
 # STORE SETTINGS FROM MANIFEST
 #=================================================
 ynh_script_progression --message="Storing installation settings..." --weight=3
 
-ynh_app_setting_set --app=$app --key=mypads --value=$mypads
-ynh_app_setting_set --app=$app --key=useldap --value=$useldap
 ynh_app_setting_set --app=$app --key=overwrite_settings --value="1"
 ynh_app_setting_set --app=$app --key=overwrite_credentials --value="1"
 ynh_app_setting_set --app=$app --key=overwrite_nginx --value="1"
