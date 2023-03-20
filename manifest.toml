@@ -100,8 +100,12 @@ ram.runtime = "50M"
     [resources.apt]
     packages = "mariadb-server"
     packages_from_raw_bash = """
-          [[ "$export" == "libreoffice" ]] && echo "unoconv libreoffice-writer"
-          [[ "$export" == "abiword" ]] && echo "abiword"
+          if [[ "$export" == "libreoffice" ]]
+          then 
+              echo "unoconv libreoffice-writer"
+          elif [[ "$export" == "abiword" ]]
+              echo "abiword"
+          fi
     """
 
     [resources.database]
