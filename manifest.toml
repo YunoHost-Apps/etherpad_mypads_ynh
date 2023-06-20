@@ -13,7 +13,7 @@ maintainers = []
 license = "Apache-2.0"
 website = "http://etherpad.org"
 demo = "https://video.etherpad.com"
-admindoc = "http://etherpad.org/doc/v1.8.18"
+admindoc = "http://etherpad.org/doc/v1.9.0"
 code = "https://github.com/ether/etherpad-lite"
 
 [integration]
@@ -45,7 +45,7 @@ ram.runtime = "50M"
     ask.fr = "Choisissez la langue"
     type = "string"
     choices = ["ca", "de", "en", "es", "fr", "gl", "hu", "it", "nl", "pt"]
-    default = "en"
+    default = "fr"
 
     [install.admin]
     type = "user"
