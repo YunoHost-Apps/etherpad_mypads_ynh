@@ -5,7 +5,7 @@ name = "Etherpad MyPads"
 description.en = "Online editor providing collaborative editing in real-time"
 description.fr = "Éditeur en ligne fournissant l'édition collaborative en temps réel"
 
-version = "1.8.18~ynh3"
+version = "1.9.0~ynh1"
 
 maintainers = []
 
@@ -13,12 +13,12 @@ maintainers = []
 license = "Apache-2.0"
 website = "http://etherpad.org"
 demo = "https://video.etherpad.com"
-admindoc = "http://etherpad.org/doc/v1.8.18"
+admindoc = "http://etherpad.org/doc/v1.9.0"
 code = "https://github.com/ether/etherpad-lite"
 
 [integration]
 yunohost = ">= 11.1.21"
-architectures = "all"
+architectures = ["arm64", "amd64"]
 multi_instance = true
 ldap = false
 sso = false
@@ -45,7 +45,7 @@ ram.runtime = "50M"
     ask.fr = "Choisissez la langue"
     type = "string"
     choices = ["ca", "de", "en", "es", "fr", "gl", "hu", "it", "nl", "pt"]
-    default = "en"
+    default = "fr"
 
     [install.admin]
     type = "user"
@@ -80,8 +80,8 @@ ram.runtime = "50M"
     [resources.sources]
 
         [resources.sources.main]
-        url = "https://github.com/ether/etherpad-lite/archive/1.8.18.tar.gz"
-        sha256 = "67ccc0bac94e146b26fbddcf8330e0f543a4ff82213c420a376644614a7ff2c4"
+        url = "https://github.com/ether/etherpad-lite/archive/1.9.0.tar.gz"
+        sha256 = "552ada23d880a875238ba5f411ac873913d059ef6c82a087f9c021b849dcaa6b"
         autoupdate.strategy = "latest_github_tag"
 
     [resources.system_user]
@@ -92,11 +92,11 @@ ram.runtime = "50M"
 
     [resources.permissions]
     main.url = "/"
-
+    api.show_tile = false
     admin.url = "/admin"
     admin.auth_header = false
-    api.show_tile = false
     admin.allowed = ["admins"]
+    admin.show_tile = false
 
     [resources.apt]
     packages = "mariadb-server"

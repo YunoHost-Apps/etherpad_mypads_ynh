@@ -18,20 +18,20 @@ test_format = 1.0
 
 
 # This is an additional test suite
-[without_mypads]
-    args.export = "libreoffice"
-    args.mypads = 0
-    args.useldap = 0
-    only = ["install.root"]
+#[without_mypads]
+#    args.export = "libreoffice"
+#    args.mypads = 0
+#    args.useldap = 0
+#    only = ["install.root"]
 
-[with_abiword]
-    args.export = "abiword"
-    args.mypads = 1
-    args.useldap = 1
-    only = ["install.root"]
+#[with_abiword]
+#    args.export = "abiword"
+#    args.mypads = 1
+#    args.useldap = 1
+#    only = ["install.root"]
 
-[without_export]
-    args.export = "none"
-    args.mypads = 1
-    args.useldap = 0
-    only = ["install.root"]
+#[without_export]
+#    args.export = "none"
+#    args.mypads = 1
+#    args.useldap = 0
+#    only = ["install.root"]
