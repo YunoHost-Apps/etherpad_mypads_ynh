@@ -46,7 +46,7 @@ This version of Etherpad is preconfigured with a collection of plugins:
 ## Documentation and resources
 
 * Official app website: <http://etherpad.org>
-* Official admin documentation: <http://etherpad.org/doc/v1.8.18>
+* Official admin documentation: <http://etherpad.org/doc/v1.9.0>
 * Upstream app code repository: <https://github.com/ether/etherpad-lite>
 * YunoHost documentation for this app: <https://yunohost.org/app_etherpad_mypads>
 * Report a bug: <https://github.com/YunoHost-Apps/etherpad_mypads_ynh/issues>
