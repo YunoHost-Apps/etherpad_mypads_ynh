@@ -35,7 +35,7 @@ Cette version d'Etherpad est préconfigurée avec une collection de plugins:
 - [ep_subscript_and_superscript](https://www.npmjs.com/package/ep_subscript_and_superscript) - *Support des exposants et indices*
 
 
-**Version incluse :** 1.8.18~ynh3
+**Version incluse :** 1.9.0~ynh1
 
 **Démo :** https://video.etherpad.com
 
