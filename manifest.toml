@@ -18,7 +18,7 @@ code = "https://github.com/ether/etherpad-lite"
 
 [integration]
 yunohost = ">= 11.1.21"
-architectures = "all"
+architectures = ["arm64", "amd64"]
 multi_instance = true
 ldap = false
 sso = false
