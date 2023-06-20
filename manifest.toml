@@ -1,0 +1,115 @@
+packaging_format = 2
+
+id = "etherpad_mypads"
+name = "Etherpad MyPads"
+description.en = "Online editor providing collaborative editing in real-time"
+description.fr = "Éditeur en ligne fournissant l'édition collaborative en temps réel"
+
+version = "1.8.18~ynh3"
+
+maintainers = []
+
+[upstream]
+license = "Apache-2.0"
+website = "http://etherpad.org"
+demo = "https://video.etherpad.com"
+admindoc = "http://etherpad.org/doc/v1.8.18"
+code = "https://github.com/ether/etherpad-lite"
+
+[integration]
+yunohost = ">= 11.1.21"
+architectures = "all"
+multi_instance = true
+ldap = false
+sso = false
+disk = "50M"
+ram.build = "1500M"
+ram.runtime = "50M"
+
+[install]
+    [install.domain]
+    type = "domain"
+
+    [install.path]
+    type = "path"
+    default = "/pad"
+
+    [install.init_main_permission]
+    help.en = "If your Etherpad instance is set to Visitors, everyone will be able to create a pad or see an existing one."
+    help.fr = "Si votre instance Etherpad est définie sur Visiteurs, tout le monde pourra créer un pad ou en voir un existant."
+    type = "group"
+    default = "visitors"
+
+    [install.language]
+    ask.en = "Choose your language"
+    ask.fr = "Choisissez la langue"
+    type = "string"
+    choices = ["ca", "de", "en", "es", "fr", "gl", "hu", "it", "nl", "pt"]
+    default = "en"
+
+    [install.admin]
+    type = "user"
+
+    [install.password]
+    type = "password"
+
+    [install.export]
+    ask.en = "Use AbiWord (~260 Mo) or LibreOffice (~400 Mo) (more stable) to expand export possibilities (PDF, doc)?"
+    ask.fr = "Utiliser AbiWord (~260 Mo) ou LibreOffice (~400 Mo) (plus stable) pour étendre les possibilités d'export (PDF, doc) ?"
+    type = "string"
+    choices = ["none", "abiword", "libreoffice"]
+    default = "none"
+
+    [install.mypads]
+    ask.en = "Do you want to install MyPads plugin?"
+    ask.fr = "Voulez-vous installer le plugin MyPads ?"
+    help.en = "<a href=https://git.framasoft.org/framasoft/ep_mypads target=_blank>MyPads plugin</a>"
+    type = "boolean"
+    default = true
+
+    [install.useldap]
+    ask.en = "Do you want to use LDAP with MyPads?"
+    ask.fr = "Voulez-vous utiliser LDAP avec MyPads ?"
+    help.en = "Using LDAP won't let you add new user aside from YunoHost users."
+    help.fr = "Utiliser LDAP ne vous permettra pas d'ajouter un nouvel utilisateur en dehors des utilisateurs de YunoHost."
+    type = "boolean"
+    default = true
+
+[resources]
+
+    [resources.sources]
+
+        [resources.sources.main]
+        url = "https://github.com/ether/etherpad-lite/archive/1.8.18.tar.gz"
+        sha256 = "67ccc0bac94e146b26fbddcf8330e0f543a4ff82213c420a376644614a7ff2c4"
+        autoupdate.strategy = "latest_github_tag"
+
+    [resources.system_user]
+
+    [resources.install_dir]
+
+    [resources.ports]
+
+    [resources.permissions]
+    main.url = "/"
+
+    admin.url = "/admin"
+    admin.auth_header = false
+    api.show_tile = false
+    admin.allowed = ["admins"]
+
+    [resources.apt]
+    packages = "mariadb-server"
+    packages_from_raw_bash = """
+          if [[ "$export" == "libreoffice" ]]
+          then 
+              echo "unoconv libreoffice-writer"
+          elif [[ "$export" == "abiword" ]]
+          then
+              echo "abiword"
+          fi
+    """
+
+    [resources.database]
+    type = "mysql"
+    

@@ -10,16 +10,6 @@
 source _common.sh
 source /usr/share/yunohost/helpers
 
-ynh_abort_if_errors
-
-#=================================================
-# RETRIEVE ARGUMENTS
-#=================================================
-
-app=$YNH_APP_INSTANCE_NAME
-
-final_path=$(ynh_app_setting_get $app final_path)
-
 #=================================================
 # SPECIFIC CODE
 #=================================================
