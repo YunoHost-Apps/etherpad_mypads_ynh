@@ -35,7 +35,7 @@ This version of Etherpad is preconfigured with a collection of plugins:
 - [ep_subscript_and_superscript](https://www.npmjs.com/package/ep_subscript_and_superscript) - *Support for subscript and superscript*
 
 
-**Shipped version:** 1.9.0~ynh1
+**Shipped version:** 1.9.1~ynh1
 
 **Demo:** https://video.etherpad.com
 
