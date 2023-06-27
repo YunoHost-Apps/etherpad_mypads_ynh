@@ -5,7 +5,7 @@
 #=================================================
 
 # NodeJS version
-nodejs_version=14
+nodejs_version=16
 
 # MyPads version
 # This variable is mostly used to force an upgrade of the package in case of new versions of MyPads.
