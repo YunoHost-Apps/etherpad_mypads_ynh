@@ -22,7 +22,6 @@ ep_headings2_version=0.2.44
 ep_markdown_version=0.1.50
 ep_spellcheck_version=0.0.43
 ep_subscript_and_superscript_version=0.2.47
-ep_table_of_contents_version=0.3.42
 ep_font_size_version=0.4.44
 
 #=================================================

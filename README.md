@@ -21,7 +21,6 @@ Etherpad is a real-time collaborative editor scalable to thousands of simultaneo
 This version of Etherpad is preconfigured with a collection of plugins: 
 
 - [ep_mypads](https://www.npmjs.com/package/ep_mypads) - *Groups and private pads for etherpad*
-- [ep_table_of_contents](https://www.npmjs.com/package/ep_table_of_contents) - *Display pad's table of contents*
 - [ep_align](https://www.npmjs.com/package/ep_align) - *Add Left/Center/Right/Justify alignment*
 - [ep_author_hover](https://www.npmjs.com/package/ep_author_hover) - *Display author names when hovereing text*
 - [ep_comments_page](https://www.npmjs.com/package/ep_comments_page) - *Add comments on sidebar and link it to the text.*
