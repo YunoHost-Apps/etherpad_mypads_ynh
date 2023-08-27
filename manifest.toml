@@ -43,7 +43,7 @@ ram.runtime = "50M"
     [install.language]
     ask.en = "Choose your language"
     ask.fr = "Choisissez la langue"
-    type = "string"
+    type = "select"
     choices = ["ca", "de", "en", "es", "fr", "gl", "hu", "it", "nl", "pt"]
     default = "fr"
 
@@ -56,7 +56,7 @@ ram.runtime = "50M"
     [install.export]
     ask.en = "Use AbiWord (~260 Mo) or LibreOffice (~400 Mo) (more stable) to expand export possibilities (PDF, doc)?"
     ask.fr = "Utiliser AbiWord (~260 Mo) ou LibreOffice (~400 Mo) (plus stable) pour étendre les possibilités d'export (PDF, doc) ?"
-    type = "string"
+    type = "select"
     choices = ["none", "abiword", "libreoffice"]
     default = "none"
 
