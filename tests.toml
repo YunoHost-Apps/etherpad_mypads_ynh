@@ -9,6 +9,7 @@ test_format = 1.0
     args.export = "libreoffice"
     args.mypads = 1
     args.useldap = 1
+    args.password = "admin!42"
 
     # -------------------------------
     # Commits to test upgrade from
