@@ -149,7 +149,8 @@ pushd "$install_dir"
 	# Framapad - Add support for Subscript and Superscript
 	ynh_exec_warn_less ynh_exec_as $app env $ynh_node_load_PATH $ynh_npm install --no-save ep_subscript_and_superscript@${ep_subscript_and_superscript_version}
 	# Framapad - View a table of contents for your pad
-	ynh_exec_warn_less ynh_exec_as $app env $ynh_node_load_PATH $ynh_npm install --no-save ep_table_of_contents@${ep_table_of_contents_version}
+        # We disabled this plugins cause pads with 20+ title are pretty slow with it. This slowness cause some a11y issues too.
+	# ynh_exec_warn_less ynh_exec_as $app env $ynh_node_load_PATH $ynh_npm install --no-save ep_table_of_contents@${ep_table_of_contents_version}
 	# Framapad - User Pad Contents font size can be set in settings, this does not effect other peoples views
 	ynh_exec_warn_less ynh_exec_as $app env $ynh_node_load_PATH $ynh_npm install --no-save ep_font_size@${ep_font_size_version}
 popd
