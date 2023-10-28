@@ -9,7 +9,8 @@ Group=__APP__
 WorkingDirectory=__INSTALL_DIR__/
 Environment=NODE_ENV=production
 Environment="__YNH_NODE_LOAD_PATH__"
-ExecStart=__YNH_NODE__ __INSTALL_DIR__/src/node/server.js
+ExecStart=__INSTALL_DIR__/src/bin/run.sh
+#ExecStart=__YNH_NODE__ __INSTALL_DIR__/src/node/server.js
 StandardOutput=append:/var/log/__APP__/etherpad.log
 StandardError=inherit
 Restart=always
