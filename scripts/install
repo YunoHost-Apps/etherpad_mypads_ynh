@@ -27,7 +27,7 @@ ynh_app_setting_set --app=$app --key=overwrite_systemd --value="1"
 #=================================================
 # INSTALL DEPENDENCIES
 #=================================================
-ynh_script_progression --message="Installing nodejs..." --weight=50
+ynh_script_progression --message="Installing nodejs..." --weight=7
 
 ynh_install_nodejs --nodejs_version=$nodejs_version
 ynh_use_nodejs
