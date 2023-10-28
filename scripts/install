@@ -75,9 +75,8 @@ chown $app -R /var/log/$app
 #=================================================
 ynh_script_progression --message="Adding a configuration file..." --weight=6
 
-cp ../conf/settings.json "$install_dir/settings.json"
+ynh_add_config --template="../conf/settings.json" --destination="$install_dir/settings.json"
 
-ynh_replace_string --match_string="__PORT__" --replace_string="$port" --target_file="$install_dir/settings.json"
 if [ "$export" = "abiword" ]
 then
 	# Get Abiword binary path
@@ -91,7 +90,6 @@ then
 	# Set the path of soffice into Etherpad config
 	ynh_replace_string --match_string="\"soffice\" : null" --replace_string="\"soffice\" : \"$soffice_path\"" --target_file="$install_dir/settings.json"
 fi
-ynh_replace_string --match_string="__LANGUAGE__" --replace_string="$language" --target_file="$install_dir/settings.json"
 
 # Use ldap for mypads
 if [ $mypads -eq 1 ] && [ $useldap -eq 1 ]
