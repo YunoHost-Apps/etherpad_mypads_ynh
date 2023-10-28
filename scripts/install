@@ -48,11 +48,11 @@ tmp_dir=$(mktemp -d)
 
 ynh_setup_source --dest_dir="$tmp_dir"
 
-cd $tmp_dir
+#cd $tmp_dir
 
-bin/installDeps.sh
+ynh_exec_warn_less $tmp_dir/bin/installDeps.sh
 
-mv {src,node_modules,var} $install_dir
+mv $tmp_dir/{src,node_modules,var} $install_dir
 
 ynh_secure_remove --file="$tmp_dir"
 
