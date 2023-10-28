@@ -44,18 +44,18 @@ echo "ALTER DATABASE $db_name CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci" 
 #=================================================
 ynh_script_progression --message="Setting up source files..." --weight=4
 
-tmp_dir=$(mktemp -d)
+# tmp_dir=$(mktemp -d)
 
-ynh_setup_source --dest_dir="$tmp_dir"
+# ynh_setup_source --dest_dir="$tmp_dir"
 
-ynh_exec_warn_less $tmp_dir/bin/installDeps.sh
+# ynh_exec_warn_less $tmp_dir/bin/installDeps.sh
 
-mv $tmp_dir/{src,node_modules,var} $install_dir
+# mv $tmp_dir/{src,node_modules,var} $install_dir
 
-ynh_secure_remove --file="$tmp_dir"
+# ynh_secure_remove --file="$tmp_dir"
 
-chmod -R o-rwx "$install_dir"
-chown -R $app:$app "$install_dir"
+# chmod -R o-rwx "$install_dir"
+# chown -R $app:$app "$install_dir"
 
 
 
