@@ -170,7 +170,7 @@ popd
 #=================================================
 # INSTALL ETHERPAD
 #=================================================
-ynh_script_progression --message="Installing Etherpad..." --weight=90
+#ynh_script_progression --message="Installing Etherpad..." --weight=90
 
 #pushd $install_dir
 # 	ynh_exec_warn_less ynh_exec_as $app env $ynh_node_load_PATH bin/installDeps.sh
@@ -218,7 +218,7 @@ yunohost service add $app --description="Collaborative editor" --log="/var/log/$
 ynh_script_progression --message="Starting a systemd service..." --weight=20
 
 # Start a systemd service
-ynh_systemd_action --service_name=$app --action=restart --line_match="You can access your Etherpad instance at" --log_path="/var/log/$app/etherpad.log" --timeout="120"
+#ynh_systemd_action --service_name=$app --action=restart --line_match="You can access your Etherpad instance at" --log_path="/var/log/$app/etherpad.log" --timeout="120"
 
 if [ $mypads -eq 1 ]
 then
@@ -235,7 +235,7 @@ fi
 ynh_script_progression --message="Configuring Fail2Ban..." --weight=13
 
 # Create a dedicated Fail2Ban config
-ynh_add_fail2ban_config --logpath="/var/log/nginx/$domain-access.log" --failregex="<HOST> .* .POST /mypads/api/auth/login HTTP/1.1. 400" --max_retry=5
+#ynh_add_fail2ban_config --logpath="/var/log/nginx/$domain-access.log" --failregex="<HOST> .* .POST /mypads/api/auth/login HTTP/1.1. 400" --max_retry=5
 
 #=================================================
 # END OF SCRIPT
