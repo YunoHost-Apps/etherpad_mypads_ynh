@@ -34,7 +34,7 @@ Cette version d'Etherpad est préconfigurée avec une collection de plugins:
 - [ep_subscript_and_superscript](https://www.npmjs.com/package/ep_subscript_and_superscript) - *Support des exposants et indices*
 
 
-**Version incluse :** 1.9.3~ynh1
+**Version incluse :** 1.9.4~ynh1
 
 **Démo :** https://video.etherpad.com
 
@@ -47,6 +47,7 @@ Cette version d'Etherpad est préconfigurée avec une collection de plugins:
 * Site officiel de l’app : <http://etherpad.org>
 * Documentation officielle de l’admin : <http://etherpad.org/doc/v1.9.0>
 * Dépôt de code officiel de l’app : <https://github.com/ether/etherpad-lite>
+* YunoHost Store: <https://apps.yunohost.org/app/etherpad_mypads>
 * Signaler un bug : <https://github.com/YunoHost-Apps/etherpad_mypads_ynh/issues>
 
 ## Informations pour les développeurs
