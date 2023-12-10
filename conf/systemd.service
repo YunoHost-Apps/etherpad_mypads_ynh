@@ -7,7 +7,7 @@ Type=simple
 User=__APP__
 Group=__APP__
 WorkingDirectory=__INSTALL_DIR__/
-Environment=NODE_ENV=production
+Environment=ETHERPAD_PRODUCTION=true
 Environment="__YNH_NODE_LOAD_PATH__"
 ExecStart=__INSTALL_DIR__/src/bin/run.sh
 #ExecStart=__YNH_NODE__ __INSTALL_DIR__/src/node/server.js
