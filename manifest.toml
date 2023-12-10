@@ -81,7 +81,7 @@ ram.runtime = "50M"
 
         [resources.sources.main]
         url = "https://github.com/ether/etherpad-lite/archive/bbaa6a7e8dee3223dfed7a73397d599e3194c9a6.tar.gz"
-        sha256 = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        sha256 = "83a5c24e27e93e26d660f60724400d3f47e2780e4ec07a7a080310948836a589"
         autoupdate.strategy = "latest_github_tag"
 
     [resources.system_user]
