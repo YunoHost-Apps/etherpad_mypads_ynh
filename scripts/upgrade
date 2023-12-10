@@ -77,6 +77,12 @@ if [ -n "${abiword:-}" ]; then
 	ynh_app_setting_delete --app=$app --key=abiword
 fi
 
+if [ -z "${language:-}" ]; then
+    # If upgrading from a version which doesn't support translations, set language to English by default
+    language=en
+    ynh_app_setting_set --app=$app --key=language --value=$language
+fi
+
 # If export setting doesn't exist
 if [ -z "${export:-}" ]; then
 	export=none
@@ -177,71 +183,30 @@ chown $app -R /var/log/$app
 # CONFIGURE ETHERPAD
 #=================================================
 
-if [ "$upgrade_type" == "UPGRADE_APP" ]
+ynh_script_progression --message="Configure etherpad..."
+
+abiword_path="null"
+soffice_path="null"
+
+if [[ "$export" == "abiword" ]]
 then
-	ynh_script_progression --message="Reconfiguring Etherpad..." --weight=3
-
-	# Overwrite the settings config file only if it's allowed
-	if [ $overwrite_settings -eq 1 ]
-	then
-		# Verify the checksum of a file, stored by `ynh_store_file_checksum` in the install script.
-		ynh_backup_if_checksum_is_different --file="$install_dir/settings.json"
-
-		ynh_add_config --template="../conf/settings.json" --destination="$install_dir/settings.json"
-
-		if [ "$export" = "abiword" ]
-		then
-			# Get abiword binary path
-			abiword_path=`which abiword`
-			# Set the path of Abiword into Etherpad config
-			ynh_replace_string --match_string="\"abiword\" : null" --replace_string="\"abiword\" : \"$abiword_path\"" --target_file="$install_dir/settings.json"
-		elif [ "$export" = "libreoffice" ]
-		then
-			# Get soffice binary path
-			soffice_path=`which soffice`
-			# Set the path of soffice into Etherpad config
-			ynh_replace_string --match_string="\"soffice\" : null" --replace_string="\"soffice\" : \"$soffice_path\"" --target_file="$install_dir/settings.json"
-		fi
-
-		if test -z "$language"; then
-			# If upgrading from a version which doesn't support translations, set language to English by default
-			language=en
-			ynh_app_setting_set --app=$app --key=language --value=$language
-		fi
-
-		# Use LDAP for MyPads
-		if [ $mypads -eq 1 ] && [ $useldap -eq 1 ]
-		then
-			ynh_replace_string --match_string="//noldap" --replace_string="" --target_file="$install_dir/settings.json"
-		fi
-
-		# Optional parameters from config-panel feature
-		if [ -n "$pad_config_nocolors" ]; then
-			ynh_replace_string --match_string="\(\"noColors\" *: \).*," --replace_string="\1$pad_config_nocolors," --target_file="$install_dir/settings.json"
-		fi
-		if [ -n "$pad_config_showlinenumbers" ]; then
-			ynh_replace_string --match_string="\(\"showLineNumbers\" *: \).*," --replace_string="\1$pad_config_showlinenumbers," --target_file="$install_dir/settings.json"
-		fi
-		if [ -n "$pad_config_chatandusers" ]; then
-			ynh_replace_string --match_string="\(\"chatAndUsers\" *: \).*," --replace_string="\1$pad_config_chatandusers," --target_file="$install_dir/settings.json"
-		fi
-		if [ -n "$pad_config_alwaysshowchat" ]; then
-			ynh_replace_string --match_string="\(\"alwaysShowChat\" *: \).*," --replace_string="\1$pad_config_alwaysshowchat," --target_file="$install_dir/settings.json"
-		fi
-		if [ -n "$pad_config_show_markdown" ]; then
-			ynh_replace_string --match_string="\(\"ep_markdown_default\" *: \).*," --replace_string="\1$pad_config_show_markdown," --target_file="$install_dir/settings.json"
-		fi
-
-		# Recalculate and store the checksum of the file for the next upgrade.
-		ynh_store_file_checksum --file="$install_dir/settings.json"
-	fi
-
-	# Overwrite the credentials config file only if it's allowed
-	if [ $overwrite_credentials -eq 1 ]
-	then
-		ynh_add_config --template="../conf/credentials.json" --destination="$install_dir/credentials.json"
-	fi
+    abiword_path="\"$(which abiword)\""
+elif [[ "$export" == "libreoffice" ]]
+then
+    soffice_path="\"$(which soffice)\""
 fi
+
+# Use ldap for mypads
+comment_if_ldap_disabled="//ldap_disabled"
+if [ $mypads -eq 1 ] && [ $useldap -eq 1 ]
+then
+    comment_if_ldap_disabled=""
+fi
+
+# Calculate and store the config file checksum into the app settings
+
+ynh_add_config --template="settings.json" --destination="$install_dir/settings.json"
+ynh_add_config --template="credentials.json" --destination="$install_dir/credentials.json"
 
 chmod 600 "$install_dir/settings.json"
 chown $app:$app "$install_dir/settings.json"
