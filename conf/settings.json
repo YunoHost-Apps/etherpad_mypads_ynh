@@ -246,29 +246,29 @@
 			"highlightSelectedText": false
 		},
 		// ep_mypads
-//noldap		"ep_mypads": {
-//noldap			"ldap": {
-//noldap				// Your LDAP URL
-//noldap				"url": "ldap://127.0.0.1",
-//noldap				// Where to search your users
-//noldap				"searchBase": "ou=users,dc=yunohost,dc=org",
-//noldap				// A LDAP filter ({{username}} is replaced by user's login)
-//noldap				"searchFilter": "(&(|(objectclass=posixAccount))(uid={{username}}))",
-//noldap				// LDAP properties mapping for MyPads
-//noldap				"properties": {
-//noldap					// Which LDAP property will be used as user's login?
-//noldap					"login": "uid",
-//noldap					// as user's email
-//noldap					"email": "mail",
-//noldap					// as user's firstname
-//noldap					"firstname": "givenName",
-//noldap					// as users's lastname
-//noldap					"lastname": "sn"
-//noldap				},
-//noldap				// Default langage for LDAP created users
-//noldap				"defaultLang": "__LANGUAGE__"
-//noldap			}
-//noldap		},
+__COMMENT_IF_LDAP_DISABLED__		"ep_mypads": {
+__COMMENT_IF_LDAP_DISABLED__			"ldap": {
+__COMMENT_IF_LDAP_DISABLED__				// Your LDAP URL
+__COMMENT_IF_LDAP_DISABLED__				"url": "ldap://127.0.0.1",
+__COMMENT_IF_LDAP_DISABLED__				// Where to search your users
+__COMMENT_IF_LDAP_DISABLED__				"searchBase": "ou=users,dc=yunohost,dc=org",
+__COMMENT_IF_LDAP_DISABLED__				// A LDAP filter ({{username}} is replaced by user's login)
+__COMMENT_IF_LDAP_DISABLED__				"searchFilter": "(&(|(objectclass=posixAccount))(uid={{username}}))",
+__COMMENT_IF_LDAP_DISABLED__				// LDAP properties mapping for MyPads
+__COMMENT_IF_LDAP_DISABLED__				"properties": {
+__COMMENT_IF_LDAP_DISABLED__					// Which LDAP property will be used as user's login?
+__COMMENT_IF_LDAP_DISABLED__					"login": "uid",
+__COMMENT_IF_LDAP_DISABLED__					// as user's email
+__COMMENT_IF_LDAP_DISABLED__					"email": "mail",
+__COMMENT_IF_LDAP_DISABLED__					// as user's firstname
+__COMMENT_IF_LDAP_DISABLED__					"firstname": "givenName",
+__COMMENT_IF_LDAP_DISABLED__					// as users's lastname
+__COMMENT_IF_LDAP_DISABLED__					"lastname": "sn"
+__COMMENT_IF_LDAP_DISABLED__				},
+__COMMENT_IF_LDAP_DISABLED__				// Default langage for LDAP created users
+__COMMENT_IF_LDAP_DISABLED__				"defaultLang": "__LANGUAGE__"
+__COMMENT_IF_LDAP_DISABLED__			}
+__COMMENT_IF_LDAP_DISABLED__		},
 
   /*
    * Should we suppress errors from being visible in the default Pad Text?
@@ -312,7 +312,7 @@
    * it to null disables Abiword and will only allow plain text and HTML
    * import/exports.
    */
-  "abiword" : null,
+  "abiword" : __ABIWORD_PATH__,
 
   /*
    * This is the absolute path to the soffice executable.
@@ -320,7 +320,7 @@
    * LibreOffice can be used in lieu of Abiword to export pads.
    * Setting it to null disables LibreOffice exporting.
    */
-  "soffice" : null,
+  "soffice" : __SOFFICE_PATH__,
 
   /*
    * Path to the Tidy executable.
