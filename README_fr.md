@@ -21,7 +21,6 @@ Etherpad est un éditeur collaboratif en temps réel évolutif pour des milliers
 Cette version d'Etherpad est préconfigurée avec une collection de plugins:
 
 - [ep_mypads](https://www.npmjs.com/package/ep_mypads) - *Groupes et pads privés pour etherpad*
-- [ep_table_of_contents](https://www.npmjs.com/package/ep_table_of_contents) - *Affichage de la table des matières*
 - [ep_align](https://www.npmjs.com/package/ep_align) - *Ajout de l'alignement à gauche/centre/droit/justifié*
 - [ep_author_hover](https://www.npmjs.com/package/ep_author_hover) - *Affichage de l'auteur lorsqu'on passe la souris au dessus d'un texte*
 - [ep_comments_page](https://www.npmjs.com/package/ep_comments_page) - *Ajout de commentaire dans la barre latéral + lien avec le texte du pad*
@@ -35,7 +34,7 @@ Cette version d'Etherpad est préconfigurée avec une collection de plugins:
 - [ep_subscript_and_superscript](https://www.npmjs.com/package/ep_subscript_and_superscript) - *Support des exposants et indices*
 
 
-**Version incluse :** 1.9.1~ynh1
+**Version incluse :** 1.9.1~ynh2
 
 **Démo :** https://video.etherpad.com
 

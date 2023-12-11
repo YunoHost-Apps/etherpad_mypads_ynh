@@ -22,7 +22,6 @@ ep_headings2_version=0.2.44
 ep_markdown_version=0.1.50
 ep_spellcheck_version=0.0.43
 ep_subscript_and_superscript_version=0.2.47
-ep_table_of_contents_version=0.3.42
 ep_font_size_version=0.4.44
 
 #=================================================
@@ -34,14 +33,6 @@ ep_font_size_version=0.4.44
 #=================================================
 
 ynh_maintenance_mode_ON () {
-	# Load value of $path and $domain from the config if their not set
-	if [ -z $path ]; then
-		path=$(ynh_app_setting_get $app path)
-	fi
-	if [ -z $domain ]; then
-		domain=$(ynh_app_setting_get $app domain)
-	fi
-
 	mkdir -p /var/www/html/
 	
 	# Create an html to serve as maintenance notice
@@ -90,14 +81,6 @@ include conf.d/yunohost_panel.conf.inc;
 }
 
 ynh_maintenance_mode_OFF () {
-	# Load value of $path and $domain from the config if their not set
-	if [ -z $path ]; then
-		path=$(ynh_app_setting_get $app path)
-	fi
-	if [ -z $domain ]; then
-		domain=$(ynh_app_setting_get $app domain)
-	fi
-
 	# Rewrite the nginx config file to redirect from ${path}_maintenance to the real url of the app.
 	echo "rewrite ^${path}_maintenance/(.*)$ ${path}/\$1 redirect;" > "/etc/nginx/conf.d/$domain.d/maintenance.$app.conf"
 	systemctl reload nginx
