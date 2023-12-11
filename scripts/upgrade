@@ -147,30 +147,20 @@ ynh_add_systemd_config
 ynh_script_progression --message="Installing Etherpad plugins..." --weight=90
 
 pushd "$install_dir"
+	if [ $mypads -eq 1 ]; then
+		# Framapad - Groups and private pads for Etherpad
+		ynh_exec_warn_less ynh_exec_as $app env $ynh_node_load_PATH $ynh_npm install --no-save ep_mypads@${mypads_version}
+	fi
+	# Framapad - Adds heading support to Etherpad Lite.
+	ynh_exec_warn_less ynh_exec_as $app env $ynh_node_load_PATH $ynh_npm install --no-save ep_headings2@${ep_headings2_version}
 	# Add Left/Center/Right/Justify to lines of text in a pad
 	ynh_exec_warn_less ynh_exec_as $app env $ynh_node_load_PATH $ynh_npm install --no-save ep_align@${ep_align_version}
 	# Framapad - Adds author names to span titles
 	ynh_exec_warn_less ynh_exec_as $app env $ynh_node_load_PATH $ynh_npm install --no-save ep_author_hover@${ep_author_hover_version}
 	# Framapad - Adds comments on sidebar and link it to the text.
 	ynh_exec_warn_less ynh_exec_as $app env $ynh_node_load_PATH $ynh_npm install --no-save ep_comments_page@${ep_comments_page_version}
-	# Framapad - Displays paragraphs, sentences, words and characters counts.
-	ynh_exec_warn_less ynh_exec_as $app env $ynh_node_load_PATH $ynh_npm install --no-save ep_countable@${ep_countable_version}
 	# Framapad - Delete pads which were never edited
 	ynh_exec_warn_less ynh_exec_as $app env $ynh_node_load_PATH $ynh_npm install --no-save ep_delete_empty_pads@${ep_delete_empty_pads_version}
-	# Framapad - Apply colors to fonts
-	ynh_exec_warn_less ynh_exec_as $app env $ynh_node_load_PATH $ynh_npm install --no-save ep_font_color@${ep_font_color_version}
-	# Framapad - Adds heading support to Etherpad Lite.
-	ynh_exec_warn_less ynh_exec_as $app env $ynh_node_load_PATH $ynh_npm install --no-save ep_headings2@${ep_headings2_version}
-	# Framapad - Edit and Export as Markdown in Etherpad
-	ynh_exec_warn_less ynh_exec_as $app env $ynh_node_load_PATH $ynh_npm install --no-save ep_markdown@${ep_markdown_version}
-	if [ $mypads -eq 1 ]; then
-		# Framapad - Groups and private pads for Etherpad
-		ynh_exec_warn_less ynh_exec_as $app env $ynh_node_load_PATH $ynh_npm install --no-save ep_mypads@${mypads_version}
-	fi
-	# Framapad - Add support to do 'Spell checking'
-	ynh_exec_warn_less ynh_exec_as $app env $ynh_node_load_PATH $ynh_npm install --no-save ep_spellcheck@${ep_spellcheck_version}
-	# Framapad - Add support for Subscript and Superscript
-	ynh_exec_warn_less ynh_exec_as $app env $ynh_node_load_PATH $ynh_npm install --no-save ep_subscript_and_superscript@${ep_subscript_and_superscript_version}
 	# Framapad - User Pad Contents font size can be set in settings, this does not effect other peoples views
 	ynh_exec_warn_less ynh_exec_as $app env $ynh_node_load_PATH $ynh_npm install --no-save ep_font_size@${ep_font_size_version}
 popd
