@@ -151,7 +151,7 @@ then
         ynh_script_progression --message="Uninstalling ep_table_of_contents..." --weight=90
         ynh_exec_warn_less ynh_exec_as $app env $ynh_node_load_PATH $ynh_npm uninstall ep_table_of_contents 
     fi
-then
+fi
 
 ynh_script_progression --message="Installing Etherpad plugins..." --weight=90
 
