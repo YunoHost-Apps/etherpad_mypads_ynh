@@ -157,8 +157,6 @@ pushd "$install_dir"
 	ynh_exec_warn_less ynh_exec_as $app env $ynh_node_load_PATH $ynh_npm install --no-save ep_align@${ep_align_version}
 	# Framapad - Adds author names to span titles
 	ynh_exec_warn_less ynh_exec_as $app env $ynh_node_load_PATH $ynh_npm install --no-save ep_author_hover@${ep_author_hover_version}
-	# Framapad - Adds comments on sidebar and link it to the text.
-	ynh_exec_warn_less ynh_exec_as $app env $ynh_node_load_PATH $ynh_npm install --no-save ep_comments_page@${ep_comments_page_version}
 	# Framapad - Delete pads which were never edited
 	ynh_exec_warn_less ynh_exec_as $app env $ynh_node_load_PATH $ynh_npm install --no-save ep_delete_empty_pads@${ep_delete_empty_pads_version}
 	# Framapad - User Pad Contents font size can be set in settings, this does not effect other peoples views
