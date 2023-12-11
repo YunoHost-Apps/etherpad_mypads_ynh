@@ -148,12 +148,14 @@ if ynh_compare_current_package_version --comparison lt --version 1.9.1~ynh2
 then
     if ynh_exec_as $app env $ynh_node_load_PATH $ynh_npm ls 2>/dev/null | grep -q ep_table_of_contents
     then
-        ynh_script_progression --message="Uninstalling ep_table_of_contents..." --weight=90
-        ynh_exec_warn_less ynh_exec_as $app env $ynh_node_load_PATH $ynh_npm uninstall ep_table_of_contents 
+        ynh_script_progression --message="Uninstalling ep_table_of_contents..." --weight=2
+        pushd "$install_dir"
+            ynh_exec_warn_less ynh_exec_as $app env $ynh_node_load_PATH $ynh_npm uninstall ep_table_of_contents 
+        popd
     fi
 fi
 
-ynh_script_progression --message="Installing Etherpad plugins..." --weight=90
+ynh_script_progression --message="Installing Etherpad plugins..." --weight=10
 
 pushd "$install_dir"
 	# Add Left/Center/Right/Justify to lines of text in a pad
