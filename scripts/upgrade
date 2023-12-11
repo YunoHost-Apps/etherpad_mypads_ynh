@@ -140,15 +140,10 @@ chmod 600 "$install_dir/credentials.json"
 chown $app:$app "$install_dir/credentials.json"
 
 #=================================================
-# SETUP SYSTEMD
-#=================================================
-ynh_script_progression --message="Upgrading systemd configuration..." --weight=2
-
-ynh_add_systemd_config
-
-#=================================================
 # INSTALL ETHERPAD'S PLUGINS
 #=================================================
+
+
 ynh_script_progression --message="Installing Etherpad plugins..." --weight=90
 
 pushd "$install_dir"
@@ -200,26 +195,22 @@ then
 fi
 
 #=================================================
-# GENERIC FINALIZATION
+# SETUP SYSTEMD
 #=================================================
-# SETUP LOGROTATE
-#=================================================
-ynh_script_progression --message="Upgrading logrotate configuration..." --weight=2
+ynh_script_progression --message="Configuring systemd service..." --weight=2
+
+ynh_add_systemd_config
+
+# Integrate in YunoHost
+yunohost service add $app --description="Collaborative editor" --log="/var/log/$app/etherpad.log"
 
 # Use logrotate to manage app-specific logfile(s)
 ynh_use_logrotate --non-append --specific_user=$app/$app
 
 #=================================================
-# INTEGRATE SERVICE IN YUNOHOST
-#=================================================
-ynh_script_progression --message="Integrating service in YunoHost..." --weight=1
-
-yunohost service add $app --description="Collaborative editor" --log="/var/log/$app/etherpad.log"
-
-#=================================================
 # START SYSTEMD SERVICE
 #=================================================
-ynh_script_progression --message="Starting a systemd service..." --weight=9
+ynh_script_progression --message="Starting systemd service..." --weight=9
 
 ynh_systemd_action --service_name=$app --action=restart --line_match="You can access your Etherpad instance at" --log_path="/var/log/$app/etherpad.log" --timeout="120"
 
