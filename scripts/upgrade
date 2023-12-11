@@ -55,6 +55,11 @@ if [ -z "${path:-}" ]; then
 	ynh_app_setting_set --app=$app --key=path --value=$path
 fi
 
+if [ -z "${password:-}" ]; then
+	password=$(ynh_string_random --length=32)
+	ynh_app_setting_set --app=$app --key=password --value="$password"
+fi
+
 # Support full Unicode in MySQL databases
 ynh_mysql_connect_as --user=$db_user --password="$db_pwd" --database=$db_name \
     <<< "ALTER DATABASE $db_name CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;"

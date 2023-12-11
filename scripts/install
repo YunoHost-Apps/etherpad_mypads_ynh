@@ -7,6 +7,9 @@ fi
 source _common.sh
 source /usr/share/yunohost/helpers
 
+# Save the passord (not saved automatically by the core)
+ynh_app_setting_set --app=$app --key=password --value="$password"
+
 #=================================================
 # INSTALL DEPENDENCIES
 #=================================================
