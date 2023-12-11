@@ -1,43 +1,7 @@
 #!/bin/bash
 
-#=================================================
-# GENERIC START
-#=================================================
-# IMPORT GENERIC HELPERS
-#=================================================
-
 source _common.sh
 source /usr/share/yunohost/helpers
-
-#=================================================
-# LOAD SETTINGS
-#=================================================
-ynh_script_progression --message="Loading installation settings..." --weight=20
-
-export=$(ynh_app_setting_get --app=$app --key=export)
-password=$(ynh_app_setting_get --app=$app --key=password)
-mypads=$(ynh_app_setting_get --app=$app --key=mypads)
-useldap=$(ynh_app_setting_get --app=$app --key=useldap)
-abiword=$(ynh_app_setting_get --app=$app --key=abiword)
-overwrite_settings=$(ynh_app_setting_get --app=$app --key=overwrite_settings)
-overwrite_credentials=$(ynh_app_setting_get --app=$app --key=overwrite_credentials)
-overwrite_nginx=$(ynh_app_setting_get --app=$app --key=overwrite_nginx)
-overwrite_systemd=$(ynh_app_setting_get --app=$app --key=overwrite_systemd)
-
-# Optional parameters from config-panel feature
-pad_config_nocolors=$(ynh_app_setting_get --app=$app --key=pad_config_nocolors)
-pad_config_showlinenumbers=$(ynh_app_setting_get --app=$app --key=pad_config_showlinenumbers)
-pad_config_chatandusers=$(ynh_app_setting_get --app=$app --key=pad_config_chatandusers)
-pad_config_alwaysshowchat=$(ynh_app_setting_get --app=$app --key=pad_config_alwaysshowchat)
-pad_config_show_markdown=$(ynh_app_setting_get --app=$app --key=pad_config_show_markdown)
-
-#=================================================
-# CHECK VERSION
-#=================================================
-ynh_script_progression --message="Checking version..." --weight=1
-
-# Wait for etherpad to be fully started
-ynh_systemd_action --action=restart --line_match="You can access your Etherpad instance at" --log_path="/var/log/$app/etherpad.log" --timeout="120"
 
 upgrade_type=$(ynh_check_app_version_changed)
 
@@ -45,6 +9,9 @@ upgrade_type=$(ynh_check_app_version_changed)
 # ACTIVATE MAINTENANCE MODE
 #=================================================
 ynh_script_progression --message="Activating maintenance mode..." --weight=2
+
+# Wait for etherpad to be fully started # (... but why ???)
+ynh_systemd_action --action=restart --line_match="You can access your Etherpad instance at" --log_path="/var/log/$app/etherpad.log" --timeout="120"
 
 ynh_maintenance_mode_ON
 
@@ -62,73 +29,30 @@ ynh_systemd_action --service_name=$app --action="stop"
 #=================================================
 ynh_script_progression --message="Ensuring downward compatibility..." --weight=2
 
-# If abiword setting doesn't exist
-if [ -z "${abiword:-}" ]; then
-	abiword=0
-	ynh_app_setting_set --app=$app --key=abiword --value=$abiword
-fi
-
-# If abiword setting exists
-if [ -n "${abiword:-}" ]; then
-	if [ $abiword -eq 1 ]; then
-		export=abiword
-	fi
-	ynh_app_setting_set --app=$app --key=export --value=$export
-	ynh_app_setting_delete --app=$app --key=abiword
-fi
-
 if [ -z "${language:-}" ]; then
     # If upgrading from a version which doesn't support translations, set language to English by default
     language=en
     ynh_app_setting_set --app=$app --key=language --value=$language
 fi
 
-# If export setting doesn't exist
 if [ -z "${export:-}" ]; then
 	export=none
 	ynh_app_setting_set --app=$app --key=export --value=$export
 fi
 
-# If mypads setting doesn't exist
 if [ -z "${mypads:-}" ]; then
 	mypads=1
 	ynh_app_setting_set --app=$app --key=mypads --value=$mypads
 fi
 
-# If useldap setting doesn't exist
 if [ -z "${useldap:-}" ]; then
 	useldap=0
 	ynh_app_setting_set --app=$app --key=useldap --value=$useldap
 fi
 
-# If path setting doesn't exist
 if [ -z "${path:-}" ]; then
 	path="/"
 	ynh_app_setting_set --app=$app --key=path --value=$path
-fi
-
-# If overwrite_settings doesn't exist, create it
-if [ -z "${overwrite_settings:-}" ]; then
-	overwrite_settings=1
-	ynh_app_setting_set --app=$app --key=overwrite_settings --value=$overwrite_settings
-fi
-
-# If overwrite_credentials doesn't exist, create it
-if [ -z "${overwrite_credentials:-}" ]; then
-	overwrite_credentials=1
-	ynh_app_setting_set --app=$app --key=overwrite_credentials --value=$overwrite_credentials
-fi
-
-# If overwrite_nginx doesn't exist, create it
-if [ -z "${overwrite_nginx:-}" ]; then
-	overwrite_nginx=1
-	ynh_app_setting_set --app=$app --key=overwrite_nginx --value=$overwrite_nginx
-fi
-
-# If overwrite_systemd doesn't exist, create it
-if [ -z "${overwrite_systemd:-}" ]; then
-	overwrite_systemd=1
-	ynh_app_setting_set --app=$app --key=overwrite_systemd --value=$overwrite_systemd
 fi
 
 # Support full Unicode in MySQL databases
@@ -163,11 +87,7 @@ ynh_use_nodejs
 #=================================================
 ynh_script_progression --message="Upgrading NGINX web server configuration..." --weight=2
 
-# Overwrite the NGINX configuration only if it's allowed
-if [ $overwrite_nginx -eq 1 ]
-then
-	ynh_add_nginx_config
-fi
+ynh_add_nginx_config
 
 #=================================================
 # SPECIFIC UPGRADE
@@ -219,11 +139,7 @@ chown $app:$app "$install_dir/credentials.json"
 #=================================================
 ynh_script_progression --message="Upgrading systemd configuration..." --weight=2
 
-# Create a dedicated systemd config
-if [ $overwrite_systemd -eq 1 ]
-then
-	ynh_add_systemd_config
-fi
+ynh_add_systemd_config
 
 #=================================================
 # INSTALL ETHERPAD'S PLUGINS
