@@ -144,15 +144,15 @@ chown $app:$app "$install_dir/credentials.json"
 #=================================================
 
 # If upgrading from an old version and table of content is there, remove it
-if ynh_compare_current_package_version --comparison lt --version 1.9.1~ynh2
+if ynh_compare_current_package_version --comparison lt --version 1.9.1~ynh3
 then
+    pushd "$install_dir"
     if ynh_exec_as $app env $ynh_node_load_PATH $ynh_npm ls 2>/dev/null | grep -q ep_table_of_contents
     then
         ynh_script_progression --message="Uninstalling ep_table_of_contents..." --weight=2
-        pushd "$install_dir"
             ynh_exec_warn_less ynh_exec_as $app env $ynh_node_load_PATH $ynh_npm uninstall ep_table_of_contents 
-        popd
     fi
+    popd
 fi
 
 ynh_script_progression --message="Installing Etherpad plugins..." --weight=10
