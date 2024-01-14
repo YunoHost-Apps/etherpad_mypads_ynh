@@ -25,7 +25,7 @@ ldap = false
 
 sso = false
 
-disk = "50M"
+disk = "200M"
 ram.build = "1500M"
 ram.runtime = "50M"
 
