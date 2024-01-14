@@ -150,7 +150,7 @@ then
     if ynh_exec_as $app env $ynh_node_load_PATH $ynh_npm ls 2>/dev/null | grep -q ep_table_of_contents
     then
         ynh_script_progression --message="Uninstalling ep_table_of_contents..." --weight=2
-            ynh_exec_warn_less ynh_exec_as $app env $ynh_node_load_PATH $ynh_npm uninstall ep_table_of_contents 
+        ynh_exec_warn_less ynh_exec_as $app env $ynh_node_load_PATH $ynh_npm uninstall ep_table_of_contents
     fi
     popd
 fi
