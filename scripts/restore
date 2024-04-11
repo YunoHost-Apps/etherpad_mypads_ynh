@@ -6,7 +6,6 @@ source /usr/share/yunohost/helpers
 #=================================================
 # RESTORE THE APP MAIN DIR
 #=================================================
-#
 ynh_script_progression --message="Restoring the app main directory..." --weight=5
 
 ynh_restore_file --origin_path="$install_dir"
@@ -28,7 +27,11 @@ chown $app:$app "$install_dir/credentials.json"
 ynh_script_progression --message="Restoring system configurations related to $app..."
 
 ynh_install_nodejs --nodejs_version=$nodejs_version
-ynh_use_nodejs
+
+pushd $install_dir
+	ynh_use_nodejs
+	ynh_exec_warn_less npm install pnpm -g
+popd
 
 ynh_restore_file --origin_path="/etc/nginx/conf.d/$domain.d/$app.conf"
 
