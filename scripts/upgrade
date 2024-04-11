@@ -101,8 +101,7 @@ chown $app -R /var/log/$app
 #=================================================
 # CONFIGURE ETHERPAD
 #=================================================
-
-ynh_script_progression --message="Configure etherpad..."
+ynh_script_progression --message="Configure $app..."
 
 abiword_path="null"
 soffice_path="null"
@@ -149,7 +148,7 @@ chown $app:$app "$install_dir/credentials.json"
 #    popd
 #fi
 
-ynh_script_progression --message="Installing Etherpad plugins..." --weight=10
+#ynh_script_progression --message="Installing Etherpad plugins..." --weight=10
 
 #pushd "$install_dir"
 #	ynh_exec_warn_less npm install pnpm -g
