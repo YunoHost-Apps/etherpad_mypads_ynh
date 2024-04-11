@@ -3,8 +3,6 @@
 source _common.sh
 source /usr/share/yunohost/helpers
 
-upgrade_type=$(ynh_check_app_version_changed)
-
 #=================================================
 # ACTIVATE MAINTENANCE MODE
 #=================================================
@@ -67,14 +65,10 @@ ynh_mysql_connect_as --user=$db_user --password="$db_pwd" --database=$db_name \
 #=================================================
 # DOWNLOAD, CHECK AND UNPACK SOURCE
 #=================================================
+ynh_script_progression --message="Upgrading source files..." --weight=4
 
-if [ "$upgrade_type" == "UPGRADE_APP" ]
-then
-	ynh_script_progression --message="Upgrading source files..." --weight=4
-
-	# Download, check integrity, uncompress and patch the source from app.src
-	ynh_setup_source --dest_dir="$install_dir" --keep="settings.json credentials.json"
-fi
+# Download, check integrity, uncompress and patch the source from app.src
+ynh_setup_source --dest_dir="$install_dir" --keep="settings.json credentials.json"
 
 chmod -R o-rwx "$install_dir"
 chown -R $app:$app "$install_dir"
@@ -192,7 +186,8 @@ popd
 ynh_script_progression --message="Upgrading Etherpad..." --weight=10
 
 pushd $install_dir
-	ynh_exec_warn_less ynh_exec_as $app env $ynh_node_load_PATH ETHERPAD_PRODUCTION=true src/bin/installDeps.sh
+	ynh_exec_warn_less npm install pnpm -g
+	ynh_exec_warn_less ynh_exec_as $app env $ynh_node_load_PATH ETHERPAD_PRODUCTION=true bin/installDeps.sh
 popd
 
 #=================================================

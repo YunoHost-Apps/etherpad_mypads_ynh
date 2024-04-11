@@ -130,7 +130,8 @@ popd
 ynh_script_progression --message="Installing Etherpad..." --weight=90
 
 pushd $install_dir
- 	ynh_exec_warn_less ynh_exec_as $app env $ynh_node_load_PATH ETHERPAD_PRODUCTION=true src/bin/installDeps.sh
+	ynh_exec_warn_less npm install pnpm -g
+ 	ynh_exec_warn_less ynh_exec_as $app env $ynh_node_load_PATH ETHERPAD_PRODUCTION=true bin/installDeps.sh
 popd
 
 #=================================================
