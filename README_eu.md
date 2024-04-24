@@ -1,0 +1,65 @@
+<!--
+Ohart ongi: README hau automatikoki sortu da <https://github.com/YunoHost/apps/tree/master/tools/readme_generator>ri esker
+EZ editatu eskuz.
+-->
+
+# Etherpad MyPads YunoHost-erako
+
+[![Integrazio maila](https://dash.yunohost.org/integration/etherpad_mypads.svg)](https://dash.yunohost.org/appci/app/etherpad_mypads) ![Funtzionamendu egoera](https://ci-apps.yunohost.org/ci/badges/etherpad_mypads.status.svg) ![Mantentze egoera](https://ci-apps.yunohost.org/ci/badges/etherpad_mypads.maintain.svg)
+
+[![Instalatu Etherpad MyPads YunoHost-ekin](https://install-app.yunohost.org/install-with-yunohost.svg)](https://install-app.yunohost.org/?app=etherpad_mypads)
+
+*[Irakurri README hau beste hizkuntzatan.](./ALL_README.md)*
+
+> *Pakete honek Etherpad MyPads YunoHost zerbitzari batean azkar eta zailtasunik gabe instalatzea ahalbidetzen dizu.*  
+> *YunoHost ez baduzu, kontsultatu [gida](https://yunohost.org/install) nola instalatu ikasteko.*
+
+## Aurreikuspena
+
+Etherpad is a real-time collaborative editor scalable to thousands of simultaneous real time users. It provides full data export capabilities, and runs on your server, under your control.
+
+This version of Etherpad is preconfigured with a collection of plugins: 
+
+- [ep_mypads](https://www.npmjs.com/package/ep_mypads) - *Groups and private pads for etherpad*
+- [ep_align](https://www.npmjs.com/package/ep_align) - *Add Left/Center/Right/Justify alignment*
+- [ep_author_hover](https://www.npmjs.com/package/ep_author_hover) - *Display author names when hovereing text*
+- [ep_comments_page](https://www.npmjs.com/package/ep_comments_page) - *Add comments on sidebar and link it to the text.*
+- [ep_countable](https://www.npmjs.com/package/ep_countable) - *Add paragraphs, words and characters count*
+- [ep_delete_empty_pads](https://www.npmjs.com/package/ep_delete_empty_pads) - *Delete pads which were never edited*
+- [ep_font_color](https://www.npmjs.com/package/ep_font_color) - *Be able to change font color*
+- [ep_font_size](https://www.npmjs.com/package/ep_font_size) - *Be able to change font size*
+- [ep_headings2](https://www.npmjs.com/package/ep_headings2) - *Be able to set text as headers*
+- [ep_markdown](https://www.npmjs.com/package/ep_markdown) - *Edit and export as Markdown*
+- [ep_spellcheck](https://www.npmjs.com/package/ep_spellcheck) - *Add spell checking*
+- [ep_subscript_and_superscript](https://www.npmjs.com/package/ep_subscript_and_superscript) - *Support for subscript and superscript*
+
+
+**Paketatutako bertsioa:** 1.9.5~ynh1
+
+**Demoa:** <https://video.etherpad.com>
+
+## Pantaila-argazkiak
+
+![Etherpad MyPads(r)en pantaila-argazkia](./doc/screenshots/etherpad_demo.gif)
+
+## Dokumentazioa eta baliabideak
+
+- Aplikazioaren webgune ofiziala: <http://etherpad.org>
+- Administratzaileen dokumentazio ofiziala: <http://etherpad.org/doc/v1.9.0>
+- Jatorrizko aplikazioaren kode-gordailua: <https://github.com/ether/etherpad-lite>
+- YunoHost Denda: <https://apps.yunohost.org/app/etherpad_mypads>
+- Eman errore baten berri: <https://github.com/YunoHost-Apps/etherpad_mypads_ynh/issues>
+
+## Garatzaileentzako informazioa
+
+Bidali `pull request`a [`testing` abarrera](https://github.com/YunoHost-Apps/etherpad_mypads_ynh/tree/testing).
+
+`testing` abarra probatzeko, ondorengoa egin:
+
+```bash
+sudo yunohost app install https://github.com/YunoHost-Apps/etherpad_mypads_ynh/tree/testing --debug
+edo
+sudo yunohost app upgrade etherpad_mypads -u https://github.com/YunoHost-Apps/etherpad_mypads_ynh/tree/testing --debug
+```
+
+**Informazio gehiago aplikazioaren paketatzeari buruz:** <https://yunohost.org/packaging_apps>
