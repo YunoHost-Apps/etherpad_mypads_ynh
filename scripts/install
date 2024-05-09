@@ -59,7 +59,7 @@ chown $app -R /var/log/$app
 #=================================================
 # ADD A CONFIGURATION
 #=================================================
-ynh_script_progression --message="Configure etherpad..."
+ynh_script_progression --message="Configure $app..."
 
 abiword_path="null"
 soffice_path="null"
@@ -90,13 +90,14 @@ chmod 600 "$install_dir/credentials.json"
 chown $app:$app "$install_dir/credentials.json"
 
 #=================================================
-# INSTALL ETHERPAD'S PLUGINS
+# INSTALL ETHERPAD
 #=================================================
-ynh_script_progression --message="Installing $app plugins..." --weight=90
+ynh_script_progression --message="Installing $app..." --weight=90
 
 pushd "$install_dir"
 	ynh_exec_warn_less npm install pnpm -g
-	ynh_exec_warn_less ynh_exec_as $app env $ynh_node_load_PATH pnpm run install-plugins \
+ 	ynh_exec_warn_less ynh_exec_as $app env $ynh_node_load_PATH ETHERPAD_PRODUCTION=true bin/installDeps.sh && \
+ 		pnpm run install-plugins \
 		ep_align@${ep_align_version} \
   		ep_author_hover@${ep_author_hover_version} \
   		ep_delete_empty_pads@${ep_delete_empty_pads_version} \
@@ -104,19 +105,9 @@ pushd "$install_dir"
   		ep_markdown@${ep_markdown_version} \
   		ep_font_size@${ep_font_size_version}
 	if [ $mypads -eq 1 ]; then
-		ynh_exec_warn_less ynh_exec_as $app env $ynh_node_load_PATH pnpm run install-plugins \
+		pnpm run install-plugins \
   		ep_mypads@${mypads_version}
 	fi
-popd
-
-#=================================================
-# INSTALL ETHERPAD
-#=================================================
-ynh_script_progression --message="Installing $app..." --weight=90
-
-pushd "$install_dir"
-	ynh_exec_warn_less npm install pnpm -g
- 	ynh_exec_warn_less ynh_exec_as $app env $ynh_node_load_PATH ETHERPAD_PRODUCTION=true bin/installDeps.sh
 popd
 
 #=================================================
