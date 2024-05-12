@@ -1,20 +1,20 @@
 <!--
-NOTA: Este README foi creado automáticamente por <https://github.com/YunoHost/apps/tree/master/tools/readme_generator>
-NON debe editarse manualmente.
+Este archivo README esta generado automaticamente<https://github.com/YunoHost/apps/tree/master/tools/readme_generator>
+No se debe editar a mano.
 -->
 
-# Etherpad MyPads para YunoHost
+# Etherpad MyPads para Yunohost
 
-[![Nivel de integración](https://dash.yunohost.org/integration/etherpad_mypads.svg)](https://dash.yunohost.org/appci/app/etherpad_mypads) ![Estado de funcionamento](https://ci-apps.yunohost.org/ci/badges/etherpad_mypads.status.svg) ![Estado de mantemento](https://ci-apps.yunohost.org/ci/badges/etherpad_mypads.maintain.svg)
+[![Nivel de integración](https://dash.yunohost.org/integration/etherpad_mypads.svg)](https://dash.yunohost.org/appci/app/etherpad_mypads) ![Estado funcional](https://ci-apps.yunohost.org/ci/badges/etherpad_mypads.status.svg) ![Estado En Mantención](https://ci-apps.yunohost.org/ci/badges/etherpad_mypads.maintain.svg)
 
-[![Instalar Etherpad MyPads con YunoHost](https://install-app.yunohost.org/install-with-yunohost.svg)](https://install-app.yunohost.org/?app=etherpad_mypads)
+[![Instalar Etherpad MyPads con Yunhost](https://install-app.yunohost.org/install-with-yunohost.svg)](https://install-app.yunohost.org/?app=etherpad_mypads)
 
-*[Le este README en outros idiomas.](./ALL_README.md)*
+*[Leer este README en otros idiomas.](./ALL_README.md)*
 
-> *Este paquete permíteche instalar Etherpad MyPads de xeito rápido e doado nun servidor YunoHost.*  
-> *Se non usas YunoHost, le a [documentación](https://yunohost.org/install) para saber como instalalo.*
+> *Este paquete le permite instalarEtherpad MyPads rapidamente y simplement en un servidor YunoHost.*  
+> *Si no tiene YunoHost, visita [the guide](https://yunohost.org/install) para aprender como instalarla.*
 
-## Vista xeral
+## Descripción general
 
 Etherpad is a real-time collaborative editor scalable to thousands of simultaneous real time users. It provides full data export capabilities, and runs on your server, under your control.
 
@@ -34,32 +34,32 @@ This version of Etherpad is preconfigured with a collection of plugins:
 - [ep_subscript_and_superscript](https://www.npmjs.com/package/ep_subscript_and_superscript) - *Support for subscript and superscript*
 
 
-**Versión proporcionada:** 2.0.3~ynh1
+**Versión actual:** 2.0.3~ynh1
 
 **Demo:** <https://video.etherpad.com>
 
-## Capturas de pantalla
+## Capturas
 
-![Captura de pantalla de Etherpad MyPads](./doc/screenshots/etherpad_demo.gif)
+![Captura de Etherpad MyPads](./doc/screenshots/etherpad_demo.gif)
 
-## Documentación e recursos
+## Documentaciones y recursos
 
-- Web oficial da app: <http://etherpad.org>
-- Documentación oficial para admin: <http://etherpad.org/doc/v1.9.0>
-- Repositorio de orixe do código: <https://github.com/ether/etherpad-lite>
-- Tenda YunoHost: <https://apps.yunohost.org/app/etherpad_mypads>
-- Informar dun problema: <https://github.com/YunoHost-Apps/etherpad_mypads_ynh/issues>
+- Sitio web oficial: <http://etherpad.org>
+- Documentación administrador oficial: <http://etherpad.org/doc/v1.9.0>
+- Repositorio del código fuente oficial de la aplicación : <https://github.com/ether/etherpad-lite>
+- Catálogo YunoHost: <https://apps.yunohost.org/app/etherpad_mypads>
+- Reportar un error: <https://github.com/YunoHost-Apps/etherpad_mypads_ynh/issues>
 
-## Info de desenvolvemento
+## Información para desarrolladores
 
-Envía a túa colaboración á [rama `testing`](https://github.com/YunoHost-Apps/etherpad_mypads_ynh/tree/testing).
+Por favor enviar sus correcciones a la [`branch testing`](https://github.com/YunoHost-Apps/etherpad_mypads_ynh/tree/testing
 
-Para probar a rama `testing`, procede deste xeito:
+Para probar la rama `testing`, sigue asÍ:
 
 ```bash
 sudo yunohost app install https://github.com/YunoHost-Apps/etherpad_mypads_ynh/tree/testing --debug
-ou
+o
 sudo yunohost app upgrade etherpad_mypads -u https://github.com/YunoHost-Apps/etherpad_mypads_ynh/tree/testing --debug
 ```
 
-**Máis info sobre o empaquetado da app:** <https://yunohost.org/packaging_apps>
+**Mas informaciones sobre el empaquetado de aplicaciones:** <https://yunohost.org/packaging_apps>

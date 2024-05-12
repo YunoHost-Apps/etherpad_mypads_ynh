@@ -3,7 +3,7 @@
 请勿手动编辑。
 -->
 
-# YunoHost 的 Etherpad MyPads
+# YunoHost 上的 Etherpad MyPads
 
 [![集成程度](https://dash.yunohost.org/integration/etherpad_mypads.svg)](https://dash.yunohost.org/appci/app/etherpad_mypads) ![工作状态](https://ci-apps.yunohost.org/ci/badges/etherpad_mypads.status.svg) ![维护状态](https://ci-apps.yunohost.org/ci/badges/etherpad_mypads.maintain.svg)
 
@@ -34,7 +34,7 @@ This version of Etherpad is preconfigured with a collection of plugins:
 - [ep_subscript_and_superscript](https://www.npmjs.com/package/ep_subscript_and_superscript) - *Support for subscript and superscript*
 
 
-**分发版本：** 1.9.5~ynh1
+**分发版本：** 2.0.3~ynh1
 
 **演示：** <https://video.etherpad.com>
 
