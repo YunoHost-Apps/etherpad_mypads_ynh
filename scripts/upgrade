@@ -145,7 +145,6 @@ pushd $install_dir
   		ep_author_hover@${ep_author_hover_version} \
   		ep_delete_empty_pads@${ep_delete_empty_pads_version} \
   		ep_headings2@${ep_headings2_version} \
-  		ep_markdown@${ep_markdown_version} \
   		ep_font_size@${ep_font_size_version}
 	if [ $mypads -eq 1 ]; then
 		ynh_exec_warn_less ynh_exec_as $app env $ynh_node_load_PATH pnpm run install-plugins \
