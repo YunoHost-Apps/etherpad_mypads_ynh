@@ -116,12 +116,12 @@ popd
 
 if [ $mypads -eq 1 ]
 then
-	ynh_script_progression --message="Tweaking MyPad configuration..." --weight=1
+	ynh_script_progression --message="Tweaking MyPads configuration..." --weight=1
 
 	# Add a link to Etherpad to allow anonymous pads creation from MyPads.
 	ynh_replace_string --match_string="^ *\"DESCRIPTION\": .*</ul>" --replace_string="&<a href=../>Pads anonymes</a>" --target_file=$install_dir/node_modules/ep_mypads/static/l10n/fr.json
 	ynh_replace_string --match_string="^ *\"DESCRIPTION\": .*</ul>" --replace_string="&<a href=../>Anonymous pads</a>" --target_file=$install_dir/node_modules/ep_mypads/static/l10n/en.json
-	# And a link to etherpad admin from Mypads.
+	# And a link to Etherpad admin from MyPads.
 	ynh_replace_string --match_string="^ *\"FOOTER\": .*2.0" --replace_string="& | <a href='../admin'>Etherpad admin</a>" --target_file=$install_dir/node_modules/ep_mypads/static/l10n/en.json
 	ynh_replace_string --match_string="^ *\"FOOTER\": .*2.0" --replace_string="& | <a href='../admin'>Etherpad admin</a>" --target_file=$install_dir/node_modules/ep_mypads/static/l10n/fr.json
 
