@@ -98,15 +98,15 @@ pushd "$install_dir"
 	ynh_exec_warn_less npm install pnpm -g
  	ynh_exec_warn_less ynh_exec_as $app env $ynh_node_load_PATH ETHERPAD_PRODUCTION=true bin/installDeps.sh && \
  		ynh_exec_warn_less ynh_exec_as $app env $ynh_node_load_PATH pnpm run install-plugins \
-		ep_align@${ep_align_version} \
-  		ep_author_hover@${ep_author_hover_version} \
-  		ep_delete_empty_pads@${ep_delete_empty_pads_version} \
-  		ep_headings2@${ep_headings2_version} \
-  		ep_font_size@${ep_font_size_version}
-	if [ $mypads -eq 1 ]; then
-		ynh_exec_warn_less ynh_exec_as $app env $ynh_node_load_PATH pnpm run install-plugins \
-  		ep_mypads@${mypads_version}
-	fi
+			ep_align@${ep_align_version} \
+  			ep_author_hover@${ep_author_hover_version} \
+  			ep_delete_empty_pads@${ep_delete_empty_pads_version} \
+  			ep_headings2@${ep_headings2_version} \
+  			ep_font_size@${ep_font_size_version}
+		if [ $mypads -eq 1 ]; then
+			ynh_exec_warn_less ynh_exec_as $app env $ynh_node_load_PATH pnpm run install-plugins \
+  				ep_mypads@${mypads_version}
+		fi
 popd
 
 #=================================================
