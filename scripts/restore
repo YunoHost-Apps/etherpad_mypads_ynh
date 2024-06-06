@@ -29,6 +29,7 @@ ynh_script_progression --message="Restoring system configurations related to $ap
 ynh_install_nodejs --nodejs_version=$nodejs_version
 
 pushd "$install_dir"
+	ynh_use_nodejs
 	ynh_exec_warn_less env $ynh_node_load_PATH corepack enable && COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack prepare pnpm@latest --activate
 popd
 
