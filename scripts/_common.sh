@@ -11,12 +11,12 @@ nodejs_version=20
 # This variable is mostly used to force an upgrade of the package in case of new versions of MyPads.
 mypads_version=1.7.24
 
-# Plugin versions
-ep_align_version=0.3.94
+# Plugin versions -> https://static.etherpad.org/index.html
+ep_align_version=0.3.95
 ep_author_hover_version=0.3.55
 ep_delete_empty_pads_version=0.0.10
-ep_headings2_version=0.2.62
-ep_font_size_version=0.4.59
+ep_headings2_version=0.2.63
+ep_font_size_version=0.4.60
 
 #=================================================
 # PERSONAL HELPERS
