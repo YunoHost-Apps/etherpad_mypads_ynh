@@ -140,7 +140,7 @@ ynh_script_progression --message="Upgrading $app..." --weight=10
 pushd $install_dir
 	ynh_exec_warn_less env $ynh_node_load_PATH corepack enable && corepack prepare pnpm@latest --activate
 	ynh_exec_warn_less ynh_exec_as $app env $ynh_node_load_PATH ETHERPAD_PRODUCTION=true COREPACK_ENABLE_DOWNLOAD_PROMPT=0 bin/installDeps.sh && \
- 		ynh_exec_warn_less ynh_exec_as $app env $ynh_node_load_PATH COREPACK_ENABLE_DOWNLOAD_PROMPT=0 pnpm run install-plugins \
+ 		ynh_exec_warn_less ynh_exec_as $app env $ynh_node_load_PATH pnpm run install-plugins \
 		ep_align@${ep_align_version} \
   		ep_author_hover@${ep_author_hover_version} \
   		ep_delete_empty_pads@${ep_delete_empty_pads_version} \
