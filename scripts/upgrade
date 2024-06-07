@@ -147,7 +147,7 @@ pushd $install_dir
   		ep_headings2@${ep_headings2_version} \
   		ep_font_size@${ep_font_size_version}
 	if [ $mypads -eq 1 ]; then
-		ynh_exec_warn_less ynh_exec_as $app env $ynh_node_load_PATH COREPACK_ENABLE_DOWNLOAD_PROMPT=0 pnpm run install-plugins \
+		ynh_exec_warn_less ynh_exec_as $app env $ynh_node_load_PATH pnpm run install-plugins \
   		ep_mypads@${mypads_version}
 	fi
 popd
