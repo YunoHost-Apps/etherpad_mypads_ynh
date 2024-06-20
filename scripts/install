@@ -155,7 +155,7 @@ then
 	ynh_mysql_connect_as --user=$db_user --password=$db_pwd --database=$db_name < "../conf/lang_mypads.sql"
 
 	# Wait for etherpad to be fully started
-	ynh_systemd_action --action=restart --line_match="Your Etherpad version is" --log_path="/var/log/$app/etherpad.log"
+	ynh_systemd_action --action=restart --line_match="Your Etherpad version is" --log_path="systemd"
 fi
 
 #=================================================

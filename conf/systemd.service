@@ -11,8 +11,6 @@ Environment=ETHERPAD_PRODUCTION=true
 Environment="__YNH_NODE_LOAD_PATH__"
 Environment="NODE_ENV=production"
 ExecStart=__INSTALL_DIR__/bin/run.sh
-#StandardOutput=append:/var/log/__APP__/etherpad.log
-#StandardError=inherit
 Restart=always
 
 # Sandboxing options to harden security

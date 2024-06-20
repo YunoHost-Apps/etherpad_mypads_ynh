@@ -65,7 +65,7 @@ ynh_mysql_connect_as --user=$db_user --password=$db_pwd --database=$db_name < ./
 #=================================================
 ynh_script_progression --message="Reloading NGINX web server and $app's service..."
 
-ynh_systemd_action --service_name=$app --action=restart --line_match="Your Etherpad version is" --log_path="/var/log/$app/etherpad.log"
+ynh_systemd_action --service_name=$app --action=restart --line_match="Your Etherpad version is" --log_path="systemd"
 
 ynh_systemd_action --action=reload --service_name=nginx
 
