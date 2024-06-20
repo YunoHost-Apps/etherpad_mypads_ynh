@@ -147,7 +147,7 @@ ynh_use_logrotate --specific_user=$app/$app
 ynh_script_progression --message="Starting systemd service..." --weight=20
 
 # Start a systemd service
-ynh_systemd_action --service_name=$app --action=restart --line_match="Your Etherpad version is" --log_path="/var/log/$app/etherpad.log"
+ynh_systemd_action --service_name=$app --action=restart --log_path=systemd --line_match="Your Etherpad version is"
 
 if [ $mypads -eq 1 ]
 then
@@ -155,7 +155,7 @@ then
 	ynh_mysql_connect_as --user=$db_user --password=$db_pwd --database=$db_name < "../conf/lang_mypads.sql"
 
 	# Wait for etherpad to be fully started
-	ynh_systemd_action --action=restart --line_match="Your Etherpad version is" --log_path="systemd"
+	ynh_systemd_action --action=restart --log_path=systemd --line_match="Your Etherpad version is"
 fi
 
 #=================================================
