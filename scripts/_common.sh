@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #=================================================
-# COMMON VARIABLES
+# COMMON VARIABLES AND CUSTOM HELPERS
 #=================================================
 
 # NodeJS version
@@ -24,17 +24,9 @@ ep_spellcheck_version=0.0.43
 ep_subscript_and_superscript_version=0.2.47
 ep_font_size_version=0.4.44
 
-#=================================================
-# PERSONAL HELPERS
-#=================================================
-
-#=================================================
-# EXPERIMENTAL HELPERS
-#=================================================
-
 ynh_maintenance_mode_ON () {
 	mkdir -p /var/www/html/
-	
+
 	# Create an html to serve as maintenance notice
 	echo "<!DOCTYPE html>
 <html>
@@ -94,7 +86,3 @@ ynh_maintenance_mode_OFF () {
 
 	systemctl reload nginx
 }
-
-#=================================================
-# FUTURE OFFICIAL HELPERS
-#=================================================
