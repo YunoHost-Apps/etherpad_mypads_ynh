@@ -102,9 +102,9 @@ then
 fi
 
 #=================================================
-# SETUP SYSTEMD
+# SYSTEM CONFIGURATION
 #=================================================
-ynh_script_progression "Configuring systemd service..."
+ynh_script_progression "Adding system configurations related to $app..."
 
 ynh_add_config_nginx
 
