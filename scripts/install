@@ -1,9 +1,5 @@
 #!/bin/bash
 
-if ynh_in_ci_tests; then
-	sleep 10
-fi
-
 source _common.sh
 source /usr/share/yunohost/helpers
 
