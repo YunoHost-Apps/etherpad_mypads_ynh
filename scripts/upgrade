@@ -149,7 +149,7 @@ pushd "$install_dir"
   		ep_font_size@${ep_font_size_version}
 	if [ $mypads -eq 1 ]; then
 			ynh_hide_warnings ynh_exec_as_app pnpm run install-plugins ep_mypads@${mypads_version}
-	f
+	fi
 popd
 
 #=================================================
