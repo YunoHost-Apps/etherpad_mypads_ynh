@@ -22,6 +22,13 @@ ynh_nodejs_install
 ynh_script_progression "Initializing MySQL database..."
 
 echo "ALTER DATABASE $db_name CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci" | ynh_mysql_db_shell abiword_path="\"$(which abiword)\""
+
+abiword_path="null"
+soffice_path="null"
+
+if [[ "$export" == "abiword" ]]
+then
+    abiword_path="\"$(which abiword)\""
 elif [[ "$export" == "libreoffice" ]]
 then
     soffice_path="\"$(which soffice)\""
