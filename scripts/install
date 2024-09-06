@@ -20,6 +20,23 @@ ynh_script_progression "Initializing MySQL database..."
 echo "ALTER DATABASE $db_name CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci" | ynh_mysql_connect_as --user=$db_user --password=$db_pwd --database=$db_name
 
 #=================================================
+# DOWNLOAD, CHECK AND UNPACK SOURCE
+#=================================================
+ynh_script_progression --message="Setting up source files..." --weight=4
+
+ynh_setup_source --dest_dir="$install_dir"
+
+#=================================================
+# HANDLE LOG FILES AND LOGROTATE
+#=================================================
+ynh_script_progression --message="Configuring log rotation..." --weight=1
+
+# Create log directory
+mkdir -p /var/log/$app
+touch /var/log/$app/etherpad.log
+chown $app -R /var/log/$app
+
+#=================================================
 # ADD A CONFIGURATION
 #=================================================
 ynh_script_progression --message="Configure $app..."
@@ -111,6 +128,8 @@ fi
 # SETUP SYSTEMD
 #=================================================
 ynh_script_progression "Configuring systemd service..."
+
+ynh_add_nginx_config
 
 ynh_config_add_systemd
 
