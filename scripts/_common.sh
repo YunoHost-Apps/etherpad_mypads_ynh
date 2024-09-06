@@ -11,18 +11,12 @@ nodejs_version=20
 # This variable is mostly used to force an upgrade of the package in case of new versions of MyPads.
 mypads_version=1.7.25
 
-# Plugin versions
+# Plugin versions -> https://static.etherpad.org/index.html
 ep_align_version=0.3.97
-ep_author_hover_version=0.3.37
-ep_comments_page_version=1.0.36
-ep_countable_version=0.0.13
+ep_author_hover_version=0.3.55
 ep_delete_empty_pads_version=0.0.10
-ep_font_color_version=0.0.88
 ep_headings2_version=0.2.65
-ep_markdown_version=1.0.1
-ep_spellcheck_version=0.0.60
-ep_subscript_and_superscript_version=0.3.8
-ep_font_size_version=0.4.46
+ep_font_size_version=0.4.60
 
 ynh_maintenance_mode_ON () {
 	mkdir -p /var/www/html/

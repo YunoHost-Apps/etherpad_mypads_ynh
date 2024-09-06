@@ -8,7 +8,8 @@ source /usr/share/yunohost/helpers
 #=================================================
 ynh_script_progression "Activating maintenance mode..."
 
-ynh_systemctl --action=restart --wait_until="You can access your Etherpad instance at" --log_path="/var/log/$app/etherpad.log" --timeout="120"
+# Wait for Etherpad to be fully started # (... but why ???)
+# ynh_systemctl --action=restart --line_match="Your Etherpad version is" --log_path="systemd"
 
 ynh_maintenance_mode_ON
 
@@ -42,9 +43,10 @@ ynh_mysql_db_shell <<< "ALTER DATABASE $db_name CHARACTER SET utf8mb4 COLLATE ut
 #=================================================
 # DOWNLOAD, CHECK AND UNPACK SOURCE
 #=================================================
+
 ynh_script_progression "Upgrading source files..."
 
-ynh_setup_source --dest_dir="$install_dir" --keep="settings.json credentials.json"
+ynh_setup_source --dest_dir="$install_dir" --full_replace --keep="settings.json credentials.json"
 
 #=================================================
 # UPGRADE DEPENDENCIES
@@ -56,7 +58,8 @@ ynh_nodejs_install
 #=================================================
 # CONFIGURE ETHERPAD
 #=================================================
-ynh_script_progression "Configure etherpad..."
+
+ynh_script_progression "Configure $app..."
 
 abiword_path="null"
 soffice_path="null"
@@ -80,12 +83,6 @@ fi
 
 ynh_config_add --template="settings.json" --destination="$install_dir/settings.json"
 ynh_config_add --template="credentials.json" --destination="$install_dir/credentials.json"
-
-#REMOVEME? Assuming the file is setup using ynh_config_add, the proper chmod/chowns are now already applied and it shouldn't be necessary to tweak perms | chmod 600 "$install_dir/settings.json"
-#REMOVEME? Assuming the file is setup using ynh_config_add, the proper chmod/chowns are now already applied and it shouldn't be necessary to tweak perms | chown $app:$app "$install_dir/settings.json"
-
-#REMOVEME? Assuming the file is setup using ynh_config_add, the proper chmod/chowns are now already applied and it shouldn't be necessary to tweak perms | chmod 600 "$install_dir/credentials.json"
-#REMOVEME? Assuming the file is setup using ynh_config_add, the proper chmod/chowns are now already applied and it shouldn't be necessary to tweak perms | chown $app:$app "$install_dir/credentials.json"
 
 #=================================================
 # INSTALL ETHERPAD'S PLUGINS
@@ -140,25 +137,35 @@ popd
 #=================================================
 ynh_script_progression "Upgrading Etherpad..."
 
-pushd $install_dir
-	ynh_hide_warnings ynh_exec_as_app ETHERPAD_PRODUCTION=true src/bin/installDeps.sh
+pushd "$install_dir"
+	ynh_hide_warnings ynh_exec_as_app corepack enable
+  ynh_hide_warnings ynh_exec_as_app corepack prepare pnpm@latest --activate
+ 	ynh_hide_warnings ynh_exec_as_app ETHERPAD_PRODUCTION=true bin/installDeps.sh
+  ynh_hide_warnings ynh_exec_as_app pnpm run install-plugins \
+			ep_align@${ep_align_version} \
+  		ep_author_hover@${ep_author_hover_version} \
+  		ep_delete_empty_pads@${ep_delete_empty_pads_version} \
+  		ep_headings2@${ep_headings2_version} \
+  		ep_font_size@${ep_font_size_version}
+	if [ $mypads -eq 1 ]; then
+			ynh_hide_warnings ynh_exec_as_app pnpm run install-plugins ep_mypads@${mypads_version}
+	f
 popd
 
 #=================================================
 # ADD MYPADS LINK
 #=================================================
 
-# FIXME: this is still supported but the recommendation is now to *always* re-setup the app sources wether or not the upstream sources changed
-if ynh_app_upstream_version_changed && [ $mypads -eq 1 ]
+if [ $mypads -eq 1 ]
 then
 	# Find the /div just after the field to open a pad in order to add a link to MyPads plugin.
 	sed -i '157i<center><br><font size="4"><a href="./mypads/" style="text-decoration: none; color: #555">MyPads</a></font></center>' $install_dir/src/templates/index.html
 fi
 
 #=================================================
-# SETUP SYSTEMD
+# REAPPLY SYSTEM CONFIGURATIONS
 #=================================================
-ynh_script_progression "Configuring systemd service..."
+ynh_script_progression "Upgrading system configurations related to $app..."
 
 ynh_config_add_nginx
 
@@ -175,7 +182,7 @@ ynh_config_add_fail2ban --logpath="/var/log/nginx/$domain-access.log" --failrege
 #=================================================
 ynh_script_progression "Starting systemd service..."
 
-ynh_systemctl --service=$app --action=restart --wait_until="You can access your Etherpad instance at" --log_path="/var/log/$app/etherpad.log" --timeout="120"
+ynh_systemctl --service=$app --action=restart --line_match="Your Etherpad version is" --log_path="systemd"
 
 #=================================================
 # DEACTIVE MAINTENANCE MODE

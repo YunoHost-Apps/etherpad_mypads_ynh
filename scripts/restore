@@ -6,7 +6,7 @@ source /usr/share/yunohost/helpers
 #=================================================
 # RESTORE THE APP MAIN DIR
 #=================================================
-#
+
 ynh_script_progression "Restoring the app main directory..."
 
 ynh_restore "$install_dir"
@@ -20,6 +20,11 @@ chmod 600 "$install_dir/credentials.json"
 ynh_script_progression "Restoring system configurations related to $app..."
 
 ynh_nodejs_install
+
+pushd "$install_dir"
+	ynh_hide_warnings ynh_exec_as_app corepack enable
+  ynh_hide_warnings ynh_exec_as_app corepack prepare pnpm@latest --activate
+popd
 
 ynh_restore "/etc/nginx/conf.d/$domain.d/$app.conf"
 
@@ -50,7 +55,7 @@ echo "ALTER DATABASE $db_name CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci" 
 #=================================================
 ynh_script_progression "Reloading NGINX web server and $app's service..."
 
-ynh_systemctl --service=$app --action=restart --wait_until="You can access your Etherpad instance at" --log_path="/var/log/$app/etherpad.log" --timeout="120"
+ynh_systemctl --service=$app --action=restart --line_match="Your Etherpad version is" --log_path="systemd"
 
 ynh_systemctl --action=reload --service=nginx
 
