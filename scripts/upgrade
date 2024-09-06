@@ -95,42 +95,10 @@ then
     if ynh_exec_as_app node_load_PATH npm ls 2>/dev/null | grep -q ep_table_of_contents
     then
         ynh_script_progression "Uninstalling ep_table_of_contents..."
-            ynh_hide_warnings ynh_exec_as_app node_load_PATH npm uninstall ep_table_of_contents
-
+        ynh_hide_warnings ynh_exec_as_app npm uninstall ep_table_of_contents
     fi
     popd
 fi
-
-ynh_script_progression "Installing Etherpad plugins..."
-
-pushd "$install_dir"
-	# Add Left/Center/Right/Justify to lines of text in a pad
-	ynh_hide_warnings ynh_exec_as_app node_load_PATH npm install --no-save ep_align@${ep_align_version}
-	# Framapad - Adds author names to span titles
-	ynh_hide_warnings ynh_exec_as_app node_load_PATH npm install --no-save ep_author_hover@${ep_author_hover_version}
-	# Framapad - Adds comments on sidebar and link it to the text.
-	ynh_hide_warnings ynh_exec_as_app node_load_PATH npm install --no-save ep_comments_page@${ep_comments_page_version}
-	# Framapad - Displays paragraphs, sentences, words and characters counts.
-	ynh_hide_warnings ynh_exec_as_app node_load_PATH npm install --no-save ep_countable@${ep_countable_version}
-	# Framapad - Delete pads which were never edited
-	ynh_hide_warnings ynh_exec_as_app node_load_PATH npm install --no-save ep_delete_empty_pads@${ep_delete_empty_pads_version}
-	# Framapad - Apply colors to fonts
-	ynh_hide_warnings ynh_exec_as_app node_load_PATH npm install --no-save ep_font_color@${ep_font_color_version}
-	# Framapad - Adds heading support to Etherpad Lite.
-	ynh_hide_warnings ynh_exec_as_app node_load_PATH npm install --no-save ep_headings2@${ep_headings2_version}
-	# Framapad - Edit and Export as Markdown in Etherpad
-	ynh_hide_warnings ynh_exec_as_app node_load_PATH npm install --no-save ep_markdown@${ep_markdown_version}
-	if [ $mypads -eq 1 ]; then
-		# Framapad - Groups and private pads for Etherpad
-		ynh_hide_warnings ynh_exec_as_app node_load_PATH npm install --no-save ep_mypads@${mypads_version}
-	fi
-	# Framapad - Add support to do 'Spell checking'
-	ynh_hide_warnings ynh_exec_as_app node_load_PATH npm install --no-save ep_spellcheck@${ep_spellcheck_version}
-	# Framapad - Add support for Subscript and Superscript
-	ynh_hide_warnings ynh_exec_as_app node_load_PATH npm install --no-save ep_subscript_and_superscript@${ep_subscript_and_superscript_version}
-	# Framapad - User Pad Contents font size can be set in settings, this does not effect other peoples views
-	ynh_hide_warnings ynh_exec_as_app node_load_PATH npm install --no-save ep_font_size@${ep_font_size_version}
-popd
 
 #=================================================
 # UPGRADE NPM MODULES
@@ -138,18 +106,18 @@ popd
 ynh_script_progression "Upgrading Etherpad..."
 
 pushd "$install_dir"
-	ynh_hide_warnings ynh_exec_as_app corepack enable
-  ynh_hide_warnings ynh_exec_as_app corepack prepare pnpm@latest --activate
- 	ynh_hide_warnings ynh_exec_as_app ETHERPAD_PRODUCTION=true bin/installDeps.sh
-  ynh_hide_warnings ynh_exec_as_app pnpm run install-plugins \
-			ep_align@${ep_align_version} \
-  		ep_author_hover@${ep_author_hover_version} \
-  		ep_delete_empty_pads@${ep_delete_empty_pads_version} \
-  		ep_headings2@${ep_headings2_version} \
-  		ep_font_size@${ep_font_size_version}
-	if [ $mypads -eq 1 ]; then
-			ynh_hide_warnings ynh_exec_as_app pnpm run install-plugins ep_mypads@${mypads_version}
-	fi
+    ynh_hide_warnings ynh_exec_as_app corepack enable
+    ynh_hide_warnings ynh_exec_as_app corepack prepare pnpm@latest --activate
+    ynh_hide_warnings ynh_exec_as_app ETHERPAD_PRODUCTION=true bin/installDeps.sh
+    ynh_hide_warnings ynh_exec_as_app pnpm run install-plugins \
+        ep_align@${ep_align_version} \
+        ep_author_hover@${ep_author_hover_version} \
+        ep_delete_empty_pads@${ep_delete_empty_pads_version} \
+        ep_headings2@${ep_headings2_version} \
+        ep_font_size@${ep_font_size_version}
+    if [ $mypads -eq 1 ]; then
+        ynh_hide_warnings ynh_exec_as_app pnpm run install-plugins ep_mypads@${mypads_version}
+    fi
 popd
 
 #=================================================
@@ -158,8 +126,8 @@ popd
 
 if [ $mypads -eq 1 ]
 then
-	# Find the /div just after the field to open a pad in order to add a link to MyPads plugin.
-	sed -i '157i<center><br><font size="4"><a href="./mypads/" style="text-decoration: none; color: #555">MyPads</a></font></center>' $install_dir/src/templates/index.html
+    # Find the /div just after the field to open a pad in order to add a link to MyPads plugin.
+    sed -i '157i<center><br><font size="4"><a href="./mypads/" style="text-decoration: none; color: #555">MyPads</a></font></center>' $install_dir/src/templates/index.html
 fi
 
 #=================================================
