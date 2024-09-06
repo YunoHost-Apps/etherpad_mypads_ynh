@@ -17,7 +17,7 @@ ynh_nodejs_install
 #=================================================
 ynh_script_progression "Initializing MySQL database..."
 
-echo "ALTER DATABASE $db_name CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci" | ynh_mysql_db_shell abiword_path="\"$(which abiword)\""
+echo "ALTER DATABASE $db_name CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci" | ynh_mysql_connect_as --user=$db_user --password=$db_pwd --database=$db_name
 
 #=================================================
 # ADD A CONFIGURATION
