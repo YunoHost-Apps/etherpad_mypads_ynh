@@ -8,7 +8,6 @@ source /usr/share/yunohost/helpers
 #=================================================
 ynh_script_progression "Activating maintenance mode..."
 
-# Wait for etherpad to be fully started # (... but why ???)
 ynh_systemctl --action=restart --wait_until="You can access your Etherpad instance at" --log_path="/var/log/$app/etherpad.log" --timeout="120"
 
 ynh_maintenance_mode_ON
@@ -25,61 +24,28 @@ ynh_systemctl --service=$app --action="stop"
 #=================================================
 ynh_script_progression "Ensuring downward compatibility..."
 
-if [ -z "${language:-}" ]; then
-    # If upgrading from a version which doesn't support translations, set language to English by default
-    language=en
-    ynh_app_setting_set --key=language --value=$language
-fi
+ynh_app_setting_set_default --key=anguage --value=en
 
-# FIXMEhelpers2.1: maybe replace with: ynh_app_setting_set_default --key=export --value=none
-if [ -z "${export:-}" ]; then
-	export=none
-	ynh_app_setting_set --key=export --value=$export
-fi
+ynh_app_setting_set_default --key=export --value=none
 
-# FIXMEhelpers2.1: maybe replace with: ynh_app_setting_set_default --key=mypads --value=1
-if [ -z "${mypads:-}" ]; then
-	mypads=1
-	ynh_app_setting_set --key=mypads --value=$mypads
-fi
+ynh_app_setting_set_default --key=mypads --value=1
 
-# FIXMEhelpers2.1: maybe replace with: ynh_app_setting_set_default --key=useldap --value=0
-if [ -z "${useldap:-}" ]; then
-	useldap=0
-	ynh_app_setting_set --key=useldap --value=$useldap
-fi
+ynh_app_setting_set_default --key=useldap --value=0
 
-# FIXMEhelpers2.1: maybe replace with: ynh_app_setting_set_default --key=path --value="/"
-if [ -z "${path:-}" ]; then
-	path="/"
-	ynh_app_setting_set --key=path --value=$path
-fi
+ynh_app_setting_set_default --key=path --value="/"
 
-# FIXMEhelpers2.1: maybe replace with: ynh_app_setting_set_default --key=password --value=$(ynh_string_random --length=32)
-if [ -z "${password:-}" ]; then
-	password=$(ynh_string_random --length=32)
-	ynh_app_setting_set --key=password --value="$password"
-fi
+ynh_app_setting_set_default --key=password --value=$(ynh_string_random --length=32)
 
 # Support full Unicode in MySQL databases
-ynh_mysql_db_shell \
-    <<< "ALTER DATABASE $db_name CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;"
+ynh_mysql_db_shell <<< "ALTER DATABASE $db_name CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;"
 
 #=================================================
 # DOWNLOAD, CHECK AND UNPACK SOURCE
 #=================================================
+ynh_script_progression "Upgrading source files..."
 
-# FIXME: this is still supported but the recommendation is now to *always* re-setup the app sources wether or not the upstream sources changed
-if ynh_app_upstream_version_changed
-then
-	ynh_script_progression "Upgrading source files..."
+ynh_setup_source --dest_dir="$install_dir" --keep="settings.json credentials.json"
 
-	# Download, check integrity, uncompress and patch the source from app.src
-	ynh_setup_source --dest_dir="$install_dir" --keep="settings.json credentials.json"
-fi
-
-#REMOVEME? Assuming the install dir is setup using ynh_setup_source, the proper chmod/chowns are now already applied and it shouldn't be necessary to tweak perms | chmod -R o-rwx "$install_dir"
-#REMOVEME? Assuming the install dir is setup using ynh_setup_source, the proper chmod/chowns are now already applied and it shouldn't be necessary to tweak perms | chown -R $app:$app "$install_dir"
 #=================================================
 # UPGRADE DEPENDENCIES
 #=================================================
@@ -88,24 +54,8 @@ ynh_script_progression "Upgrading dependencies..."
 ynh_nodejs_install
 
 #=================================================
-# NGINX CONFIGURATION
-#=================================================
-ynh_script_progression "Upgrading NGINX web server configuration..."
-
-ynh_config_add_nginx
-
-#=================================================
-# HANDLE LOG FILES AND LOGROTATE
-#=================================================
-ynh_script_progression "Configuring log rotation..."
-
-# Create log directory
-#REMOVEME? Assuming ynh_config_add_logrotate is called, the proper chmod/chowns are now already applied and it shouldn't be necessary to tweak perms | chown $app -R /var/log/$app
-
-#=================================================
 # CONFIGURE ETHERPAD
 #=================================================
-
 ynh_script_progression "Configure etherpad..."
 
 abiword_path="null"
@@ -191,7 +141,7 @@ popd
 ynh_script_progression "Upgrading Etherpad..."
 
 pushd $install_dir
-	ynh_hide_warnings ynh_exec_as_app node_load_PATH ETHERPAD_PRODUCTION=true src/bin/installDeps.sh
+	ynh_hide_warnings ynh_exec_as_app ETHERPAD_PRODUCTION=true src/bin/installDeps.sh
 popd
 
 #=================================================
@@ -210,13 +160,15 @@ fi
 #=================================================
 ynh_script_progression "Configuring systemd service..."
 
+ynh_config_add_nginx
+
 ynh_config_add_systemd
 
-# Integrate in YunoHost
 yunohost service add $app --description="Collaborative editor" --log="/var/log/$app/etherpad.log"
 
-# Use logrotate to manage app-specific logfile(s)
 ynh_config_add_logrotate
+
+ynh_config_add_fail2ban --logpath="/var/log/nginx/$domain-access.log" --failregex="<HOST> .* .POST /mypads/api/auth/login HTTP/1.1. 400"
 
 #=================================================
 # START SYSTEMD SERVICE
@@ -224,14 +176,6 @@ ynh_config_add_logrotate
 ynh_script_progression "Starting systemd service..."
 
 ynh_systemctl --service=$app --action=restart --wait_until="You can access your Etherpad instance at" --log_path="/var/log/$app/etherpad.log" --timeout="120"
-
-#=================================================
-# UPGRADE FAIL2BAN
-#=================================================
-ynh_script_progression "Reconfiguring Fail2Ban..."
-
-# Create a dedicated Fail2Ban config
-ynh_config_add_fail2ban --logpath="/var/log/nginx/$domain-access.log" --failregex="<HOST> .* .POST /mypads/api/auth/login HTTP/1.1. 400"
 
 #=================================================
 # DEACTIVE MAINTENANCE MODE

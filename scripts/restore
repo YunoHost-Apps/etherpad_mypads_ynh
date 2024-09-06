@@ -13,16 +13,14 @@ ynh_restore "$install_dir"
 
 #REMOVEME? Assuming the install dir is setup using ynh_setup_source, the proper chmod/chowns are now already applied and it shouldn't be necessary to tweak perms | chmod -R o-rwx "$install_dir"
 #REMOVEME? Assuming the install dir is setup using ynh_setup_source, the proper chmod/chowns are now already applied and it shouldn't be necessary to tweak perms | chown -R $app:$app "$install_dir"
-#REMOVEME? Assuming the file is setup using ynh_config_add, the proper chmod/chowns are now already applied and it shouldn't be necessary to tweak perms | chmod 600 "$install_dir/settings.json"
+chmod 600 "$install_dir/settings.json"
 #REMOVEME? Assuming the file is setup using ynh_config_add, the proper chmod/chowns are now already applied and it shouldn't be necessary to tweak perms | chown $app:$app "$install_dir/settings.json"
 
-#REMOVEME? Assuming the file is setup using ynh_config_add, the proper chmod/chowns are now already applied and it shouldn't be necessary to tweak perms | chmod 600 "$install_dir/credentials.json"
+600 "$install_dir/credentials.json"
 #REMOVEME? Assuming the file is setup using ynh_config_add, the proper chmod/chowns are now already applied and it shouldn't be necessary to tweak perms | chown $app:$app "$install_dir/credentials.json"
 
 #=================================================
 # RESTORE SYSTEM CONFIGURATIONS
-#=================================================
-# RESTORE THE PHP-FPM CONFIGURATION
 #=================================================
 ynh_script_progression "Restoring system configurations related to $app..."
 
@@ -32,7 +30,7 @@ ynh_restore "/etc/nginx/conf.d/$domain.d/$app.conf"
 
 mkdir -p /var/log/$app
 touch /var/log/$app/etherpad.log
-#REMOVEME? Assuming ynh_config_add_logrotate is called, the proper chmod/chowns are now already applied and it shouldn't be necessary to tweak perms | chown $app -R /var/log/$app
+chown $app -R /var/log/$app
 
 ynh_restore "/etc/systemd/system/$app.service"
 systemctl enable $app.service --quiet
