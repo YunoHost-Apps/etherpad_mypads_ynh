@@ -75,6 +75,8 @@ pushd "$install_dir"
   ynh_exec_as_app sh -c 'echo $PATH'
   ynh_exec_as_app which node
   ynh_exec_as_app which npm
+  ynh_exec_as_app npm --version
+  ynh_hide_warnings ynh_exec_as_app npm --version
   ynh_hide_warnings ynh_exec_as_app npm install --no-save ep_align@${ep_align_version}
   ynh_hide_warnings ynh_exec_as_app npm install --no-save ep_author_hover@${ep_author_hover_version}
   ynh_hide_warnings ynh_exec_as_app npm install --no-save ep_delete_empty_pads@${ep_delete_empty_pads_version}
