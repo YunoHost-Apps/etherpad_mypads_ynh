@@ -71,7 +71,7 @@ ynh_script_progression "Installing Etherpad plugins..."
 pushd "$install_dir"
   corepack enable
   corepack prepare pnpm@latest --activate
-  ynh_hide_warnings ynh_exec_as_app ETHERPAD_PRODUCTION=true bin/installDeps.sh
+  ynh_hide_warnings ynh_exec_as_app ETHERPAD_PRODUCTION=true src/bin/installDeps.sh
   ynh_hide_warnings ynh_exec_as_app pnpm run install-plugins \
         ep_align@${ep_align_version} \
         ep_author_hover@${ep_author_hover_version} \
