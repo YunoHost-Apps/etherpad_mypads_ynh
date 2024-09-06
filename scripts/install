@@ -23,6 +23,11 @@ ynh_script_progression "Initializing MySQL database..."
 
 echo "ALTER DATABASE $db_name CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci" | ynh_mysql_db_shell abiword_path="\"$(which abiword)\""
 
+#=================================================
+# ADD A CONFIGURATION
+#=================================================
+ynh_script_progression --message="Configure $app..."
+
 abiword_path="null"
 soffice_path="null"
 
@@ -34,14 +39,12 @@ then
     soffice_path="\"$(which soffice)\""
 fi
 
-# Use ldap for mypads
+# Use LDAP for MyPads
 comment_if_ldap_disabled="//ldap_disabled"
 if [ $mypads -eq 1 ] && [ $useldap -eq 1 ]
 then
     comment_if_ldap_disabled=""
 fi
-
-# Calculate and store the config file checksum into the app settings
 
 ynh_config_add --template="settings.json" --destination="$install_dir/settings.json"
 ynh_config_add --template="credentials.json" --destination="$install_dir/credentials.json"
@@ -83,10 +86,10 @@ popd
 #=================================================
 # INSTALL ETHERPAD
 #=================================================
-ynh_script_progression "Installing Etherpad..."
+ynh_script_progression "Installing $app..."
 
 pushd $install_dir
- 	ynh_hide_warnings ynh_exec_as_app node_load_PATH ETHERPAD_PRODUCTION=true src/bin/installDeps.sh
+ 	ynh_hide_warnings ynh_exec_as_app ETHERPAD_PRODUCTION=true src/bin/installDeps.sh
 popd
 
 #=================================================
@@ -95,7 +98,7 @@ popd
 
 if [ $mypads -eq 1 ]
 then
-	ynh_script_progression "Tweaking mypad configuration..."
+	ynh_script_progression "Tweaking MyPad configuration..."
 
 	# Add a link to Etherpad to allow anonymous pads creation from MyPads.
 	ynh_replace --match="^ *\"DESCRIPTION\": .*</ul>" --replace="&<a href=../>Pads anonymes</a>" --file=$install_dir/node_modules/ep_mypads/static/l10n/fr.json
@@ -113,21 +116,19 @@ fi
 #=================================================
 ynh_script_progression "Configuring systemd service..."
 
-# Create a dedicated systemd config
 ynh_config_add_systemd
 
-# Intgrate in YunoHost
 yunohost service add $app --description="Collaborative editor" --log="/var/log/$app/etherpad.log"
 
-# Use logrotate to manage application logfile(s)
 ynh_config_add_logrotate
+
+ynh_config_add_fail2ban --logpath="/var/log/nginx/$domain-access.log" --failregex="<HOST> .* .POST /mypads/api/auth/login HTTP/1.1. 400"
 
 #=================================================
 # START SYSTEMD SERVICE
 #=================================================
 ynh_script_progression "Starting systemd service..."
 
-# Start a systemd service
 ynh_systemctl --service=$app --action=restart --wait_until="You can access your Etherpad instance at" --log_path="/var/log/$app/etherpad.log" --timeout="120"
 
 if [ $mypads -eq 1 ]
@@ -138,14 +139,6 @@ then
 	# Wait for etherpad to be fully started
 	ynh_systemctl --action=restart --wait_until="You can access your Etherpad instance at" --log_path="/var/log/$app/etherpad.log" --timeout="120"
 fi
-
-#=================================================
-# SETUP FAIL2BAN
-#=================================================
-ynh_script_progression "Configuring Fail2Ban..."
-
-# Create a dedicated Fail2Ban config
-ynh_config_add_fail2ban --logpath="/var/log/nginx/$domain-access.log" --failregex="<HOST> .* .POST /mypads/api/auth/login HTTP/1.1. 400"
 
 #=================================================
 # END OF SCRIPT
