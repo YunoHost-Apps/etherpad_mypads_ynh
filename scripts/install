@@ -106,15 +106,15 @@ fi
 #=================================================
 ynh_script_progression "Adding system configurations related to $app..."
 
-ynh_add_config_nginx
+ynh_config_add_nginx
 
-ynh_add_config_systemd
+ynh_config_add_systemd
 
 yunohost service add $app --description="Collaborative editor" --log="/var/log/$app/etherpad.log"
 
-ynh_add_config_logrotate
+ynh_config_add_logrotate
 
-ynh_add_config_fail2ban --logpath="/var/log/nginx/$domain-access.log" --failregex="<HOST> .* .POST /mypads/api/auth/login HTTP/1.1. 400"
+ynh_config_add_fail2ban --logpath="/var/log/nginx/$domain-access.log" --failregex="<HOST> .* .POST /mypads/api/auth/login HTTP/1.1. 400"
 
 #=================================================
 # START SYSTEMD SERVICE
