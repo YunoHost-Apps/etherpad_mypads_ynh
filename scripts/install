@@ -72,19 +72,13 @@ pushd "$install_dir"
   # corepack enable
   # corepack prepare pnpm@latest --activate
   ynh_hide_warnings ynh_exec_as_app ETHERPAD_PRODUCTION=true src/bin/installDeps.sh
-  ynh_exec_as_app sh -c 'echo $PATH'
-  ynh_exec_as_app which node
-  ynh_exec_as_app which npm
-  sudo -E -u $app npm --version || true
-  ynh_exec_as_app npm --version || true
-  ynh_hide_warnings ynh_exec_as_app npm --version || true
   ynh_hide_warnings ynh_exec_as_app npm install --no-save ep_align@${ep_align_version}
   ynh_hide_warnings ynh_exec_as_app npm install --no-save ep_author_hover@${ep_author_hover_version}
   ynh_hide_warnings ynh_exec_as_app npm install --no-save ep_delete_empty_pads@${ep_delete_empty_pads_version}
   ynh_hide_warnings ynh_exec_as_app npm install --no-save ep_headings2@${ep_headings2_version}
   ynh_hide_warnings ynh_exec_as_app npm install --no-save ep_font_size@${ep_font_size_version}
   if [ $mypads -eq 1 ]; then
-    ynh_hide_warnings ynh_exec_as_app pnpm run install-plugins ep_mypads@${mypads_version}
+    ynh_hide_warnings ynh_exec_as_app npm install --no-save ep_mypads@${mypads_version}
   fi
 popd
 
@@ -112,15 +106,15 @@ fi
 #=================================================
 ynh_script_progression "Configuring systemd service..."
 
-ynh_add_nginx_config
+ynh_add_config_nginx
 
-ynh_config_add_systemd
+ynh_add_config_systemd
 
 yunohost service add $app --description="Collaborative editor" --log="/var/log/$app/etherpad.log"
 
-ynh_config_add_logrotate
+ynh_add_config_logrotate
 
-ynh_config_add_fail2ban --logpath="/var/log/nginx/$domain-access.log" --failregex="<HOST> .* .POST /mypads/api/auth/login HTTP/1.1. 400"
+ynh_add_config_fail2ban --logpath="/var/log/nginx/$domain-access.log" --failregex="<HOST> .* .POST /mypads/api/auth/login HTTP/1.1. 400"
 
 #=================================================
 # START SYSTEMD SERVICE
