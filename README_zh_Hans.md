@@ -29,7 +29,7 @@ This version of Etherpad is preconfigured with a collection of plugins:
 
 
 
-**分发版本：** 2.1.1~ynh1
+**分发版本：** 2.2.3~ynh1
 
 **演示：** <https://video.etherpad.com>
 
