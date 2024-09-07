@@ -9,7 +9,7 @@ source /usr/share/yunohost/helpers
 ynh_script_progression "Activating maintenance mode..."
 
 # Wait for Etherpad to be fully started # (... but why ???)
-# ynh_systemctl --action=restart --line_match="Your Etherpad version is" --log_path="systemd"
+# ynh_systemctl --action=restart --wait_until="Your Etherpad version is" --log_path="systemd"
 
 ynh_maintenance_mode_ON
 
@@ -149,7 +149,7 @@ ynh_config_add_fail2ban --logpath="/var/log/nginx/$domain-access.log" --failrege
 #=================================================
 ynh_script_progression "Starting systemd service..."
 
-ynh_systemctl --service=$app --action=restart --line_match="Your Etherpad version is" --log_path="systemd"
+ynh_systemctl --service=$app --action=restart --wait_until="Your Etherpad version is" --log_path="systemd"
 
 #=================================================
 # DEACTIVE MAINTENANCE MODE
