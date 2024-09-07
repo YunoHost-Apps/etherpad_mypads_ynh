@@ -26,15 +26,10 @@ ynh_systemctl --service=$app --action="stop"
 ynh_script_progression "Ensuring downward compatibility..."
 
 ynh_app_setting_set_default --key=anguage --value=en
-
 ynh_app_setting_set_default --key=export --value=none
-
 ynh_app_setting_set_default --key=mypads --value=1
-
 ynh_app_setting_set_default --key=useldap --value=0
-
 ynh_app_setting_set_default --key=path --value="/"
-
 ynh_app_setting_set_default --key=password --value=$(ynh_string_random --length=32)
 
 # Support full Unicode in MySQL databases
@@ -43,7 +38,6 @@ ynh_mysql_db_shell <<< "ALTER DATABASE $db_name CHARACTER SET utf8mb4 COLLATE ut
 #=================================================
 # DOWNLOAD, CHECK AND UNPACK SOURCE
 #=================================================
-
 ynh_script_progression "Upgrading source files..."
 
 ynh_setup_source --dest_dir="$install_dir" --full_replace --keep="settings.json credentials.json"
@@ -80,7 +74,6 @@ then
 fi
 
 # Calculate and store the config file checksum into the app settings
-
 ynh_config_add --template="settings.json" --destination="$install_dir/settings.json"
 ynh_config_add --template="credentials.json" --destination="$install_dir/credentials.json"
 
