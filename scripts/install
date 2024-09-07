@@ -72,13 +72,13 @@ pushd "$install_dir"
     ynh_hide_warnings corepack enable && corepack prepare pnpm@latest --activate
     ynh_hide_warnings pnpm i    
     ynh_hide_warnings pnpm run build:etherpad
-    ynh_hide_warnings ynh_exec_as_app npm install --no-save ep_align@${ep_align_version}
-    ynh_hide_warnings ynh_exec_as_app npm install --no-save ep_author_hover@${ep_author_hover_version}
-    ynh_hide_warnings ynh_exec_as_app npm install --no-save ep_delete_empty_pads@${ep_delete_empty_pads_version}
-    ynh_hide_warnings ynh_exec_as_app npm install --no-save ep_headings2@${ep_headings2_version}
-    ynh_hide_warnings ynh_exec_as_app npm install --no-save ep_font_size@${ep_font_size_version}
+    ynh_hide_warnings npm install --no-save ep_align@${ep_align_version}
+    ynh_hide_warnings npm install --no-save ep_author_hover@${ep_author_hover_version}
+    ynh_hide_warnings npm install --no-save ep_delete_empty_pads@${ep_delete_empty_pads_version}
+    ynh_hide_warnings npm install --no-save ep_headings2@${ep_headings2_version}
+    ynh_hide_warnings npm install --no-save ep_font_size@${ep_font_size_version}
     if [ $mypads -eq 1 ]; then
-        ynh_hide_warnings ynh_exec_as_app npm install --no-save ep_mypads@${mypads_version}
+        ynh_hide_warnings npm install --no-save ep_mypads@${mypads_version}
     fi
 popd
 
