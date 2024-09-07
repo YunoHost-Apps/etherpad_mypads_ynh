@@ -32,9 +32,9 @@ ynh_setup_source --dest_dir="$install_dir"
 ynh_script_progression "Configuring log rotation..."
 
 # Create log directory
-mkdir -p /var/log/$app
-touch /var/log/$app/etherpad.log
-chown $app -R /var/log/$app
+#mkdir -p /var/log/$app
+#touch /var/log/$app/etherpad.log
+#chown $app -R /var/log/$app
 
 #=================================================
 # ADD A CONFIGURATION
@@ -130,7 +130,7 @@ then
     ynh_mysql_db_shell < "../conf/lang_mypads.sql"
 
     # Wait for Etherpad to be fully started
-    ynh_systemctl --service=$app --action=restart --log_path="/var/log/$app/etherpad.log" --wait_until="Your Etherpad version is"
+    ynh_systemctl --service=$app --action=restart --log_path="systemd" --wait_until="Your Etherpad version is" #--log_path="/var/log/$app/etherpad.log"
 fi
 
 #=================================================

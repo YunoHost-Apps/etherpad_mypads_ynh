@@ -142,7 +142,7 @@ ynh_config_add_fail2ban --logpath="/var/log/nginx/$domain-access.log" --failrege
 #=================================================
 ynh_script_progression "Starting systemd service..."
 
-ynh_systemctl --service=$app --action=restart --log_path="/var/log/$app/etherpad.log" --wait_until="Your Etherpad version is"
+ynh_systemctl --service=$app --action=restart --log_path="systemd" --wait_until="Your Etherpad version is" #--log_path="/var/log/$app/etherpad.log"
 
 #=================================================
 # DEACTIVE MAINTENANCE MODE
