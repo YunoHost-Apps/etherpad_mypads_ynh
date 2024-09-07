@@ -22,7 +22,7 @@ ynh_config_change_url_nginx
 ynh_script_progression "Starting $app's systemd service..."
 
 # Start a systemd service
-ynh_systemctl --service=$app --action=restart --line_match="Your Etherpad version is" --log_path="systemd"
+ynh_systemctl --service=$app --action=restart --wait_until="Your Etherpad version is" --log_path="systemd"
 
 #=================================================
 # DEACTIVE MAINTENANCE MODE
