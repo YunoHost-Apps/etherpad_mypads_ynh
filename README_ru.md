@@ -29,7 +29,7 @@ This version of Etherpad is preconfigured with a collection of plugins:
 
 
 
-**Поставляемая версия:** 2.2.3~ynh1
+**Поставляемая версия:** 2.2.4~ynh4
 
 **Демо-версия:** <https://video.etherpad.com>
 
