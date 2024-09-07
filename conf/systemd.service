@@ -7,10 +7,9 @@ Type=simple
 User=__APP__
 Group=__APP__
 WorkingDirectory=__INSTALL_DIR__/
-Environment=ETHERPAD_PRODUCTION=true
 Environment="PATH=__PATH_WITH_NODEJS__"
 Environment="NODE_ENV=production"
-ExecStart=__INSTALL_DIR__/bin/run.sh
+ExecStart=__NODEJS_DIR__/pnpm run prod
 StandardOutput=append:/var/log/__APP__/etherpad.log
 StandardError=inherit
 Restart=always
