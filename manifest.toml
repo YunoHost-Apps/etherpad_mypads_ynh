@@ -5,7 +5,7 @@ name = "Etherpad MyPads"
 description.en = "Collaborative editing in real-time"
 description.fr = "Édition collaborative en temps réel"
 
-version = "2.2.4~ynh4"
+version = "2.2.4~ynh1"
 
 maintainers = []
 
