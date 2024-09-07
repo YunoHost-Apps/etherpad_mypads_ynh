@@ -20,11 +20,6 @@ ynh_script_progression "Restoring system configurations related to $app..."
 
 ynh_nodejs_install
 
-pushd "$install_dir"
-	ynh_hide_warnings ynh_exec_as_app corepack enable
-  ynh_hide_warnings ynh_exec_as_app corepack prepare pnpm@latest --activate
-popd
-
 ynh_restore "/etc/nginx/conf.d/$domain.d/$app.conf"
 
 mkdir -p /var/log/$app
