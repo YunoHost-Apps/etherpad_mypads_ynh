@@ -96,7 +96,7 @@ fi
 #=================================================
 # UPGRADE NPM MODULES
 #=================================================
-ynh_script_progression "Upgrading Etherpad..."
+ynh_script_progression "Upgrading $app..."
 
 pushd "$install_dir"
     ynh_hide_warnings corepack enable && corepack prepare pnpm@latest --activate
