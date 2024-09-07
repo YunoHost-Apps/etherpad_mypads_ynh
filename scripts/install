@@ -130,7 +130,7 @@ then
     ynh_mysql_db_shell < "../conf/lang_mypads.sql"
 
     # Wait for Etherpad to be fully started
-    ynh_systemctl --service=$app --action=restart --wait_until="Your Etherpad version is"
+    ynh_systemctl --service=$app --action=restart --log_path="/var/log/$app/etherpad.log" --wait_until="Your Etherpad version is"
 fi
 
 #=================================================
