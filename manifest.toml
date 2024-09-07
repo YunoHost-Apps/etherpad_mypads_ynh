@@ -2,8 +2,8 @@ packaging_format = 2
 
 id = "etherpad_mypads"
 name = "Etherpad MyPads"
-description.en = "Online editor providing collaborative editing in real-time"
-description.fr = "Éditeur en ligne fournissant l'édition collaborative en temps réel"
+description.en = "Collaborative editing in real-time"
+description.fr = "Édition collaborative en temps réel"
 
 version = "2.2.4~ynh4"
 
