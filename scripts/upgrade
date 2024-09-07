@@ -131,7 +131,7 @@ ynh_config_add_nginx
 
 ynh_config_add_systemd
 
-yunohost service add $app --description="Collaborative editor" --log="/var/log/$app/etherpad.log"
+yunohost service add $app --description="Collaborative editor"
 
 ynh_config_add_logrotate
 
