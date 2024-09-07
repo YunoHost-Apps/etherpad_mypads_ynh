@@ -99,17 +99,17 @@ fi
 ynh_script_progression "Upgrading Etherpad..."
 
 pushd "$install_dir"
-  # corepack enable
-  # corepack prepare pnpm@latest --activate
-  ynh_hide_warnings ynh_exec_as_app ETHERPAD_PRODUCTION=true src/bin/installDeps.sh
-  ynh_hide_warnings ynh_exec_as_app npm install --no-save ep_align@${ep_align_version}
-  ynh_hide_warnings ynh_exec_as_app npm install --no-save ep_author_hover@${ep_author_hover_version}
-  ynh_hide_warnings ynh_exec_as_app npm install --no-save ep_delete_empty_pads@${ep_delete_empty_pads_version}
-  ynh_hide_warnings ynh_exec_as_app npm install --no-save ep_headings2@${ep_headings2_version}
-  ynh_hide_warnings ynh_exec_as_app npm install --no-save ep_font_size@${ep_font_size_version}
-  if [ $mypads -eq 1 ]; then
-    ynh_hide_warnings ynh_exec_as_app npm install --no-save ep_mypads@${mypads_version}
-  fi
+    ynh_hide_warnings corepack enable && corepack prepare pnpm@latest --activate
+    ynh_hide_warnings pnpm i    
+    ynh_hide_warnings pnpm run build:etherpad
+    ynh_hide_warnings ynh_exec_as_app npm install --no-save ep_align@${ep_align_version}
+    ynh_hide_warnings ynh_exec_as_app npm install --no-save ep_author_hover@${ep_author_hover_version}
+    ynh_hide_warnings ynh_exec_as_app npm install --no-save ep_delete_empty_pads@${ep_delete_empty_pads_version}
+    ynh_hide_warnings ynh_exec_as_app npm install --no-save ep_headings2@${ep_headings2_version}
+    ynh_hide_warnings ynh_exec_as_app npm install --no-save ep_font_size@${ep_font_size_version}
+    if [ $mypads -eq 1 ]; then
+        ynh_hide_warnings ynh_exec_as_app npm install --no-save ep_mypads@${mypads_version}
+    fi
 popd
 
 #=================================================
