@@ -29,7 +29,7 @@ This version of Etherpad is preconfigured with a collection of plugins:
 
 
 
-**Versión actual:** 2.2.3~ynh1
+**Versión actual:** 2.2.5~ynh1
 
 **Demo:** <https://video.etherpad.com>
 
@@ -47,7 +47,7 @@ This version of Etherpad is preconfigured with a collection of plugins:
 
 ## Información para desarrolladores
 
-Por favor enviar sus correcciones a la [`branch testing`](https://github.com/YunoHost-Apps/etherpad_mypads_ynh/tree/testing
+Por favor enviar sus correcciones a la [rama `testing`](https://github.com/YunoHost-Apps/etherpad_mypads_ynh/tree/testing).
 
 Para probar la rama `testing`, sigue asÍ:
 
