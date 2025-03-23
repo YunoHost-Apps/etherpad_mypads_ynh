@@ -13,7 +13,7 @@ maintainers = []
 license = "Apache-2.0"
 website = "http://etherpad.org"
 demo = "https://video.etherpad.com"
-admindoc = "http://etherpad.org/doc/v1.9.0"
+admindoc = "http://etherpad.org/doc/v2.2.7"
 code = "https://github.com/ether/etherpad-lite"
 
 [integration]
@@ -96,6 +96,7 @@ ram.runtime = "50M"
 
     [resources.permissions]
     main.url = "/"
+    main.auth_header = false
     api.show_tile = false
     #admin.url = "/admin"
     #admin.auth_header = false
