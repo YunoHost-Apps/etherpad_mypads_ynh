@@ -1,5 +1,9 @@
 #!/bin/bash
 
+#=================================================
+# IMPORT GENERIC HELPERS
+#=================================================
+
 source _common.sh
 source /usr/share/yunohost/helpers
 
@@ -8,19 +12,19 @@ source /usr/share/yunohost/helpers
 #=================================================
 ynh_script_progression "Removing system configurations related to $app..."
 
+ynh_config_remove_logrotate
+
+ynh_config_remove_fail2ban
+
 if ynh_hide_warnings yunohost service status $app >/dev/null; then
 	yunohost service remove $app
 fi
 
 ynh_config_remove_systemd
 
-ynh_config_remove_logrotate
-
 ynh_config_remove_nginx
 
 ynh_nodejs_remove
-
-ynh_config_remove_fail2ban
 
 #=================================================
 # END OF SCRIPT

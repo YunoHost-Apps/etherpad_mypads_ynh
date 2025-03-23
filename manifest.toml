@@ -22,7 +22,8 @@ helpers_version = "2.1"
 architectures = ["arm64", "amd64"]
 multi_instance = true
 
-ldap = false
+ldap = true
+
 sso = false
 
 disk = "200M"
