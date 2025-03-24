@@ -72,6 +72,7 @@ ynh_config_add --template="credentials.json" --destination="$install_dir/credent
 ynh_script_progression "Installing $app and plugins..."
 
 pushd "$install_dir"
+	ynh_hide_warnings corepack enable && COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack prepare pnpm@latest --activate
     ynh_hide_warnings pnpm install
     ynh_hide_warnings pnpm run build:etherpad
     ynh_hide_warnings pnpm run plugins install \
