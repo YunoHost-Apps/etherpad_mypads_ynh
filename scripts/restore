@@ -55,7 +55,7 @@ echo "ALTER DATABASE $db_name CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci" 
 #=================================================
 ynh_script_progression "Reloading NGINX web server and $app's service..."
 
-ynh_systemctl --service=$app --action=restart --log_path="/var/log/$app/etherpad.log" --wait_until="Etherpad is running"
+ynh_systemctl --service="$app" --action=restart --log_path=systemd --wait_until="Etherpad is running"
 
 ynh_systemctl --action=reload --service=nginx
 
