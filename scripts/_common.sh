@@ -14,7 +14,7 @@ mypads_version=1.7.25
 ep_align_version=0.3.97
 ep_author_hover_version=1.0.1
 ep_delete_empty_pads_version=0.0.10
-ep_headings2_version=0.2.65
+ep_headings2_version=0.2.66
 ep_font_size_version=0.4.62
 
 #=================================================
