@@ -82,7 +82,7 @@ pushd "$install_dir"
         ep_headings2@${ep_headings2_version} \
         ep_font_size@${ep_font_size_version}
     if [ $mypads -eq 1 ]; then
-        ynh_hide_warnings pnpm run plugins install ep_mypads@${mypads_version}
+        pnpm run plugins install ep_mypads@${mypads_version}
     fi
 popd
 
@@ -93,7 +93,8 @@ popd
 if [ $mypads -eq 1 ]
 then
     ynh_script_progression "Tweaking MyPad configuration..."
-
+ tree $install_dir/node_modules/ep_etherpad-lite/plugin_packages/ep_mypads 
+ ls -lha $install_dir/node_modules/ep_etherpad-lite/plugin_packages/ep_mypads/static/l10n 
 	# Add a link to Etherpad to allow anonymous pads creation from MyPads.
 	ynh_replace --match="^ *\"DESCRIPTION\": .*</ul>" --replace="&<a href=../>Pads anonymes</a>" --file=$install_dir/node_modules/ep_etherpad-lite/plugin_packages/ep_mypads/static/l10n/fr.json
 	ynh_replace --match="^ *\"DESCRIPTION\": .*</ul>" --replace="&<a href=../>Anonymous pads</a>" --file=$install_dir/node_modules/ep_etherpad-lite/plugin_packages/ep_mypads/static/l10n/en.json
