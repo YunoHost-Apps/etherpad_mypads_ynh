@@ -17,7 +17,7 @@ admindoc = "http://etherpad.org/doc/v1.9.0"
 code = "https://github.com/ether/etherpad-lite"
 
 [integration]
-yunohost = ">= 11.2"
+yunohost = ">= 12.1.17"
 architectures = ["arm64", "amd64"]
 multi_instance = true
 ldap = false
@@ -113,3 +113,6 @@ ram.runtime = "50M"
     [resources.database]
     type = "mysql"
     
+
+    [resources.nodejs]
+    version = "14"

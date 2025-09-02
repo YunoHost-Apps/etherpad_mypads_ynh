@@ -13,10 +13,10 @@ ynh_app_setting_set --app=$app --key=password --value="$password"
 #=================================================
 # INSTALL DEPENDENCIES
 #=================================================
-ynh_script_progression --message="Installing nodejs..." --weight=50
+#REMOVEME? ynh_script_progression --message="Installing nodejs..." --weight=50
 
-ynh_install_nodejs --nodejs_version=$nodejs_version
-ynh_use_nodejs
+#REMOVEME? ynh_install_nodejs --#REMOVEME? nodejs_version=$nodejs_version
+#REMOVEME? ynh_use_nodejs
 
 #=================================================
 # CREATE A MYSQL DATABASE
