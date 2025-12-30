@@ -574,7 +574,7 @@ __COMMENT_IF_LDAP_DISABLED__    },
    *
    * Valid values: DEBUG, INFO, WARN, ERROR
    */
-  "loglevel": "INFO",
+  "loglevel": "DEBUG",
 
     /*
    * The log layout type to use.
