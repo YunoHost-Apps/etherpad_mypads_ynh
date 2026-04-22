@@ -57,6 +57,7 @@ pushd "$install_dir"
 	ynh_hide_warnings corepack enable && COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack prepare pnpm@latest --activate
     ynh_hide_warnings pnpm install
     ynh_hide_warnings pnpm run build:etherpad
+    chown -R $app:$app ./node_modules
     ynh_hide_warnings pnpm run plugins install \
     	ep_align@${ep_align_version} \
         ep_author_hover@${ep_author_hover_version} \
