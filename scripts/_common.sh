@@ -9,11 +9,11 @@
 mypads_version=1.7.25
 
 # Plugin versions -> https://static.etherpad.org/index.html
-ep_align_version=10.0.2
-ep_author_hover_version=1.0.11
+ep_align_version=11.0.18
+ep_author_hover_version=11.0.15
 ep_delete_empty_pads_version=0.0.11
-ep_headings2_version=0.2.68
-ep_font_size_version=0.4.65
+ep_headings2_version=0.2.110
+ep_font_size_version=0.4.103
 
 #=================================================
 # CUSTOM HELPERS
