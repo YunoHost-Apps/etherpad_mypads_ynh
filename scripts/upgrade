@@ -49,8 +49,6 @@ then
     comment_if_ldap_disabled=""
 fi
 
-soffice_path=$(which soffice)
-
 # Calculate and store the config file checksum into the app settings
 ynh_config_add --template="settings.json" --destination="$install_dir/settings.json"
 chmod 600 "$install_dir/settings.json"

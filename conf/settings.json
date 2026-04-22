@@ -324,7 +324,7 @@ __COMMENT_IF_LDAP_DISABLED__    },
    * LibreOffice can be used in lieu of Abiword to export pads.
    * Setting it to null disables LibreOffice exporting.
    */
-  "soffice": __SOFFICE_PATH__,
+  "soffice": "/usr/bin/soffice",
 
   /*
    * Allow import of file types other than the supported ones:
