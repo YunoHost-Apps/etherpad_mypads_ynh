@@ -25,15 +25,3 @@ test_format = 1.0
     args.mypads = 1
     args.useldap = 1
     only = ["install.root"]
-
-[with_Abiword]
-    args.export = "abiword"
-    args.mypads = 0
-    args.useldap = 0
-    only = ["install.root"]
-
-[with_Libreoffice]
-    args.export = "libreoffice"
-    args.mypads = 0
-    args.useldap = 0
-    only = ["install.root"]
