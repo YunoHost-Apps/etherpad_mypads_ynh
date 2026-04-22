@@ -20,7 +20,6 @@ test_format = 1.0
 
 
 [with_MyPads]
-    args.export = "libreoffice"
     args.mypads = 1
     args.useldap = 1
     only = ["install.root"]
