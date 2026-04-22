@@ -23,7 +23,6 @@ ynh_systemctl --service=$app --action="stop"
 ynh_script_progression "Ensuring downward compatibility..."
 
 ynh_app_setting_set_default --key=anguage --value=en
-ynh_app_setting_set_default --key=export --value=none
 ynh_app_setting_set_default --key=mypads --value=1
 ynh_app_setting_set_default --key=useldap --value=0
 ynh_app_setting_set_default --key=path --value="/"
@@ -42,17 +41,6 @@ ynh_setup_source --dest_dir="$install_dir" --full_replace --keep="settings.json 
 # CONFIGURE ETHERPAD
 #=================================================
 ynh_script_progression "Configure $app..."
-
-abiword_path="null"
-soffice_path="null"
-
-if [[ "$export" == "abiword" ]]
-then
-    abiword_path="\"$(which abiword)\""
-elif [[ "$export" == "libreoffice" ]]
-then
-    soffice_path="\"$(which soffice)\""
-fi
 
 # Use ldap for MyPads
 comment_if_ldap_disabled="//ldap_disabled"

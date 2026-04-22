@@ -35,17 +35,6 @@ chown $app -R /var/log/$app
 #=================================================
 ynh_script_progression "Configure $app..."
 
-abiword_path="null"
-soffice_path="null"
-
-if [[ "$export" == "abiword" ]]
-then
-    abiword_path="\"$(which abiword)\""
-elif [[ "$export" == "libreoffice" ]]
-then
-    soffice_path="\"$(which soffice)\""
-fi
-
 # Use LDAP for MyPads
 comment_if_ldap_disabled="//ldap_disabled"
 if [ $mypads -eq 1 ] && [ $useldap -eq 1 ]

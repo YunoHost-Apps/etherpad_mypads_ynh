@@ -5,7 +5,7 @@ name = "Etherpad MyPads"
 description.en = "Online editor providing collaborative editing in real-time"
 description.fr = "Éditeur en ligne fournissant l'édition collaborative en temps réel"
 
-version = "2.6.0~ynh1"
+version = "2.7.0~ynh1"
 
 maintainers = []
 
@@ -17,7 +17,7 @@ admindoc = "http://etherpad.org/doc/v2.2.7"
 code = "https://github.com/ether/etherpad-lite"
 
 [integration]
-yunohost = ">= 12.1.38"
+yunohost = ">= 12.1.39"
 helpers_version = "2.1"
 architectures = ["arm64", "amd64"]
 multi_instance = true
@@ -56,13 +56,6 @@ ram.runtime = "50M"
     [install.password]
     type = "password"
 
-    [install.export]
-    ask.en = "Use AbiWord (~260 Mo) or LibreOffice (~400 Mo) (more stable) to expand export possibilities (PDF, doc)?"
-    ask.fr = "Utiliser AbiWord (~260 Mo) ou LibreOffice (~400 Mo) (plus stable) pour étendre les possibilités d'export (PDF, doc) ?"
-    type = "select"
-    choices = ["none", "abiword", "libreoffice"]
-    default = "none"
-
     [install.mypads]
     ask.en = "Do you want to install MyPads plugin?"
     ask.fr = "Voulez-vous installer le plugin MyPads ?"
@@ -82,10 +75,10 @@ ram.runtime = "50M"
 
     [resources.sources]
 
-        [resources.sources.main]
-        url = "https://github.com/ether/etherpad-lite/archive/refs/tags/2.6.0.tar.gz"
-        sha256 = "d66a3825ada7233ec927cb6ca4816f0c527b457fc423df5c32e67a2c20f53d02"
-        autoupdate.strategy = "latest_github_tag"
+    [resources.sources.main]
+    url = "https://github.com/ether/etherpad-lite/archive/refs/tags/2.7.0.tar.gz"
+    sha256 = "bb90d828bbb0e5bd611e3557f6138ca691d59190c57bd6ae72485c55a49e47e8"
+    autoupdate.strategy = "latest_github_tag"
 
     [resources.system_user]
 
@@ -101,19 +94,7 @@ ram.runtime = "50M"
     admin.auth_header = false
     admin.allowed = ["admins"]
     admin.show_tile = false
-
-    [resources.apt]
-    packages = "mariadb-server"
-    packages_from_raw_bash = """
-          if [[ "$export" == "libreoffice" ]]
-          then 
-              echo "unoconv libreoffice-writer"
-          elif [[ "$export" == "abiword" ]]
-          then
-              echo "abiword"
-          fi
-    """
-
+    
     [resources.database]
     type = "mysql"
     
