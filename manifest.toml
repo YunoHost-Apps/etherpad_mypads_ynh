@@ -96,7 +96,7 @@ ram.runtime = "50M"
     admin.show_tile = false
     
     [resources.apt]
-    packages = "mariadb-server unoconv libreoffice-writer"
+    packages = "mariadb-server, libreoffice-writer"
     
     [resources.database]
     type = "mysql"
