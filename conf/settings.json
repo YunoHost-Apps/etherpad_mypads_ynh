@@ -82,18 +82,23 @@
  *    "password": "${PASSW:}" // if PASSW is not defined would result in password === ''
  *
  *    If you want to use an empty value (null) as default value for a variable,
- *    simply do not set it, without putting any colons: "${ABIWORD}".
+ *    simply do not set it, without putting any colons: "${SOFFICE}".
  *
  * 3) if you want to use newlines in the default value of a string parameter,
  *    use "\n" as usual.
  *
- *    "defaultPadText" : "${DEFAULT_PAD_TEXT}Line 1\nLine 2"
+ *    "defaultPadText" : "${DEFAULT_PAD_TEXT:Line 1\nLine 2}"
  */
 {
   /*
    * Name your instance!
    */
-  "title": "Etherpad MyPads",
+  "title": "Etherpad",
+
+    /*
+    * Whether to show recent pads on the homepage or not.
+    */
+    "showRecentPads": true,
 
   /*
    * Pathname of the favicon you want to use. If null, the skin's favicon is
@@ -102,6 +107,41 @@
    * Etherpad root directory.
    */
   "favicon": null,
+
+  /*
+   * Canonical public origin of this Etherpad instance, e.g.
+   * "https://pad.example.com" (no trailing slash, must include scheme).
+   *
+   * When set, this is used to build absolute URLs in server-rendered output
+   * such as the Open Graph / Twitter Card link-preview meta tags (og:url,
+   * og:image, ...). When null, those URLs fall back to the request's
+   * protocol+Host, which can reflect client-controlled headers if your
+   * reverse proxy passes them through unsanitized.
+   *
+   * Set this in production deployments to lock down the canonical origin
+   * advertised in shared link previews.
+   */
+  "publicURL": null,
+
+  /*
+   * Open Graph / Twitter Card metadata, served on the homepage, pad pages and
+   * timeslider for nicer previews when a pad URL is shared in chat apps
+   * (WhatsApp, Signal, Slack, ...).
+   *
+   * - description: when set to a non-empty string, this exact text is used as
+   *   og:description / twitter:description regardless of the visitor's
+   *   negotiated language. Most link-preview crawlers don't send an
+   *   Accept-Language header, so without an override they always see the
+   *   English fallback. Set this if your instance serves a non-English
+   *   audience and you want a fixed blurb in shared previews.
+   *
+   * Leave description as null to use Etherpad's i18n catalog (key
+   * `pad.social.description`), which honours Accept-Language and can be
+   * overridden per-language via `customLocaleStrings` further down.
+   */
+  "socialMeta": {
+    "description": null
+  },
 
   /*
    * Skin name.
@@ -163,11 +203,88 @@
   "showSettingsInAdminPage": true,
 
   /*
+   * Enable/disable the metrics endpoint.
+   *
+   * This is used by the monitoring plugins to collect metrics about Etherpad.
+   * If you do not use any monitoring plugins, you can disable this.
+   */
+   "enableMetrics": "${ENABLE_METRICS:true}",
+
+  /*
+   * Self-update subsystem.
+   * tier: "off" | "notify" | "manual" | "auto" | "autonomous"
+   * Default "notify" shows a banner when an update is available. "off" disables the version check.
+   */
+  "updates": {
+    "tier": "notify",
+    "source": "github",
+    "channel": "stable",
+    "installMethod": "auto",
+    "checkIntervalHours": 6,
+    "githubRepo": "ether/etherpad",
+    /*
+     * Lock /admin/update/status to authenticated admins. Default false keeps the
+     * endpoint open (the version is already public via /health). Set true to hide
+     * full update detail from non-admins without turning the updater off.
+     */
+    "requireAdminForStatus": false,
+    /*
+     * Tier 2+ knobs. Only meaningful at tier "manual" or higher.
+     * - preApplyGraceMinutes: tier 3 only — grace minutes between detecting a new
+     *     release and starting the drain. Clamped to [0, 7*24*60] (one week).
+     *     Default 0 applies immediately when allowed; raise it to give admins
+     *     time to cancel via /admin/update.
+     * - drainSeconds: how long to broadcast "restart imminent" before exiting.
+     * - rollbackHealthCheckSeconds: window after restart for /health to come up.
+     * - diskSpaceMinMB: pre-flight refuses to start an update without this much free.
+     * - requireSignature: refuse updates whose tag isn't signed by a trusted key.
+     * - trustedKeysPath: override the keyring location passed to git verify-tag (GNUPGHOME).
+     */
+    "preApplyGraceMinutes": 0,
+    "drainSeconds": 60,
+    "rollbackHealthCheckSeconds": 60,
+    "diskSpaceMinMB": 500,
+    "requireSignature": false,
+    "trustedKeysPath": null
+  },
+
+  /*
+   * Admin OpenAPI document at /admin/openapi.json.
+   *
+   * Disabled by default per Etherpad's "new features behind a flag, off by
+   * default" policy. The admin UI's typed client embeds the spec at build
+   * time, so the runtime route is only useful for third-party tooling
+   * (Postman, swagger-ui, downstream clients). Set `enabled: true` to mount
+   * the route; the SPA at /admin/ continues to serve normally either way.
+   */
+  "adminOpenAPI": {
+    "enabled": false
+  },
+
+  /*
+   * Contact address for admin notifications (updates, security advisories, future features).
+   * Set to null to disable outbound mail from the updater.
+   */
+  "adminEmail": null,
+
+  /*
    * Settings for cleanup of pads
    */
   "cleanup": {
     "enabled": false,
     "keepRevisions": 5
+  },
+
+  /*
+   * GDPR Art. 17 author erasure REST endpoint (anonymizeAuthor).
+   *
+   * Disabled by default — enable only when an operator process exists to
+   * authorise erasure requests. While disabled, calls to anonymizeAuthor
+   * return an apierror and the AuthorManager helper is not exposed via
+   * the public API.
+   */
+  "gdprAuthorErasure": {
+    "enabled": false
   },
 
   /*
@@ -185,6 +302,42 @@
             "ca": ["/path-to-your/epl-intermediate-cert1.crt", "/path-to-your/epl-intermediate-cert2.crt"]
           },
   */
+
+  /*
+   * The type of the database.
+   *
+   * You can choose between many DB drivers, for example: dirty, postgres,
+   * sqlite, mysql.
+   *
+   * You shouldn't use "dirty" for for anything else than testing or
+   * development.
+   *
+   *
+   * Database specific settings are dependent on dbType, and go in dbSettings.
+   * Remember that since Etherpad 1.6.0 you can also store this information in
+   * credentials.json.
+   *
+   * For a complete list of the supported drivers, please refer to:
+   * https://www.npmjs.com/package/ueberdb2
+   */
+
+  /*
+   * An Example of MySQL Configuration (commented out).
+   *
+   * See: https://github.com/ether/etherpad/wiki/How-to-use-Etherpad-Lite-with-MySQL
+   */
+
+ 
+  "dbType" : "mysql",
+  "dbSettings" : {
+    "user":     "__DB_USER__",
+    "host":     "localhost",
+    "port":     3306,
+    "password": "__DB_PWD__",
+    "database": "__DB_NAME__",
+    "charset":  "utf8mb4"
+  },
+ 
 
   /*
    * The default text of a pad
@@ -208,6 +361,19 @@
     "alwaysShowChat":   false,
     "chatAndUsers":     false,
     "lang":             "__LANGUAGE__"
+    /*
+     * When true (default), each author's caret/background color fades toward white
+     * as the author goes inactive. Set to false if users pick light colors and the
+     * faded variants become visually indistinguishable.
+     */
+    "fadeInactiveAuthorColors": true,
+    /*
+     * Clamp author background colors to a WCAG 2.1 AA contrast ratio (4.5:1)
+     * against the rendered text colour at render time. The author's stored
+     * colour is not modified — only the displayed shade is adjusted. Set to
+     * false to render exact author colours regardless of contrast.
+     */
+    "enforceReadableAuthorColors": true
   },
 
   /*
@@ -243,10 +409,19 @@
    * It is hosted on GitHub and should not be blocked by many firewalls.
    *  https://etherpad.org/ep_infos
    */
-   "updateServer": "https://etherpad.org/ep_infos",
 
-    // ep_markdown
-    "ep_markdown_default": false, // Setting as default
+  "updateServer": "https://etherpad.org/ep_infos",
+
+  /*
+   * Outbound network calls. See PRIVACY.md for what each one sends.
+   *  - updateCheck=false  : disables hourly version check (UpdateCheck.ts)
+   *  - pluginCatalog=false: disables admin plugin browser
+   *                        (manual install-by-name via CLI still works)
+   */
+  "privacy": {
+    "updateCheck": true,
+    "pluginCatalog": true
+  },
 
   // Other plugins config
   // ep_comments_page
@@ -319,15 +494,25 @@ __COMMENT_IF_LDAP_DISABLED__    },
   "maxAge": 21600, // 60 * 60 * 6 = 6 hours
 
   /*
-   * This is the absolute path to the soffice executable.
+   * Absolute path to the soffice (LibreOffice) executable.
    *
-   * LibreOffice can be used in lieu of Abiword to export pads.
-   * Setting it to null disables LibreOffice exporting.
+   * When configured, soffice handles all advanced office-format
+   * conversions (docx, pdf, odt, doc, rtf — both directions). When
+   * null, Etherpad falls back to pure-JS in-process converters
+   * that handle docx export, pdf export, and docx import natively.
+   * odt/doc/rtf export and pdf import still require soffice.
    */
   "soffice": "/usr/bin/soffice",
 
   /*
-   * Allow import of file types other than the supported ones:
+   * When true (the default), the "Microsoft Word" export button
+   * downloads a .docx file -- via soffice if it's configured, or via
+   * the in-process html-to-docx converter otherwise. Set to false to
+   * revert to legacy .doc output (.doc still requires soffice).
+   */
+  "docxExport": true,
+
+  /*
    * txt, doc, docx, rtf, odt, html & htm
    */
   "allowUnknownFileEnds": true,
@@ -360,6 +545,13 @@ __COMMENT_IF_LDAP_DISABLED__    },
    */
   "cookie": {
     /*
+     * Prefix for all cookie names set by Etherpad. Set this to "ep_" or similar
+     * if Etherpad's cookie names (token, sessionID, etc.) conflict with those
+     * of another application on the same domain. Default: "" (no prefix).
+     */
+    // "prefix": "ep_",
+
+    /*
      * How often (in milliseconds) the key used to sign the express_sid cookie
      * should be rotated. Long rotation intervals reduce signature verification
      * overhead (because there are fewer historical keys to check) and database
@@ -386,13 +578,85 @@ __COMMENT_IF_LDAP_DISABLED__    },
      * significant usability drawbacks vs. "Lax". See
      * https://stackoverflow.com/q/41841880 for discussion.
      */
-    "sameSite": "Lax"
+    "sameSite": "Lax",
+
+    /*
+     * How long (in milliseconds) after navigating away from Etherpad before the
+     * user is required to log in again. (The express_sid cookie is set to
+     * expire at time now + sessionLifetime when first created, and its
+     * expiration time is periodically refreshed to a new now + sessionLifetime
+     * value.) If requireAuthentication is false then this value does not really
+     * matter.
+     *
+     * The "best" value depends on your users' usage patterns and the amount of
+     * convenience you desire. A long lifetime is more convenient (users won't
+     * have to log back in as often) but has some drawbacks:
+     *   - It increases the amount of state kept in the database.
+     *   - It might weaken security somewhat: The cookie expiration is refreshed
+     *     indefinitely without consulting authentication or authorization
+     *     hooks, so once a user has accessed a pad, the user can continue to
+     *     use the pad until the user leaves for longer than sessionLifetime.
+     *   - More historical keys (sessionLifetime / keyRotationInterval) must be
+     *     checked when verifying signatures.
+     *
+     * Session lifetime can be set to infinity (not recommended) by setting this
+     * to null or 0. Note that if the session does not expire, most browsers
+     * will delete the cookie when the browser exits, but a session record is
+     * kept in the database forever.
+     */
+    "sessionLifetime": 864000000, // = 10d * 24h/d * 60m/h * 60s/m * 1000ms/s
+
+    /*
+     * How long (in milliseconds) before the expiration time of an active user's
+     * session is refreshed (to now + sessionLifetime). This setting affects the
+     * following:
+     *   - How often a new session expiration time will be written to the
+     *     database.
+     *   - How often each user's browser will ping the Etherpad server to
+     *     refresh the expiration time of the session cookie.
+     *
+     * High values reduce the load on the database and the load from browsers,
+     * but can shorten the effective session lifetime if Etherpad is restarted
+     * or the user navigates away.
+     *
+     * Automatic session refreshes can be disabled (not recommended) by setting
+     * this to null.
+     */
+    "sessionRefreshInterval": 86400000, // = 1d * 24h/d * 60m/h * 60s/m * 1000ms/s
+
+    /*
+     * Whether to periodically clean up expired and stale sessions from the
+     * database. Set to false to disable. Default: true.
+     */
+    "sessionCleanup": true
   },
 
   /*
-   * Privacy: disable IP logging
+   * Controls what Etherpad writes to its logs about client IP addresses.
+   *
+   *   "anonymous" — replace every IP with the literal "ANONYMOUS" (default)
+   *   "truncated" — zero the last octet of IPv4 (1.2.3.0); truncate IPv6 to
+   *                 the first /48 (2001:db8:1::). Keeps aggregate visibility.
+   *   "full"      — log the full IP (document a legal basis + retention
+   *                 policy before choosing this).
+   *
+   * In-memory rate-limiting always keys on the raw IP and is never persisted.
+   */
+  "ipLogging": "anonymous",
+
+  /*
+   * Deprecated — use `ipLogging` above instead. Still honoured for one release
+   * cycle: `true` maps to `ipLogging: "anonymous"`, `false` maps to `"full"`.
+   * A deprecation warning is emitted when only this legacy setting is present.
    */
   "disableIPlogging": false,
+
+  /*
+   * Allow any user who can edit a pad to delete it without the one-time pad
+   * deletion token. If false, only the original creator's author cookie or the
+   * deletion token can delete the pad.
+   */
+  "allowPadDeletionByAllUsers": false,
 
   /*
    * Time (in seconds) to automatically reconnect pad when a "Force reconnect"
@@ -444,19 +708,63 @@ __COMMENT_IF_LDAP_DISABLED__    },
   },
 
   /*
+   * User accounts. These accounts are used by:
+   *   - default HTTP basic authentication if no plugin handles authentication
+   *   - some but not all authentication plugins
+   *   - some but not all authorization plugins
+   *
+   * User properties:
+   *   - password: The user's password. Some authentication plugins will ignore
+   *     this.
+   *   - is_admin: true gives access to /admin. Defaults to false. If you do not
+   *     uncomment this, /admin will not be available!
+   *   - readOnly: If true, this user will not be able to create new pads or
+   *     modify existing pads. Defaults to false.
+   *   - canCreate: If this is true and readOnly is false, this user can create
+   *     new pads. Defaults to true.
+   *
+   * Authentication and authorization plugins may define additional properties.
+   *
+   * WARNING: passwords should not be stored in plaintext in this file.
+   *          If you want to mitigate this, please install ep_hash_auth and
+   *          follow the section "secure your installation" in README.md
+   */
+
+  /*
+  "users": {
+    "admin": {
+      // 1) "password" can be replaced with "hash" if you install ep_hash_auth
+      // 2) please note that if password is null, the user will not be created
+      "password": "changeme1",
+      "is_admin": true
+    },
+    "user": {
+      // 1) "password" can be replaced with "hash" if you install ep_hash_auth
+      // 2) please note that if password is null, the user will not be created
+      "password": "changeme1",
+      "is_admin": false
+    }
+  },
+  */
+
+  /*
    * Restrict socket.io transport methods
    */
   "socketTransportProtocols" : ["websocket", "polling"],
 
   "socketIo": {
     /*
-     * Maximum permitted client message size (in bytes). All messages from
-     * clients that are larger than this will be rejected. Large values make it
-     * possible to paste large amounts of text, and plugins may require a larger
-     * value to work properly, but increasing the value increases susceptibility
-     * to denial of service attacks (malicious clients can exhaust memory).
+     * Maximum permitted client message size (in bytes). This controls the
+     * maximum single-message size for socket.io and directly affects large
+     * paste operations. All messages from clients that are larger than this
+     * will be rejected. Large values make it possible to paste large amounts
+     * of text, and plugins may require a larger value to work properly, but
+     * increasing the value increases susceptibility to denial of service
+     * attacks (malicious clients can exhaust memory).
+     *
+     * 1MB accommodates large pastes while still preventing abuse.
      */
-    "maxHttpBufferSize": 50000
+    "maxHttpBufferSize": 1000000
   },
 
   /*
@@ -512,6 +820,50 @@ __COMMENT_IF_LDAP_DISABLED__    },
    */
   "authenticationMethod": "${AUTHENTICATION_METHOD:sso}",
 
+    /**
+    * Allow setting dark mode for the enduser. This is so if the user has preferred dark mode in their browser, Etherpad will respect that.
+    * Of course this overrides all the skin variants and the skinName set by the administrator.
+    **/
+    "enableDarkMode": "${ENABLE_DARK_MODE:true}",
+
+    /**
+    * Enable creator-owned Pad-wide Settings and new-pad default seeding from My View.
+    * The pad creator (revision-0 author) gets the "Pad-wide Settings" section,
+    * which lets them set defaults and optionally enforce them for other users.
+    * Other users see only "User Settings" (their own view options).
+    * Set to false to revert to the legacy single-settings behavior.
+    **/
+    "enablePadWideSettings": "${ENABLE_PAD_WIDE_SETTINGS:true}",
+
+  /*
+    * Allow plugins to ride the existing padoptions COLLABROOM rail by
+    * accepting pad-wide values under plugin-namespaced keys matching
+    * /^ep_[a-z0-9_]+$/ (e.g. ep_table_of_contents). Values are validated
+    * (JSON-safe, 64 KB per key, 256 KB total) and broadcast to every
+    * connected client just like native pad-wide toggles. Disabled by
+    * default; flip to true once your plugins (e.g. ep_plugin_helpers'
+    * padToggle) require it. See doc/plugins.md.
+    **/
+    "enablePluginPadOptions": "${ENABLE_PLUGIN_PAD_OPTIONS:false}",
+
+  /*
+   * Optional privacy banner shown once the pad loads. Disabled by default.
+   *
+   *   enabled      — toggle the feature
+   *   title        — plain-text heading (HTML is escaped)
+   *   body         — plain-text body; newlines become paragraph breaks
+   *   learnMoreUrl — optional URL rendered as a "Learn more" link
+   *   dismissal    — "dismissible" (close button, stored in localStorage)
+   *                  or "sticky"  (always shown, no close button)
+   */
+  "privacyBanner": {
+    "enabled": false,
+    "title": "Privacy notice",
+    "body": "This instance processes pad content on our servers. See the linked policy for retention and how to request erasure.",
+    "learnMoreUrl": null,
+    "dismissal": "dismissible"
+  },
+
   /*
    * From Etherpad 1.8.5 onwards, when Etherpad is in production mode commits from individual users are rate limited
    *
@@ -544,7 +896,7 @@ __COMMENT_IF_LDAP_DISABLED__    },
     ],
     "right": [
       ["importexport", "timeslider", "savedrevision"],
-      ["settings", "embed"],
+      ["settings", "embed", "home"],
       ["showusers"]
     ],
     "timeslider": [
@@ -574,9 +926,57 @@ __COMMENT_IF_LDAP_DISABLED__    },
    */
    "logLayoutType": "colored",
 
-  /* Override any strings found in locale directories */
+  /*
+   * Override any strings found in locale directories.
+   *
+   * Format: { "<lang>": { "<key>": "<text>", ... }, ... }
+   * Example, per-language Open Graph description for link previews:
+   *   "customLocaleStrings": {
+   *     "en": { "pad.social.description": "Our team's collaborative pads." },
+   *     "de": { "pad.social.description": "Kollaborative Notizblöcke." }
+   *   }
+   * For a single description regardless of language, prefer
+   * `socialMeta.description` above — link-preview crawlers usually don't
+   * send Accept-Language and otherwise hit the English fallback.
+   */
   "customLocaleStrings": {},
 
   /* Disable Admin UI tests */
-  "enableAdminUITests": false
+  "enableAdminUITests": false,
+
+  /*
+   * Enable/Disable case-insensitive pad names.
+   */
+  "lowerCasePadIds": false,
+
+  "sso": {
+    "issuer": "${SSO_ISSUER:http://localhost:9001}",
+      "clients": [
+        {
+          "client_id": "${ADMIN_CLIENT:admin_client}",
+          "client_secret": "${ADMIN_SECRET:admin}",
+          "grant_types": ["authorization_code"],
+          "response_types": ["code"],
+          "redirect_uris": ["${ADMIN_REDIRECT:http://localhost:9001/admin/}"]
+        },
+        {
+          "client_id": "${USER_CLIENT:user_client}",
+          "client_secret": "${USER_SECRET:user}",
+          "grant_types": ["authorization_code"],
+          "response_types": ["code"],
+          "redirect_uris": ["${USER_REDIRECT:http://localhost:9001/}"]
+        }
+      ]
+    }
+
+    /* Set the time to live for the tokens
+         This is the time of seconds a user is logged into Etherpad
+    "ttl":  {
+        "AccessToken": 3600,
+        "AuthorizationCode": 600,
+        "ClientCredentials": 3600,
+        "IdToken": 3600,
+        "RefreshToken": 86400
+    }
+    */
 }
