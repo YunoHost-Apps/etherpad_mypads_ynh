@@ -327,7 +327,6 @@
    * See: https://github.com/ether/etherpad/wiki/How-to-use-Etherpad-Lite-with-MySQL
    */
 
- 
   "dbType" : "mysql",
   "dbSettings" : {
     "user":     "__DB_USER__",
@@ -338,7 +337,6 @@
     "charset":  "utf8mb4"
   },
  
-
   /*
    * The default text of a pad
    */
@@ -360,7 +358,7 @@
     "rtl":              false,
     "alwaysShowChat":   false,
     "chatAndUsers":     false,
-    "lang":             "__LANGUAGE__"
+    "lang":             "__LANGUAGE__",
     /*
      * When true (default), each author's caret/background color fades toward white
      * as the author goes inactive. Set to false if users pick light colors and the
