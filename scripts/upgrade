@@ -35,7 +35,7 @@ ynh_app_setting_set_default --key=password --value=$(ynh_string_random --length=
 #=================================================
 ynh_script_progression "Upgrading source files..."
 
-ynh_setup_source --dest_dir="$install_dir" --full_replace --keep="settings.json credentials.json"
+ynh_setup_source --dest_dir="$install_dir" --full_replace --keep="settings.json"
 
 #=================================================
 # CONFIGURE ETHERPAD
@@ -51,10 +51,6 @@ fi
 
 # Calculate and store the config file checksum into the app settings
 ynh_config_add --template="settings.json" --destination="$install_dir/settings.json"
-chmod 600 "$install_dir/settings.json"
-
-ynh_config_add --template="credentials.json" --destination="$install_dir/credentials.json"
-chmod 600 "$install_dir/credentials.json"
 
 #=================================================
 # UPGRADE NPM MODULES
@@ -81,7 +77,7 @@ popd
 
 if [ $mypads -eq 1 ]
 then
-	ynh_script_progression --message="Tweaking MyPads configuration..." --weight=1
+	ynh_script_progression --message="Tweaking MyPads configuration..."
 
 	# Add a link to Etherpad to allow anonymous pads creation from MyPads.
 	ynh_replace --match="^ *\"DESCRIPTION\": .*</ul>" --replace="&<a href=../>Pads anonymes</a>" --file=$install_dir/node_modules/ep_etherpad-lite/plugin_packages/ep_mypads/static/l10n/fr.json
@@ -114,7 +110,7 @@ ynh_config_add_fail2ban --logpath="/var/log/nginx/$domain-access.log" --failrege
 #=================================================
 ynh_script_progression "Starting systemd service..."
 
-ynh_systemctl --service="$app" --action=restart --log_path=systemd --wait_until="Etherpad is running"
+ynh_systemctl --service="$app" --action=restart
 
 #=================================================
 # DEACTIVE MAINTENANCE MODE

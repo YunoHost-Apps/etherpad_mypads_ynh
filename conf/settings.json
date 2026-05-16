@@ -730,14 +730,15 @@ __COMMENT_IF_LDAP_DISABLED__    },
    *          follow the section "secure your installation" in README.md
    */
 
-  /*
   "users": {
-    "admin": {
+    "__ADMIN__": {
       // 1) "password" can be replaced with "hash" if you install ep_hash_auth
       // 2) please note that if password is null, the user will not be created
-      "password": "changeme1",
+      "password": "__PASSWORD__",
       "is_admin": true
-    },
+    }
+  },
+ /*
     "user": {
       // 1) "password" can be replaced with "hash" if you install ep_hash_auth
       // 2) please note that if password is null, the user will not be created
