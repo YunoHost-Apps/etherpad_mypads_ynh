@@ -102,4 +102,4 @@ ram.runtime = "50M"
     type = "mysql"
     
     [resources.nodejs]
-    version = "25"
+    version = "24"
