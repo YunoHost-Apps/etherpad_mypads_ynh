@@ -6,14 +6,14 @@
 
 # MyPads version
 # This variable is mostly used to force an upgrade of the package in case of new versions of MyPads.
-mypads_version=1.7.25
+mypads_version=2.0.1
 
 # Plugin versions -> https://static.etherpad.org/index.html
-ep_align_version=11.0.29
-ep_author_hover_version=11.0.28
+ep_align_version=11.0.43
+ep_author_hover_version=11.0.34
 ep_delete_empty_pads_version=0.0.11
-ep_headings2_version=0.2.119
-ep_font_size_version=0.4.109
+ep_headings2_version=0.2.125
+ep_font_size_version=0.4.113
 
 #=================================================
 # CUSTOM HELPERS
