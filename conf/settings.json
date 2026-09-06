@@ -422,15 +422,6 @@
   },
 
   // Other plugins config
-  // ep_comments_page
-    // Display comments as icons, not boxes
-    "ep_comments_page": {
-      "displayCommentAsIcon": false
-    },
-    // Highlight selected text when adding comment
-    "ep_comments_page": {
-      "highlightSelectedText": false
-    },
     // ep_mypads
 __COMMENT_IF_LDAP_DISABLED__    "ep_mypads": {
 __COMMENT_IF_LDAP_DISABLED__      "ldap": {

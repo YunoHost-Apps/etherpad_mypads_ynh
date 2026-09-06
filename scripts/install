@@ -51,7 +51,7 @@ ynh_config_add --template="settings.json" --destination="$install_dir/settings.j
 ynh_script_progression "Installing $app and plugins..."
 
 pushd "$install_dir"
-	ynh_hide_warnings corepack enable && COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack prepare pnpm@latest --activate
+	ynh_hide_warnings corepack enable && COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack prepare pnpm@${pnpm_version} --activate
     ynh_hide_warnings ynh_exec_as_app pnpm install
     ynh_hide_warnings ynh_exec_as_app pnpm run build:etherpad
     chown -R $app:$app ./node_modules
@@ -70,20 +70,27 @@ popd
 # SOME HACKS
 #=================================================
 
-#if [ $mypads -eq 1 ]
-#then
-#    ynh_script_progression "Tweaking MyPad configuration..."
-#
-#	# Add a link to Etherpad to allow anonymous pads creation from MyPads.
-#	ynh_replace --match="^ *\"DESCRIPTION\": .*</ul>" --replace="&<a href=../>Pads anonymes</a>" --file=$install_dir/node_modules/ep_etherpad-lite/plugin_packages/ep_mypads/static/l10n/fr.json
-#	ynh_replace --match="^ *\"DESCRIPTION\": .*</ul>" --replace="&<a href=../>Anonymous pads</a>" --file=$install_dir/node_modules/ep_etherpad-lite/plugin_packages/ep_mypads/static/l10n/en.json
-	# And a link to Etherpad admin from MyPads.
-#	ynh_replace --match="^ *\"FOOTER\": .*2.0" --replace="& | <a href='../admin'>Etherpad admin</a>" --file=$install_dir/node_modules/ep_etherpad-lite/plugin_packages/ep_mypads/static/l10n/en.json
-#	ynh_replace --match="^ *\"FOOTER\": .*2.0" --replace="& | <a href='../admin'>Etherpad admin</a>" --file=$install_dir/node_modules/ep_etherpad-lite/plugin_packages/ep_mypads/static/l10n/fr.json
+if [ $mypads -eq 1 ]
+then
+    ynh_script_progression "Tweaking MyPads configuration..."
 
-    # Find the /div just after the field to open a pad in order to add a link to MyPads plugin.
-#   sed -i '157i<center><br><font size="4"><a href="./mypads/" style="text-decoration: none; color: #555">MyPads</a></font></center>' $install_dir/src/templates/index.html
-#fi
+    # Etherpad 2.x installs plugins into src/plugin_packages/ and symlinks them
+    # into src/node_modules/ (see src/static/js/pluginfw/installer.ts).
+    mypads_dir="$install_dir/src/plugin_packages/ep_mypads"
+    [ -d "$mypads_dir" ] || ynh_die "MyPads was requested but $mypads_dir does not exist after the plugin install — did Etherpad change where it unpacks plugins?"
+
+    # Add a link to Etherpad to allow anonymous pads creation from MyPads.
+    ynh_replace --match="^ *\"DESCRIPTION\": .*</ul>" --replace="&<a href=../>Pads anonymes</a>" --file="$mypads_dir/static/l10n/fr.json"
+    ynh_replace --match="^ *\"DESCRIPTION\": .*</ul>" --replace="&<a href=../>Anonymous pads</a>" --file="$mypads_dir/static/l10n/en.json"
+    # And a link to Etherpad admin from MyPads.
+    ynh_replace --match="^ *\"FOOTER\": .*2.0" --replace="& | <a href='../admin'>Etherpad admin</a>" --file="$mypads_dir/static/l10n/en.json"
+    ynh_replace --match="^ *\"FOOTER\": .*2.0" --replace="& | <a href='../admin'>Etherpad admin</a>" --file="$mypads_dir/static/l10n/fr.json"
+
+    # Add a link to MyPads just below the "open a pad" form of the index page.
+    # Anchored on </form>, which is unique in that template, rather than on a
+    # hardcoded line number.
+    ynh_replace --match="^\( *\)</form>" --replace="&\n\1<center><br><font size=\"4\"><a href=\"./mypads/\" style=\"text-decoration: none; color: #555\">MyPads</a></font></center>" --file="$install_dir/src/templates/index.html"
+fi
 
 #=================================================
 # SYSTEM CONFIGURATION
@@ -105,15 +112,19 @@ ynh_config_add_fail2ban --logpath="/var/log/nginx/$domain-access.log" --failrege
 #=================================================
 ynh_script_progression "Starting systemd service..."
 
-ynh_systemctl --service="$app" --action=restart
+# Wait for Etherpad to be fully up: it creates the ueberDB `store` table during
+# startup, and the MyPads language query below reads it.
+ynh_systemctl --service="$app" --action=restart --log_path=systemd --wait_until="Etherpad is running" --timeout=120
 
-#if [ $mypads -eq 1 ]
-#then
-#    ynh_replace --match="__LANGUAGE__" --replace="$language" --file="../conf/lang_mypads.sql"
-#    ynh_mysql_db_shell < "../conf/lang_mypads.sql"
+if [ $mypads -eq 1 ]
+then
+    ynh_script_progression "Setting MyPads default language..."
 
-#    ynh_systemctl --service="$app" --action=restart
-#fi
+    ynh_replace --match="__LANGUAGE__" --replace="$language" --file="../conf/lang_mypads.sql"
+    ynh_mysql_db_shell < "../conf/lang_mypads.sql"
+
+    ynh_systemctl --service="$app" --action=restart --log_path=systemd --wait_until="Etherpad is running" --timeout=120
+fi
 
 #=================================================
 # END OF SCRIPT

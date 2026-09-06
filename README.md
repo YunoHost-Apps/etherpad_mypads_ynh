@@ -12,7 +12,7 @@ Online editor providing collaborative editing in real-time
 
 [![🌐 Official app website](https://img.shields.io/badge/Official_app_website-darkgreen?style=for-the-badge)](http://etherpad.org)
 [![App Demo](https://img.shields.io/badge/App_Demo-blue?style=for-the-badge)](https://video.etherpad.com)
-[![Version: 3.3.0~ynh1](https://img.shields.io/badge/Version-3.3.0~ynh1-rgb(18,138,11)?style=for-the-badge)](https://ci-apps.yunohost.org/ci/apps/etherpad_mypads/)
+[![Version: 2.7.3~ynh1](https://img.shields.io/badge/Version-2.7.3~ynh1-rgb(18,138,11)?style=for-the-badge)](https://ci-apps.yunohost.org/ci/apps/etherpad_mypads/)
 
 <div align="center">
 <a href="https://apps.yunohost.org/app/etherpad_mypads"><img height="100px" src="https://github.com/YunoHost/yunohost-artwork/raw/refs/heads/main/badges/neopossum-badges/badge_more_info_on_the_appstore.svg"/></a>
@@ -40,6 +40,11 @@ sudo yunohost app install https://github.com/YunoHost-Apps/etherpad_mypads_ynh/t
 sudo yunohost app upgrade etherpad_mypads -u https://github.com/YunoHost-Apps/etherpad_mypads_ynh/tree/testing
 ```
 
+You can also switch to the testing branch to update from testing by default (as same as for APT when you chose to use a testing repos) with this command:
+```bash
+sudo yunohost app setting etherpad_mypads upgrade_channel -v testing
+```
+
 ### 📚 App packaging documentation
 
-Please see <https://doc.yunohost.org/packaging_apps> for more information.
+Please see <https://doc.yunohost.org/dev/packaging/> for more information.
