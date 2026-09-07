@@ -5,7 +5,7 @@ name = "Etherpad MyPads"
 description.en = "Online editor providing collaborative editing in real-time"
 description.fr = "Éditeur en ligne fournissant l'édition collaborative en temps réel"
 
-version = "2.7.3~ynh1"
+version = "3.3.3~ynh1"
 
 maintainers = []
 
@@ -76,8 +76,8 @@ ram.runtime = "50M"
     [resources.sources]
 
     [resources.sources.main]
-    url = "https://github.com/ether/etherpad-lite/archive/refs/tags/2.7.3.tar.gz"
-    sha256 = "0c00483ccec888678579b58004ecd6d698ab61c69532ba3a3a1252515fa652cc"
+    url = "https://github.com/ether/etherpad-lite/archive/refs/tags/3.3.3.tar.gz"
+    sha256 = "a35ba10042f731cd2b40c0c71ce710620c8a3bf23c54ef58e9fa524e741df5c5"
     autoupdate.strategy = "latest_github_tag"
     # Stay on the Etherpad 2.x line: ep_mypads explicitly refuses to install on
     # Etherpad 3 (upstream commit "Prevent installing on Etherpad 3") and declares
