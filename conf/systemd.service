@@ -1,5 +1,5 @@
 [Unit]
-Description=Etherpad-lite: the collaborative editor.
+Description=Etherpad-lite: collaborative editor
 After=syslog.target network.target
 
 [Service]
@@ -7,11 +7,9 @@ Type=simple
 User=__APP__
 Group=__APP__
 WorkingDirectory=__INSTALL_DIR__/
-Environment=ETHERPAD_PRODUCTION=true
-Environment="__YNH_NODE_LOAD_PATH__"
-ExecStart=__YNH_NODE__ __INSTALL_DIR__/src/node/server.js
-StandardOutput=append:/var/log/__APP__/etherpad.log
-StandardError=inherit
+Environment="NODE_ENV=production"
+Environment="PATH=__PATH_WITH_NODEJS__"
+ExecStart=__NODEJS_DIR__/pnpm run prod
 Restart=always
 
 # Sandboxing options to harden security

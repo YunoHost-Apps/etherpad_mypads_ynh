@@ -4,37 +4,29 @@
 # COMMON VARIABLES
 #=================================================
 
-# NodeJS version
-nodejs_version=14
-
 # MyPads version
 # This variable is mostly used to force an upgrade of the package in case of new versions of MyPads.
-mypads_version=1.7.24
+mypads_version=2.0.1
 
-# Plugin versions
-ep_align_version=0.3.53
-ep_author_hover_version=0.3.37
-ep_comments_page_version=1.0.5
-ep_countable_version=0.0.13
-ep_delete_empty_pads_version=0.0.10
-ep_font_color_version=0.0.63
-ep_headings2_version=0.2.44
-ep_markdown_version=0.1.50
-ep_spellcheck_version=0.0.43
-ep_subscript_and_superscript_version=0.2.47
-ep_font_size_version=0.4.44
+# pnpm version -> must track the "packageManager" field of Etherpad's own
+# package.json, so corepack installs what upstream tested against rather than
+# whatever "pnpm@latest" happens to be that day.
+pnpm_version=11.0.6
 
-#=================================================
-# PERSONAL HELPERS
-#=================================================
+# Plugin versions -> https://static.etherpad.org/index.html
+ep_align_version=11.0.43
+ep_author_hover_version=11.0.34
+ep_delete_empty_pads_version=0.0.11
+ep_headings2_version=0.2.125
+ep_font_size_version=0.4.113
 
 #=================================================
-# EXPERIMENTAL HELPERS
+# CUSTOM HELPERS
 #=================================================
 
 ynh_maintenance_mode_ON () {
 	mkdir -p /var/www/html/
-	
+
 	# Create an html to serve as maintenance notice
 	echo "<!DOCTYPE html>
 <html>
@@ -94,7 +86,3 @@ ynh_maintenance_mode_OFF () {
 
 	systemctl reload nginx
 }
-
-#=================================================
-# FUTURE OFFICIAL HELPERS
-#=================================================

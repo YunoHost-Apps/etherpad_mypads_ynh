@@ -5,7 +5,7 @@ name = "Etherpad MyPads"
 description.en = "Online editor providing collaborative editing in real-time"
 description.fr = "Éditeur en ligne fournissant l'édition collaborative en temps réel"
 
-version = "1.9.1~ynh3"
+version = "2.7.3~ynh1"
 
 maintainers = []
 
@@ -13,16 +13,19 @@ maintainers = []
 license = "Apache-2.0"
 website = "http://etherpad.org"
 demo = "https://video.etherpad.com"
-admindoc = "http://etherpad.org/doc/v1.9.0"
+admindoc = "http://etherpad.org/doc/v2.7.0"
 code = "https://github.com/ether/etherpad-lite"
 
 [integration]
-yunohost = ">= 11.2"
+yunohost = ">= 12.1.40"
+helpers_version = "2.1"
 architectures = ["arm64", "amd64"]
 multi_instance = true
-ldap = false
+
+ldap = true
 sso = false
-disk = "50M"
+
+disk = "1500M"
 ram.build = "1500M"
 ram.runtime = "50M"
 
@@ -53,13 +56,6 @@ ram.runtime = "50M"
     [install.password]
     type = "password"
 
-    [install.export]
-    ask.en = "Use AbiWord (~260 Mo) or LibreOffice (~400 Mo) (more stable) to expand export possibilities (PDF, doc)?"
-    ask.fr = "Utiliser AbiWord (~260 Mo) ou LibreOffice (~400 Mo) (plus stable) pour étendre les possibilités d'export (PDF, doc) ?"
-    type = "select"
-    choices = ["none", "abiword", "libreoffice"]
-    default = "none"
-
     [install.mypads]
     ask.en = "Do you want to install MyPads plugin?"
     ask.fr = "Voulez-vous installer le plugin MyPads ?"
@@ -79,10 +75,15 @@ ram.runtime = "50M"
 
     [resources.sources]
 
-        [resources.sources.main]
-        url = "https://github.com/ether/etherpad-lite/archive/1.9.1.tar.gz"
-        sha256 = "667741235a2bcd8d28a32f5e611b82fb2ea7d11525ff41b8b5478b05a987b047"
-        autoupdate.strategy = "latest_github_tag"
+    [resources.sources.main]
+    url = "https://github.com/ether/etherpad-lite/archive/refs/tags/2.7.3.tar.gz"
+    sha256 = "0c00483ccec888678579b58004ecd6d698ab61c69532ba3a3a1252515fa652cc"
+    autoupdate.strategy = "latest_github_tag"
+    # Stay on the Etherpad 2.x line: ep_mypads explicitly refuses to install on
+    # Etherpad 3 (upstream commit "Prevent installing on Etherpad 3") and declares
+    # peerDependencies { "ep_etherpad-lite": "^2.5.0" }. Drop this once MyPads
+    # ships a release supporting Etherpad 3.
+    autoupdate.version_regex = '^v?(2\.\d+\.\d+)$'
 
     [resources.system_user]
 
@@ -92,24 +93,18 @@ ram.runtime = "50M"
 
     [resources.permissions]
     main.url = "/"
+    main.auth_header = false
     api.show_tile = false
     admin.url = "/admin"
     admin.auth_header = false
     admin.allowed = ["admins"]
     admin.show_tile = false
-
+    
     [resources.apt]
-    packages = "mariadb-server"
-    packages_from_raw_bash = """
-          if [[ "$export" == "libreoffice" ]]
-          then 
-              echo "unoconv libreoffice-writer"
-          elif [[ "$export" == "abiword" ]]
-          then
-              echo "abiword"
-          fi
-    """
-
+    packages = "mariadb-server, libreoffice-writer"
+    
     [resources.database]
     type = "mysql"
     
+    [resources.nodejs]
+    version = "24"
