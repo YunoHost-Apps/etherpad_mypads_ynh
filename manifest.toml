@@ -5,7 +5,7 @@ name = "Etherpad MyPads"
 description.en = "Online editor providing collaborative editing in real-time"
 description.fr = "Éditeur en ligne fournissant l'édition collaborative en temps réel"
 
-version = "3.3.3~ynh1"
+version = "2.7.3~ynh1"
 
 maintainers = []
 
@@ -25,7 +25,7 @@ multi_instance = true
 ldap = true
 sso = false
 
-disk = "200M"
+disk = "1500M"
 ram.build = "1500M"
 ram.runtime = "50M"
 
@@ -48,7 +48,7 @@ ram.runtime = "50M"
     ask.fr = "Choisissez la langue"
     type = "select"
     choices = ["ca", "de", "en", "es", "fr", "gl", "hu", "it", "nl", "pt"]
-    default = "fr"
+    default = "en"
 
     [install.admin]
     type = "user"
@@ -76,9 +76,14 @@ ram.runtime = "50M"
     [resources.sources]
 
     [resources.sources.main]
-    url = "https://github.com/ether/etherpad-lite/archive/refs/tags/3.3.3.tar.gz"
-    sha256 = "a35ba10042f731cd2b40c0c71ce710620c8a3bf23c54ef58e9fa524e741df5c5"
+    url = "https://github.com/ether/etherpad-lite/archive/refs/tags/2.7.3.tar.gz"
+    sha256 = "0c00483ccec888678579b58004ecd6d698ab61c69532ba3a3a1252515fa652cc"
     autoupdate.strategy = "latest_github_tag"
+    # Stay on the Etherpad 2.x line: ep_mypads explicitly refuses to install on
+    # Etherpad 3 (upstream commit "Prevent installing on Etherpad 3") and declares
+    # peerDependencies { "ep_etherpad-lite": "^2.5.0" }. Drop this once MyPads
+    # ships a release supporting Etherpad 3.
+    autoupdate.version_regex = '^v?(2\.\d+\.\d+)$'
 
     [resources.system_user]
 
@@ -89,7 +94,6 @@ ram.runtime = "50M"
     [resources.permissions]
     main.url = "/"
     main.auth_header = false
-    api.url = "/api"
     api.show_tile = false
     admin.url = "/admin"
     admin.auth_header = false
