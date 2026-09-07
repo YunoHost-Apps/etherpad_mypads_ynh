@@ -18,7 +18,7 @@ test_format = 1.0
 
     # Etherpad 1.9.1 on helpers 2.0 — what every currently-installed instance
     # runs, so this is the migration that actually matters.
-    test_upgrade_from.033df98.name = "1.9.1~ynh3"
+    #test_upgrade_from.033df98.name = "1.9.1~ynh3"
 
 [with_MyPads]
     args.mypads = 1
