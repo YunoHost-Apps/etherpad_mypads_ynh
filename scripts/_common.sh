@@ -48,7 +48,7 @@ ynh_maintenance_mode_ON () {
 </body>
 </html>" > "/var/www/html/maintenance.$app.html"
 
-	# Create a new nginx config file to redirect all access to the app to the maintenance notice instead.
+	# Create a new NGINX config file to redirect all access to the app to the maintenance notice instead.
 	echo "# All request to the app will be redirected to ${path}_maintenance and fall on the maintenance notice
 rewrite ^${path}/(.*)$ ${path}_maintenance/? redirect;
 # Use another location, to not be in conflict with the original config file
@@ -70,7 +70,7 @@ try_files maintenance.$app.html =503;
 }
 
 ynh_maintenance_mode_OFF () {
-	# Rewrite the nginx config file to redirect from ${path}_maintenance to the real url of the app.
+	# Rewrite the NGINX config file to redirect from ${path}_maintenance to the real url of the app.
 	echo "rewrite ^${path}_maintenance/(.*)$ ${path}/\$1 redirect;" > "/etc/nginx/conf.d/$domain.d/maintenance.$app.conf"
 	systemctl reload nginx
 
