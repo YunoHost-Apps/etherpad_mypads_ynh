@@ -4,12 +4,6 @@ source _common.sh
 source /usr/share/yunohost/helpers
 
 #=================================================
-# ACTIVATE MAINTENANCE MODE
-#=================================================
-
-ynh_maintenance_mode_ON
-
-#=================================================
 # MODIFY URL IN NGINX CONF
 #=================================================
 ynh_script_progression "Updating NGINX web server configuration..."
@@ -22,12 +16,6 @@ ynh_config_change_url_nginx
 ynh_script_progression "Starting $app's systemd service..."
 
 ynh_systemctl --service="$app" --action=restart --log_path=systemd --wait_until="Etherpad is running" --timeout=120
-
-#=================================================
-# DEACTIVE MAINTENANCE MODE
-#=================================================
-
-ynh_maintenance_mode_OFF
 
 #=================================================
 # END OF SCRIPT
