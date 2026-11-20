@@ -76,8 +76,8 @@ ram.runtime = "50M"
     [resources.sources]
 
     [resources.sources.main]
-    url = "https://github.com/ether/etherpad-lite/archive/refs/tags/3.3.16.tar.gz"
-    sha256 = "6ce24cf9f71b500b7b4226208f3ba4ead84d1ed321910fb2ca8a8f6a3fe4ade4"
+    url = "https://github.com/ether/etherpad-lite/archive/refs/tags/3.3.20.tar.gz"
+    sha256 = "c5e150692b5ccf4af80fafe8493b1d3f9134e13c70f297833968631380b860c2"
     autoupdate.strategy = "latest_github_tag"
     # Stay on the Etherpad 2.x line: ep_mypads explicitly refuses to install on
     # Etherpad 3 (upstream commit "Prevent installing on Etherpad 3") and declares
